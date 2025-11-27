@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-color: #e5e7eb;
+  }
+
+  body {
+    @apply bg-white text-gray-900;
+    font-family: system-ui, -apple-system, sans-serif;
+  }
+}
