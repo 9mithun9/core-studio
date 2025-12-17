@@ -1248,8 +1248,8 @@ export default function AdminDashboard() {
 
                   {/* Data rows */}
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                    <>
-                      <div key={`${day}-label`} className="font-semibold text-gray-600 flex items-center">
+                    <React.Fragment key={day}>
+                      <div className="font-semibold text-gray-600 flex items-center">
                         {day}
                       </div>
                       {Array.from({ length: 24 }, (_, hour) => {
