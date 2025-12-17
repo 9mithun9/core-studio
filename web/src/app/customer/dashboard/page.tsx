@@ -187,6 +187,82 @@ export default function CustomerDashboard() {
         </Link>
       </div>
 
+      {/* Package Status Banners */}
+      {(() => {
+        const activePackages = allPackages.filter((p) => p.status === 'active');
+        const expiredPackages = allPackages.filter((p) => p.status === 'expired');
+        const lowSessionPackages = activePackages.filter(
+          (p) => (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) <= 2 &&
+                 (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) > 0
+        );
+        const noActivePackage = activePackages.length === 0;
+
+        // Priority 1: No active packages (all expired or no packages at all)
+        if (noActivePackage && (expiredPackages.length > 0 || allPackages.length === 0)) {
+          return (
+            <Card className="bg-orange-50 border-orange-300 border-2">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-orange-900 mb-1">Your Package Has Expired</h3>
+                    <p className="text-orange-800 mb-4">
+                      Continue your Pilates journey! Request a new package to keep progressing toward your fitness goals.
+                    </p>
+                    <Button
+                      onClick={() => setShowRequestModal(true)}
+                      className="bg-orange-600 hover:bg-orange-700 text-white"
+                    >
+                      Request New Package
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
+
+        // Priority 2: Low sessions warning
+        if (lowSessionPackages.length > 0) {
+          const pkg = lowSessionPackages[0];
+          const remaining = pkg.remainingUnbooked ?? pkg.availableForBooking ?? pkg.remainingSessions;
+          return (
+            <Card className="bg-yellow-50 border-yellow-300 border-2">
+              <CardContent className="pt-6">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
+                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-bold text-yellow-900 mb-1">
+                      {remaining === 1 ? 'Last Session Remaining!' : 'Running Low on Sessions'}
+                    </h3>
+                    <p className="text-yellow-800 mb-4">
+                      You have only <strong>{remaining} session{remaining > 1 ? 's' : ''}</strong> left in your {pkg.name}.
+                      {' '}Request a new package to maintain your momentum!
+                    </p>
+                    <Button
+                      onClick={() => setShowRequestModal(true)}
+                      className="bg-yellow-600 hover:bg-yellow-700 text-white"
+                    >
+                      Request New Package
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        }
+
+        return null;
+      })()}
+
       {/* Upcoming Sessions Quick View */}
       {overview.upcomingBookings && overview.upcomingBookings.length > 0 && (
         <Card className="bg-primary-50 border-primary-200">
@@ -228,13 +304,19 @@ export default function CustomerDashboard() {
                   <CardTitle>My Packages</CardTitle>
                   <CardDescription>All your session packages</CardDescription>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => setShowRequestModal(true)}
-                >
-                  Add/Renew Package
-                </Button>
+                {(() => {
+                  const hasActivePackage = allPackages.some(p => p.status === 'active');
+                  return (
+                    <Button
+                      size="sm"
+                      variant={hasActivePackage ? "outline" : "default"}
+                      onClick={() => setShowRequestModal(true)}
+                      className={!hasActivePackage ? "bg-primary-600 hover:bg-primary-700 text-white animate-pulse" : ""}
+                    >
+                      {hasActivePackage ? 'Add/Renew' : 'Request Package'}
+                    </Button>
+                  );
+                })()}
               </div>
             </CardHeader>
             <CardContent>
@@ -286,10 +368,19 @@ export default function CustomerDashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-500">
-                  <p className="mb-4">No packages yet</p>
-                  <Button variant="outline" size="sm">
-                    Contact Studio
+                <div className="text-center py-12 text-gray-500">
+                  <div className="mb-4">
+                    <svg className="mx-auto w-16 h-16 text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <p className="text-lg font-medium text-gray-700 mb-2">No packages yet</p>
+                    <p className="text-sm text-gray-500 mb-6">Start your Pilates journey by requesting your first package!</p>
+                  </div>
+                  <Button
+                    onClick={() => setShowRequestModal(true)}
+                    className="bg-primary-600 hover:bg-primary-700 text-white"
+                  >
+                    Request Your First Package
                   </Button>
                 </div>
               )}

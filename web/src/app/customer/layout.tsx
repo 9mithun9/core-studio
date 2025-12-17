@@ -64,8 +64,15 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       <header className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/customer/dashboard">
-              <div className="text-2xl font-bold text-primary-600">Core Studio</div>
+            <Link href="/customer/dashboard" className="flex items-center gap-3">
+              <Image
+                src="/logo.png"
+                alt="Core Studio Pilates"
+                width={40}
+                height={40}
+                className="object-contain"
+              />
+              <div className="text-2xl font-bold text-primary-600">Core Studio Pilates</div>
             </Link>
 
             <nav className="hidden md:flex items-center gap-6">
