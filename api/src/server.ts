@@ -1,10 +1,13 @@
 import express, { Application } from 'express';
 import cors from 'cors';
+import path from 'path';
 import { connectDB } from '@/config/db';
 import { logger } from '@/config/logger';
 import { config } from '@/config/env';
 import { errorHandler } from '@/middlewares';
 import routes from '@/routes';
+import { BookingAutoConfirmService } from '@/services/bookingAutoConfirmService';
+import { SchedulerService } from '@/services/schedulerService';
 
 const app: Application = express();
 
@@ -16,6 +19,9 @@ app.use(cors({
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Serve static files (uploaded images)
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Request logging
 app.use((req, res, next) => {
@@ -40,6 +46,12 @@ const startServer = async () => {
       logger.info(`Server running on ${config.apiUrl}`);
       logger.info(`Environment: ${config.nodeEnv}`);
       logger.info(`Studio timezone: ${config.studioTimezone}`);
+
+      // Start auto-confirm service for pending bookings
+      BookingAutoConfirmService.startPeriodicCheck();
+
+      // Start scheduler service for automatic session completion
+      SchedulerService.initialize();
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

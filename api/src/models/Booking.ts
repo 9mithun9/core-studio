@@ -6,7 +6,7 @@ const bookingSchema = new Schema<IBooking>(
     customerId: {
       type: Schema.Types.ObjectId,
       ref: 'Customer',
-      required: true,
+      required: false, // Not required for blocked time slots
     },
     teacherId: {
       type: Schema.Types.ObjectId,
@@ -53,13 +53,17 @@ const bookingSchema = new Schema<IBooking>(
       type: Schema.Types.ObjectId,
       ref: 'User',
     },
+    autoConfirmed: {
+      type: Boolean,
+      default: false,
+    },
     googleCalendarEventId: {
       type: String,
     },
     createdBy: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false, // Not required for system-created blocked time slots
     },
     notes: {
       type: String,

@@ -1,9 +1,32 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npm install)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 5 bash:*)",
+      "Bash(npx ts-node:*)",
+      "Bash(npm run ts-node:*)",
+      "Bash(node --loader ts-node/esm scripts/createExpiredPackageUser.ts:*)",
+      "Bash(cross-env NODE_OPTIONS=--openssl-legacy-provider ts-node-dev:*)",
+      "Bash(npx cross-env:*)",
+      "Bash(npm install:*)",
+      "Bash(tasklist:*)",
+      "Bash(findstr:*)",
+      "Bash(taskkill:*)",
+      "Bash(timeout /t 3)",
+      "Bash(timeout /t 5)",
       "Bash(netstat:*)",
-      "Bash(findstr:*)"
+      "Bash(cat:*)",
+      "Bash(git checkout:*)",
+      "Bash(node --loader ts-node/esm:*)",
+      "Bash(npm run:*)",
+      "Bash(node:*)",
+      "Bash(timeout:*)",
+      "Bash(cross-env NODE_OPTIONS=--openssl-legacy-provider npx ts-node:*)",
+      "Bash(dir:*)",
+      "Bash(ping:*)",
+      "Bash(npx tsx:*)",
+      "Bash(move \"fixPackageRemainingSession s.ts\" fixPackageRemainingSessions.ts)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

@@ -17,6 +17,10 @@ const teacherSchema = new Schema<ITeacher>(
       type: [String],
       default: [],
     },
+    yearsOfExperience: {
+      type: Number,
+      min: 0,
+    },
     hourlyRate: {
       type: Number,
       min: 0,

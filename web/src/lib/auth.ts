@@ -48,25 +48,25 @@ export const authService = {
 
   setAuth(auth: AuthResponse): void {
     if (typeof window === 'undefined') return;
-    localStorage.setItem('accessToken', auth.accessToken);
-    localStorage.setItem('user', JSON.stringify(auth.user));
+    sessionStorage.setItem('accessToken', auth.accessToken);
+    sessionStorage.setItem('user', JSON.stringify(auth.user));
   },
 
   clearAuth(): void {
     if (typeof window === 'undefined') return;
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('user');
+    sessionStorage.removeItem('accessToken');
+    sessionStorage.removeItem('user');
   },
 
   getStoredUser(): User | null {
     if (typeof window === 'undefined') return null;
-    const userStr = localStorage.getItem('user');
+    const userStr = sessionStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   },
 
   getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    return sessionStorage.getItem('accessToken');
   },
 
   isAuthenticated(): boolean {

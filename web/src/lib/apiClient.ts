@@ -39,13 +39,13 @@ class ApiClient {
 
   private getToken(): string | null {
     if (typeof window === 'undefined') return null;
-    return localStorage.getItem('accessToken');
+    return sessionStorage.getItem('accessToken');
   }
 
   private clearToken(): void {
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('user');
+      sessionStorage.removeItem('accessToken');
+      sessionStorage.removeItem('user');
     }
   }
 

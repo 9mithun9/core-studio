@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { authService } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
+import NotificationBell from '@/components/NotificationBell';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -69,21 +70,21 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                 Packages
               </Link>
               <Link
-                href="/customer/calendar"
+                href="/customer/teachers"
                 className="text-gray-600 hover:text-primary-600"
               >
-                Book Session
-              </Link>
-              <Link
-                href="/customer/history"
-                className="text-gray-600 hover:text-primary-600"
-              >
-                History
+                Teachers
               </Link>
             </nav>
 
             <div className="flex items-center gap-3">
-              <span className="text-sm text-gray-600">Hi, {user?.name}</span>
+              <NotificationBell />
+              <Link
+                href="/customer/profile"
+                className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+              >
+                Hi, {user?.name}
+              </Link>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 Logout
               </Button>

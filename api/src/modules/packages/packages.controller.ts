@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { Package, Customer, Payment } from '@/models';
+import { Package, Customer, Payment, Booking } from '@/models';
 import { validateSchema } from '@/utils/validation';
 import { AppError, asyncHandler } from '@/middlewares';
-import { PackageType, PackageStatus, UserRole } from '@/types';
+import { PackageType, PackageStatus, UserRole, BookingStatus } from '@/types';
 
 // Validation schemas
 const createPackageSchema = z.object({
@@ -105,8 +105,56 @@ export const getMyPackages = asyncHandler(async (req: Request, res: Response) =>
     .sort({ createdAt: -1 })
     .lean();
 
+  // Add session counts for each package
+  const packagesWithCounts = await Promise.all(
+    packages.map(async (pkg) => {
+      // Count completed sessions (already done)
+      // Includes: COMPLETED, NO_SHOW, and past CONFIRMED sessions
+      const completedCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        $or: [
+          { status: { $in: [BookingStatus.COMPLETED, BookingStatus.NO_SHOW] } },
+          { status: BookingStatus.CONFIRMED, endTime: { $lt: new Date() } }
+        ],
+      });
+
+      // Count upcoming sessions (PENDING or CONFIRMED future sessions)
+      const upcomingCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+        startTime: { $gte: new Date() },
+      });
+
+      // Calculate remaining: Total - Completed - Upcoming
+      // This represents sessions not yet booked (available to book)
+      const remainingUnbooked = pkg.totalSessions - completedCount - upcomingCount;
+
+      // Count cancelled bookings (for admin reference, not shown to customer)
+      const cancelledCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        status: BookingStatus.CANCELLED,
+      });
+
+      // Count pending bookings (subset of upcoming, for UI reference)
+      const pendingCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        status: BookingStatus.PENDING,
+      });
+
+      return {
+        ...pkg,
+        completedCount,
+        upcomingCount,
+        remainingUnbooked,
+        cancelledCount,
+        pendingCount,
+        availableForBooking: remainingUnbooked,
+      };
+    })
+  );
+
   res.json({
-    packages,
+    packages: packagesWithCounts,
   });
 });
 

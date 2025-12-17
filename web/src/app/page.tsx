@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
@@ -9,7 +10,16 @@ export default function HomePage() {
       <header className="border-b bg-white">
         <div className="container mx-auto px-4 py-4">
           <nav className="flex items-center justify-between">
-            <div className="text-2xl font-bold text-primary-600">Core Studio</div>
+            <Link href="/" className="flex items-center">
+              <Image
+                src="/logo.png"
+                alt="Core Studio Pilates"
+                width={300}
+                height={120}
+                className="h-24 w-auto md:h-28"
+                priority
+              />
+            </Link>
             <div className="hidden md:flex items-center gap-6">
               <Link href="/about" className="text-gray-600 hover:text-primary-600">
                 About
@@ -167,7 +177,14 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid md:grid-cols-4 gap-8">
             <div>
-              <div className="text-xl font-bold text-primary-600 mb-4">Core Studio</div>
+              <Image
+                src="/logo.png"
+                alt="Core Studio Pilates"
+                width={180}
+                height={70}
+                className="h-14 w-auto mb-4"
+              />
+              <div className="text-xl font-bold text-primary-600 mb-4 sr-only">Core Studio</div>
               <p className="text-gray-600 text-sm">
                 Premium Pilates studio dedicated to helping you achieve your fitness goals.
               </p>

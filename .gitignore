@@ -41,6 +41,9 @@ yarn-error.log*
 logs/
 *.log
 
+# Uploads (user-generated files)
+api/uploads/
+
 # IDE
 .vscode/
 .idea/
@@ -51,3 +54,7 @@ logs/
 # OS
 Thumbs.db
 .DS_Store
+
+# Windows nul files
+nul
+**/nul

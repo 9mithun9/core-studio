@@ -17,7 +17,9 @@ export enum UserStatus {
 
 export enum PackageType {
   PRIVATE = 'private',
+  DUO = 'duo',
   GROUP = 'group',
+  BLOCKED = 'blocked', // For time blocking
 }
 
 export enum PackageStatus {
@@ -33,6 +35,7 @@ export enum BookingStatus {
   COMPLETED = 'completed',
   CANCELLED = 'cancelled',
   NO_SHOW = 'noShow',
+  CANCELLATION_REQUESTED = 'cancellationRequested',
 }
 
 export enum PaymentMethod {
@@ -92,11 +95,18 @@ export interface ICustomer extends Document {
   _id: Types.ObjectId;
   userId: Types.ObjectId | IUser;
   dateOfBirth?: Date;
+  height?: number; // in cm
+  weight?: number; // in kg
+  medicalNotes?: string;
+  profilePhoto?: string;
+  profession?: string;
+  gender?: 'male' | 'female' | 'other';
   healthNotes?: string;
   preferredTeacherId?: Types.ObjectId;
   emergencyContactName?: string;
   emergencyContactPhone?: string;
   tags: string[];
+  totalCancellations: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -106,6 +116,7 @@ export interface ITeacher extends Document {
   userId: Types.ObjectId | IUser;
   bio?: string;
   specialties: string[];
+  yearsOfExperience?: number;
   hourlyRate?: number;
   defaultLocation?: string;
   workingHoursTemplate?: Record<string, any>;
@@ -150,6 +161,7 @@ export interface IBooking extends Document {
   requestCreatedAt?: Date;
   confirmedAt?: Date;
   confirmedBy?: Types.ObjectId | IUser;
+  autoConfirmed?: boolean;
   googleCalendarEventId?: string;
   createdBy: Types.ObjectId | IUser;
   notes?: string;

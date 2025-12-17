@@ -18,6 +18,7 @@ export default function RegisterPage() {
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +44,7 @@ export default function RegisterPage() {
         password: formData.password,
       });
 
-      router.push('/customer/dashboard');
+      setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.error || 'Registration failed. Please try again.');
     } finally {
@@ -69,12 +70,26 @@ export default function RegisterPage() {
           <CardDescription>Start your Pilates journey today</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
-                {error}
+          {success ? (
+            <div className="text-center py-8">
+              <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4">
+                <p className="font-semibold mb-2">Registration Request Submitted!</p>
+                <p className="text-sm">
+                  Your registration request has been submitted successfully.
+                  Please wait for admin approval. You will be notified once your account is activated.
+                </p>
               </div>
-            )}
+              <Link href="/auth/login">
+                <Button variant="outline">Return to Login</Button>
+              </Link>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-4">
+              {error && (
+                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                  {error}
+                </div>
+              )}
 
             <div>
               <label htmlFor="name" className="block text-sm font-medium mb-2">
@@ -156,17 +171,20 @@ export default function RegisterPage() {
               />
             </div>
 
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Creating account...' : 'Create Account'}
-            </Button>
-          </form>
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Submitting request...' : 'Create Account'}
+              </Button>
+            </form>
+          )}
 
-          <div className="mt-6 text-center text-sm">
-            <span className="text-gray-600">Already have an account? </span>
-            <Link href="/auth/login" className="text-primary-600 hover:underline">
-              Sign in
-            </Link>
-          </div>
+          {!success && (
+            <div className="mt-6 text-center text-sm">
+              <span className="text-gray-600">Already have an account? </span>
+              <Link href="/auth/login" className="text-primary-600 hover:underline">
+                Sign in
+              </Link>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

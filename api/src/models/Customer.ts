@@ -12,6 +12,29 @@ const customerSchema = new Schema<ICustomer>(
     dateOfBirth: {
       type: Date,
     },
+    height: {
+      type: Number, // in cm
+    },
+    weight: {
+      type: Number, // in kg
+    },
+    medicalNotes: {
+      type: String,
+      trim: true,
+    },
+    profilePhoto: {
+      type: String,
+      trim: true,
+    },
+    profession: {
+      type: String,
+      trim: true,
+    },
+    gender: {
+      type: String,
+      enum: ['male', 'female', 'other'],
+      trim: true,
+    },
     healthNotes: {
       type: String,
       trim: true,
@@ -31,6 +54,10 @@ const customerSchema = new Schema<ICustomer>(
     tags: {
       type: [String],
       default: [],
+    },
+    totalCancellations: {
+      type: Number,
+      default: 0,
     },
   },
   {

@@ -87,13 +87,20 @@ export const getCustomerOverview = asyncHandler(async (req: Request, res: Respon
     status: PackageStatus.ACTIVE,
   }).lean();
 
-  // Get upcoming bookings
+  // Get upcoming bookings (including cancellation requested)
   const upcomingBookings = await Booking.find({
     customerId: customer._id,
     startTime: { $gte: new Date() },
-    status: { $in: ['pending', 'confirmed'] },
+    status: { $in: ['pending', 'confirmed', 'cancellationRequested'] },
   })
-    .populate('teacherId', 'userId bio')
+    .populate({
+      path: 'teacherId',
+      select: 'userId bio specialties',
+      populate: {
+        path: 'userId',
+        select: 'name email phone',
+      },
+    })
     .sort({ startTime: 1 })
     .limit(5)
     .lean();
@@ -126,6 +133,10 @@ export const updateCustomer = asyncHandler(async (req: Request, res: Response) =
   // Update allowed fields
   const allowedFields = [
     'dateOfBirth',
+    'height',
+    'weight',
+    'medicalNotes',
+    'profilePhoto',
     'healthNotes',
     'preferredTeacherId',
     'emergencyContactName',
@@ -144,5 +155,83 @@ export const updateCustomer = asyncHandler(async (req: Request, res: Response) =
   res.json({
     message: 'Customer updated successfully',
     customer,
+  });
+});
+
+// Update own profile (for customers)
+export const updateOwnProfile = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new AppError('Not authenticated', 401);
+  }
+
+  const updates = req.body;
+
+  // Find customer by userId
+  const customer = await Customer.findOne({ userId: req.user._id });
+  if (!customer) {
+    throw new AppError('Customer profile not found', 404);
+  }
+
+  // Update allowed fields for customer self-service
+  const allowedFields = [
+    'dateOfBirth',
+    'height',
+    'weight',
+    'medicalNotes',
+    'profilePhoto',
+    'profession',
+    'gender',
+    'emergencyContactName',
+    'emergencyContactPhone',
+  ];
+
+  for (const field of allowedFields) {
+    if (updates[field] !== undefined) {
+      (customer as any)[field] = updates[field];
+    }
+  }
+
+  // Update phone number in User model if provided
+  if (updates.phone !== undefined) {
+    await User.findByIdAndUpdate(req.user._id, { phone: updates.phone });
+  }
+
+  await customer.save();
+
+  // Populate userId to return updated user data
+  await customer.populate('userId', 'name email phone');
+
+  res.json({
+    message: 'Profile updated successfully',
+    customer,
+  });
+});
+
+// Upload profile photo
+export const uploadProfilePhoto = asyncHandler(async (req: Request, res: Response) => {
+  if (!req.user) {
+    throw new AppError('Not authenticated', 401);
+  }
+
+  if (!req.file) {
+    throw new AppError('No file uploaded', 400);
+  }
+
+  // Find customer by userId
+  const customer = await Customer.findOne({ userId: req.user._id });
+  if (!customer) {
+    throw new AppError('Customer profile not found', 404);
+  }
+
+  // Generate the URL for the uploaded file
+  const photoUrl = `/uploads/profiles/${req.file.filename}`;
+
+  // Update customer's profile photo
+  customer.profilePhoto = photoUrl;
+  await customer.save();
+
+  res.json({
+    message: 'Profile photo uploaded successfully',
+    photoUrl,
   });
 });
