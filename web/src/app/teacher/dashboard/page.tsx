@@ -602,9 +602,9 @@ export default function TeacherDashboard() {
                             <span className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                               {session.packageId.name}
                             </span>
-                            {session.packageId.sessionsRemaining !== undefined && (
+                            {session.packageId.remainingSessions !== undefined && (
                               <span className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                                {session.packageId.sessionsRemaining} sessions remaining
+                                {session.packageId.remainingSessions} sessions remaining
                               </span>
                             )}
                           </>

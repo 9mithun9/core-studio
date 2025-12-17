@@ -44,7 +44,7 @@ export default function CustomerDashboard() {
 
   const loadData = async () => {
     try {
-      const [overviewData, packagesData] = await Promise.all([
+      const [overviewData, packagesData]: any[] = await Promise.all([
         apiClient.get('/customers/me/overview'),
         apiClient.get('/packages/me'),
       ]);
@@ -68,7 +68,7 @@ export default function CustomerDashboard() {
 
     // Load sessions for this package
     try {
-      const bookings = await apiClient.get('/bookings/me');
+      const bookings: any = await apiClient.get('/bookings/me');
       const packageBookings = bookings.bookings.filter(
         (b: any) => b.packageId?._id === pkg._id
       );
@@ -81,7 +81,7 @@ export default function CustomerDashboard() {
       // Fetch reviews in parallel for all completed sessions
       const reviewPromises = completedBookings.map(async (booking: any) => {
         try {
-          const response = await apiClient.get(`/reviews/booking/${booking._id}`);
+          const response: any = await apiClient.get(`/reviews/booking/${booking._id}`);
           return { bookingId: booking._id, review: response.review };
         } catch {
           return { bookingId: booking._id, review: null };

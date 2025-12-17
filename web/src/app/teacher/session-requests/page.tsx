@@ -25,7 +25,7 @@ export default function TeacherSessionRequests() {
 
   const fetchTeacherId = async () => {
     try {
-      const response = await apiClient.get('/teachers/me');
+      const response: any = await apiClient.get('/teachers/me');
       setTeacherId(response.teacher._id);
     } catch (err) {
       console.error('Failed to fetch teacher info', err);
@@ -48,7 +48,7 @@ export default function TeacherSessionRequests() {
         endpoint = `/bookings?teacherId=${teacherId}&autoConfirmed=true`;
       }
 
-      const data = await apiClient.get(endpoint);
+      const data: any = await apiClient.get(endpoint);
       setRequests(data.bookings || []);
     } catch (err: any) {
       console.error('Failed to load requests', err);

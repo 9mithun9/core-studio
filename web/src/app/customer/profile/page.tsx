@@ -51,7 +51,7 @@ export default function CustomerProfilePage() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('/customers/me/overview');
+      const data: any = await apiClient.get('/customers/me/overview');
       setProfile(data.customer);
 
       // Populate form with existing data

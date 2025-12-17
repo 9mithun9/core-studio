@@ -58,7 +58,7 @@ export default function TeacherProfilePage() {
   const fetchProfile = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('/teachers/me');
+      const data: any = await apiClient.get('/teachers/me');
       setProfile(data.teacher);
 
       // Populate form with existing data

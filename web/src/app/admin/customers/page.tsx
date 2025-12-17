@@ -88,7 +88,7 @@ export default function AdminCustomersPage() {
   const fetchCustomers = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('/admin/customers-sessions');
+      const data: any = await apiClient.get('/admin/customers-sessions');
       setCustomers(data.customers || []);
       setFilteredCustomers(data.customers || []);
     } catch (error) {

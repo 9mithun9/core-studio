@@ -49,7 +49,7 @@ export default function AdminRegistrationsPage() {
   const fetchRequests = async () => {
     try {
       setLoading(true);
-      const [pendingData, allData] = await Promise.all([
+      const [pendingData, allData]: any[] = await Promise.all([
         apiClient.get('/admin/registration-requests/pending'),
         apiClient.get('/admin/registration-requests'),
       ]);

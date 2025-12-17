@@ -36,7 +36,7 @@ export default function CustomerCalendar() {
 
   const loadPackages = async () => {
     try {
-      const data = await apiClient.get<any>('/packages/me');
+      const data: any = await apiClient.get<any>('/packages/me');
       setPackages(data.packages.filter((p: any) => p.status === 'active'));
       if (data.packages.length > 0) {
         setSelectedPackage(data.packages[0]._id);
@@ -48,7 +48,7 @@ export default function CustomerCalendar() {
 
   const loadTeachers = async () => {
     try {
-      const data = await apiClient.get<any>('/teachers');
+      const data: any = await apiClient.get<any>('/teachers');
       setTeachers(data.teachers);
       if (data.teachers.length > 0) {
         setSelectedTeacher(data.teachers[0]._id);
@@ -64,7 +64,7 @@ export default function CustomerCalendar() {
       const startOfSelectedDay = startOfDay(selectedDate);
       const endOfSelectedDay = addDays(startOfSelectedDay, 1);
 
-      const response = await apiClient.get('/bookings/availability', {
+      const response: any = await apiClient.get('/bookings/availability', {
         params: {
           teacherId: selectedTeacher,
           from: startOfSelectedDay.toISOString(),

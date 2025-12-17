@@ -131,7 +131,7 @@ export default function TeacherStudentsPage() {
   const fetchStudents = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('/teachers/students');
+      const data: any = await apiClient.get('/teachers/students');
       setStudents(data.students || []);
       setFilteredStudents(data.students || []);
 
@@ -153,7 +153,7 @@ export default function TeacherStudentsPage() {
 
   const fetchCurrentTeacher = async () => {
     try {
-      const data = await apiClient.get('/teachers/me');
+      const data: any = await apiClient.get('/teachers/me');
       if (data.teacher && data.teacher._id) {
         setCurrentTeacherId(data.teacher._id);
       }
@@ -165,7 +165,7 @@ export default function TeacherStudentsPage() {
   const fetchStudentSessions = async (customerId: string) => {
     try {
       setSessionsLoading(true);
-      const data = await apiClient.get(`/teachers/sessions`, {
+      const data: any = await apiClient.get(`/teachers/sessions`, {
         params: { customerId },
       });
       setStudentSessions(data.sessions || []);
@@ -190,7 +190,7 @@ export default function TeacherStudentsPage() {
       endOfDayDate.setHours(23, 59, 59, 999);
 
       // Fetch availability for the logged-in teacher (EXACTLY like customers do)
-      const response = await apiClient.get('/bookings/availability', {
+      const response: any = await apiClient.get('/bookings/availability', {
         params: {
           teacherId: currentTeacherId, // Pass the logged-in teacher's ID (Michael Chan)
           from: startOfDayDate.toISOString(),
@@ -780,11 +780,11 @@ export default function TeacherStudentsPage() {
                   type="date"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   min={(() => {
-                    const selectedPkg = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
+                    const selectedPkg: any = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
                     return selectedPkg?.validFrom ? new Date(selectedPkg.validFrom).toISOString().split('T')[0] : undefined;
                   })()}
                   max={(() => {
-                    const selectedPkg = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
+                    const selectedPkg: any = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
                     return selectedPkg?.validTo ? new Date(selectedPkg.validTo).toISOString().split('T')[0] : undefined;
                   })()}
                   value={sessionForm.sessionDate}
@@ -794,7 +794,7 @@ export default function TeacherStudentsPage() {
                   required
                 />
                 {(() => {
-                  const selectedPkg = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
+                  const selectedPkg: any = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
                   if (selectedPkg && selectedPkg.validFrom && selectedPkg.validTo) {
                     const validFrom = new Date(selectedPkg.validFrom).toLocaleDateString();
                     const validTo = new Date(selectedPkg.validTo).toLocaleDateString();
@@ -952,11 +952,11 @@ export default function TeacherStudentsPage() {
                   type="date"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
                   min={(() => {
-                    const selectedPkg = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
+                    const selectedPkg: any = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
                     return selectedPkg?.validFrom ? new Date(selectedPkg.validFrom).toISOString().split('T')[0] : undefined;
                   })()}
                   max={(() => {
-                    const selectedPkg = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
+                    const selectedPkg: any = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
                     return selectedPkg?.validTo ? new Date(selectedPkg.validTo).toISOString().split('T')[0] : undefined;
                   })()}
                   value={futureBookingForm.selectedDate.toISOString().split('T')[0]}
@@ -970,7 +970,7 @@ export default function TeacherStudentsPage() {
                   required
                 />
                 {(() => {
-                  const selectedPkg = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
+                  const selectedPkg: any = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
                   if (selectedPkg && selectedPkg.validFrom && selectedPkg.validTo) {
                     const validFrom = new Date(selectedPkg.validFrom).toLocaleDateString();
                     const validTo = new Date(selectedPkg.validTo).toLocaleDateString();
@@ -1034,7 +1034,7 @@ export default function TeacherStudentsPage() {
                           }
 
                           // Get the selected package type to provide context-aware messages
-                          const selectedPkg = selectedStudent?.packages.find((p) => p._id === futureBookingForm.packageId);
+                          const selectedPkg: any = selectedStudent?.packages.find((p) => p._id === futureBookingForm.packageId);
                           const myPackageType = selectedPkg?.type || 'private';
 
                           // Determine the appropriate message based on slot status and package type

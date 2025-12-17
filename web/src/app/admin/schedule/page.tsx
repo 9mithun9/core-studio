@@ -44,7 +44,7 @@ export default function AdminSchedule() {
       setLoading(true);
 
       // Fetch all teachers
-      const teachersResponse = await apiClient.get('/teachers');
+      const teachersResponse: any = await apiClient.get('/teachers');
       const teachersList = teachersResponse.teachers || [];
       setTeachers(teachersList);
 
@@ -73,7 +73,7 @@ export default function AdminSchedule() {
         const promises = teachersList.map((teacher) =>
           apiClient.get(`/bookings?teacherId=${teacher._id}&from=${start.toISOString()}&to=${end.toISOString()}`)
         );
-        const responses = await Promise.all(promises);
+        const responses: any[] = await Promise.all(promises);
 
         responses.forEach((response, index) => {
           const teacherEvents = (response.bookings || [])
@@ -86,7 +86,7 @@ export default function AdminSchedule() {
         });
       } else {
         // Fetch events for selected teacher
-        const response = await apiClient.get(
+        const response: any = await apiClient.get(
           `/bookings?teacherId=${selectedTeacher}&from=${start.toISOString()}&to=${end.toISOString()}`
         );
         allEvents = (response.bookings || [])

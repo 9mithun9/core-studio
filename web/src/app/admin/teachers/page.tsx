@@ -157,7 +157,7 @@ export default function AdminTeachersPage() {
   const fetchTeachers = async () => {
     try {
       setLoading(true);
-      const data = await apiClient.get('/admin/teachers');
+      const data: any = await apiClient.get('/admin/teachers');
       setTeachers(data.teachers || []);
       setFilteredTeachers(data.teachers || []);
     } catch (error) {
@@ -217,7 +217,7 @@ export default function AdminTeachersPage() {
   const fetchTeacherDetails = async (teacherId: string) => {
     try {
       setDetailsLoading(true);
-      const data = await apiClient.get(`/admin/teachers/${teacherId}`);
+      const data: any = await apiClient.get(`/admin/teachers/${teacherId}`);
       setTeacherStudents(data.students || []);
       setTeacherSessions(data.sessions || []);
       setDeepAnalysis(data.deepAnalysis || null);
@@ -230,7 +230,7 @@ export default function AdminTeachersPage() {
 
   const fetchTrendsData = async () => {
     try {
-      const data = await apiClient.get('/admin/teacher-session-trends', {
+      const data: any = await apiClient.get('/admin/teacher-session-trends', {
         params: { months: trendPeriod },
       });
       setTrendsData(data.trends || []);

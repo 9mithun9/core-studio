@@ -37,7 +37,7 @@ export default function AdminPackageRequests() {
         endpoint = `/package-requests/requests?status=${filter}`;
       }
 
-      const data = await apiClient.get(endpoint);
+      const data: any = await apiClient.get(endpoint);
       setRequests(data.requests || []);
     } catch (err: any) {
       console.error('Failed to load requests', err);
@@ -61,7 +61,7 @@ export default function AdminPackageRequests() {
 
   const fetchCustomerDetails = async (customerId: string) => {
     try {
-      const data = await apiClient.get(`/admin/customers-sessions`);
+      const data: any = await apiClient.get(`/admin/customers-sessions`);
       const customer = data.customers.find((c: any) => c._id === customerId);
       setCustomerDetails(customer);
       setShowCustomerInfo(true);

@@ -119,7 +119,7 @@ export default function AdminFinancePage() {
           ? { month: 'all', year: 'all' }
           : { month: selectedMonth, year: selectedYear };
 
-      const data = await apiClient.get('/admin/finance', { params });
+      const data: any = await apiClient.get('/admin/finance', { params });
       setFinanceData(data);
     } catch (error) {
       console.error('Error fetching finance data:', error);
@@ -130,7 +130,7 @@ export default function AdminFinancePage() {
 
   const fetchTrendsData = async () => {
     try {
-      const data = await apiClient.get('/admin/finance-trends', {
+      const data: any = await apiClient.get('/admin/finance-trends', {
         params: { months: trendPeriod },
       });
       setTrendsData(data.trends || []);

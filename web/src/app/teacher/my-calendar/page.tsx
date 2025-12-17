@@ -44,12 +44,12 @@ export default function TeacherMyCalendar() {
       setLoading(true);
 
       // Get current teacher info
-      const teacherResponse = await apiClient.get('/teachers/me');
+      const teacherResponse: any = await apiClient.get('/teachers/me');
       const myTeacherId = teacherResponse.teacher._id;
       setCurrentTeacherId(myTeacherId);
 
       // Get all teachers
-      const teachersResponse = await apiClient.get('/teachers');
+      const teachersResponse: any = await apiClient.get('/teachers');
       const teachersList = teachersResponse.teachers || [];
       setTeachers(teachersList);
 
@@ -78,7 +78,7 @@ export default function TeacherMyCalendar() {
         const promises = teachersList.map((teacher) =>
           apiClient.get(`/bookings?teacherId=${teacher._id}&from=${start.toISOString()}&to=${end.toISOString()}`)
         );
-        const responses = await Promise.all(promises);
+        const responses: any[] = await Promise.all(promises);
 
         responses.forEach((response, index) => {
           const teacherEvents = (response.bookings || [])
@@ -91,7 +91,7 @@ export default function TeacherMyCalendar() {
         });
       } else {
         // Fetch events for current teacher only
-        const response = await apiClient.get(
+        const response: any = await apiClient.get(
           `/bookings?teacherId=${myTeacherId}&from=${start.toISOString()}&to=${end.toISOString()}`
         );
         allEvents = (response.bookings || [])

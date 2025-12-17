@@ -1,5 +1,5 @@
 import { format as dateFnsFormat, parseISO, addHours } from 'date-fns';
-import { formatInTimeZone, toZonedTime } from 'date-fns-tz';
+import { formatInTimeZone, utcToZonedTime } from 'date-fns-tz';
 
 const STUDIO_TZ = process.env.NEXT_PUBLIC_STUDIO_TIMEZONE || 'Asia/Bangkok';
 

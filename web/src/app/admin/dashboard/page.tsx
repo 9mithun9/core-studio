@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { formatStudioTime } from '@/lib/date';
 import Link from 'next/link';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line, AreaChart, Area, ComposedChart } from 'recharts';
 
 interface Analytics {
   overview: {
@@ -89,6 +89,53 @@ interface Demographics {
   professionDistribution: Array<{ profession: string; count: number }>;
 }
 
+// New Analytics Interfaces
+interface ExecutiveOverview {
+  totalRevenue: number;
+  revenueGrowth: number;
+  activeCustomers: number;
+  averageRevenuePerUser: number;
+  sessionCompletionRate: number;
+  lastMonthRevenue: number;
+  activeCustomersLastMonth: number;
+}
+
+interface RevenueOperations {
+  monthlyRevenue: Array<{ month: string; revenue: number }>;
+  revenueByType: Array<{ type: string; revenue: number; sessions: number }>;
+  sessionsSoldVsCompleted: Array<{ month: string; sold: number; completed: number }>;
+}
+
+interface CustomerIntelligence {
+  newVsReturning: Array<{ month: string; new: number; returning: number }>;
+  genderDistribution: Array<{ gender: string; count: number }>;
+  ageDistribution: Array<{ ageRange: string; count: number }>;
+  churnRate: number;
+}
+
+interface MarketingPerformance {
+  acquisitionByChannel: Array<{ channel: string; customers: number }>;
+  funnelData: Array<{ stage: string; count: number }>;
+  cpa: number;
+  ltv: number;
+  roi: number;
+}
+
+interface RetentionInsights {
+  cohorts: Array<{
+    cohort: string;
+    month0: number;
+    month1: number;
+    month2: number;
+    month3: number;
+    month4: number;
+    month5: number;
+  }>;
+  ltvOverTime: Array<{ month: string; ltv: number }>;
+  peakUsage: Array<{ day: string; hour: number; sessions: number }>;
+  purchaseTimeDistribution: Array<{ range: string; count: number }>;
+}
+
 // Color palettes for charts
 const AGE_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#14b8a6', '#6366f1'];
 const GENDER_COLORS = {
@@ -106,6 +153,13 @@ export default function AdminDashboard() {
   const [demographics, setDemographics] = useState<Demographics | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // New analytics states
+  const [executiveOverview, setExecutiveOverview] = useState<ExecutiveOverview | null>(null);
+  const [revenueOps, setRevenueOps] = useState<RevenueOperations | null>(null);
+  const [customerIntel, setCustomerIntel] = useState<CustomerIntelligence | null>(null);
+  const [marketingPerf, setMarketingPerf] = useState<MarketingPerformance | null>(null);
+  const [retentionInsights, setRetentionInsights] = useState<RetentionInsights | null>(null);
+
   useEffect(() => {
     fetchData();
   }, []);
@@ -115,22 +169,38 @@ export default function AdminDashboard() {
       setLoading(true);
 
       // Fetch analytics
-      const analyticsData = await apiClient.get('/admin/analytics');
+      const analyticsData: any = await apiClient.get('/admin/analytics');
       setAnalytics(analyticsData);
 
       // Fetch package distribution
-      const distributionData = await apiClient.get('/admin/package-distribution');
+      const distributionData: any = await apiClient.get('/admin/package-distribution');
       setPackageDistribution(distributionData);
 
       // Fetch customer demographics
-      const demographicsData = await apiClient.get('/admin/customer-demographics');
+      const demographicsData: any = await apiClient.get('/admin/customer-demographics');
       setDemographics(demographicsData);
 
       // Fetch pending bookings
-      const pendingResponse = await apiClient.get('/bookings', {
+      const pendingResponse: any = await apiClient.get('/bookings', {
         params: { status: 'pending' },
       });
       setPendingBookings(pendingResponse.bookings || []);
+
+      // Fetch new comprehensive analytics
+      const executiveData: any = await apiClient.get('/admin/analytics/executive-overview');
+      setExecutiveOverview(executiveData);
+
+      const revenueOpsData: any = await apiClient.get('/admin/analytics/revenue-operations');
+      setRevenueOps(revenueOpsData);
+
+      const customerIntelData: any = await apiClient.get('/admin/analytics/customer-intelligence');
+      setCustomerIntel(customerIntelData);
+
+      const marketingPerfData: any = await apiClient.get('/admin/analytics/marketing-performance');
+      setMarketingPerf(marketingPerfData);
+
+      const retentionData: any = await apiClient.get('/admin/analytics/retention-insights');
+      setRetentionInsights(retentionData);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -462,8 +532,8 @@ export default function AdminDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ gender, count, percent }) =>
-                        count > 0 ? `${gender}: ${count} (${(percent * 100).toFixed(0)}%)` : ''
+                      label={(props: any) =>
+                        props.count > 0 ? `${props.gender}: ${props.count} (${(props.percent * 100).toFixed(0)}%)` : ''
                       }
                       outerRadius={100}
                       fill="#8884d8"
@@ -514,8 +584,8 @@ export default function AdminDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ profession, count, percent }) =>
-                        count > 0 ? `${profession}: ${count}` : ''
+                      label={(props: any) =>
+                        props.count > 0 ? `${props.profession}: ${props.count}` : ''
                       }
                       outerRadius={100}
                       fill="#8884d8"
@@ -678,6 +748,542 @@ export default function AdminDashboard() {
           </div>
         </CardContent>
       </Card>
+
+      {/* ========== SECTION 1: EXECUTIVE OVERVIEW ========== */}
+      {executiveOverview && (
+        <>
+          <div className="mt-12 mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">Executive Overview</h2>
+            <p className="text-gray-600 mt-1">Key performance indicators and business health metrics</p>
+          </div>
+
+          <div className="grid md:grid-cols-5 gap-6 mb-8">
+            {/* Total Revenue KPI */}
+            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium text-blue-700">Total Revenue</p>
+                  {executiveOverview.revenueGrowth !== 0 && (
+                    <span className={`text-xs font-semibold ${executiveOverview.revenueGrowth > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                      {executiveOverview.revenueGrowth > 0 ? '↑' : '↓'} {Math.abs(executiveOverview.revenueGrowth).toFixed(1)}%
+                    </span>
+                  )}
+                </div>
+                <p className="text-3xl font-bold text-blue-900">฿{executiveOverview.totalRevenue.toLocaleString()}</p>
+                <p className="text-xs text-blue-600 mt-1">This month</p>
+              </CardContent>
+            </Card>
+
+            {/* Revenue Growth KPI */}
+            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+              <CardContent className="pt-6">
+                <p className="text-sm font-medium text-green-700 mb-2">Revenue Growth</p>
+                <p className="text-3xl font-bold text-green-900">
+                  {executiveOverview.revenueGrowth > 0 ? '+' : ''}{executiveOverview.revenueGrowth.toFixed(1)}%
+                </p>
+                <p className="text-xs text-green-600 mt-1">Month-over-month</p>
+              </CardContent>
+            </Card>
+
+            {/* Active Customers KPI */}
+            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between mb-2">
+                  <p className="text-sm font-medium text-purple-700">Active Customers</p>
+                  {executiveOverview.activeCustomersLastMonth > 0 && (
+                    <span className={`text-xs font-semibold ${executiveOverview.activeCustomers >= executiveOverview.activeCustomersLastMonth ? 'text-green-600' : 'text-red-600'}`}>
+                      {executiveOverview.activeCustomers >= executiveOverview.activeCustomersLastMonth ? '↑' : '↓'}
+                      {Math.abs(executiveOverview.activeCustomers - executiveOverview.activeCustomersLastMonth)}
+                    </span>
+                  )}
+                </div>
+                <p className="text-3xl font-bold text-purple-900">{executiveOverview.activeCustomers}</p>
+                <p className="text-xs text-purple-600 mt-1">This month</p>
+              </CardContent>
+            </Card>
+
+            {/* ARPU KPI */}
+            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
+              <CardContent className="pt-6">
+                <p className="text-sm font-medium text-orange-700 mb-2">Avg Revenue Per User</p>
+                <p className="text-3xl font-bold text-orange-900">฿{executiveOverview.averageRevenuePerUser.toLocaleString()}</p>
+                <p className="text-xs text-orange-600 mt-1">ARPU</p>
+              </CardContent>
+            </Card>
+
+            {/* Session Completion Rate KPI */}
+            <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
+              <CardContent className="pt-6">
+                <p className="text-sm font-medium text-teal-700 mb-2">Completion Rate</p>
+                <p className="text-3xl font-bold text-teal-900">{executiveOverview.sessionCompletionRate.toFixed(1)}%</p>
+                <p className="text-xs text-teal-600 mt-1">Sessions completed</p>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
+
+      {/* ========== SECTION 2: REVENUE & OPERATIONS ========== */}
+      {revenueOps && (
+        <>
+          <div className="mt-12 mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">Revenue & Operations Performance</h2>
+            <p className="text-gray-600 mt-1">Financial trends and operational metrics</p>
+          </div>
+
+          {/* Monthly Revenue Trend */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Monthly Revenue Trend</CardTitle>
+              <CardDescription>Revenue over the last 12 months</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={350}>
+                <LineChart data={revenueOps.monthlyRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => `฿${Number(value).toLocaleString()}`} />
+                  <Legend />
+                  <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} name="Revenue (฿)" />
+                </LineChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Revenue by Package Type */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Revenue by Package Type</CardTitle>
+                <CardDescription>Breakdown by private, duo, and group sessions</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={revenueOps.revenueByType}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="type" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `฿${Number(value).toLocaleString()}`} />
+                    <Legend />
+                    <Bar dataKey="revenue" fill="#10b981" name="Revenue (฿)" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Sessions Sold vs Completed */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Sessions: Sold vs Completed</CardTitle>
+                <CardDescription>Last 6 months comparison</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={revenueOps.sessionsSoldVsCompleted}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="sold" fill="#3b82f6" name="Sessions Sold" />
+                    <Bar dataKey="completed" fill="#10b981" name="Sessions Completed" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
+
+      {/* ========== SECTION 3: CUSTOMER INTELLIGENCE ========== */}
+      {customerIntel && (
+        <>
+          <div className="mt-12 mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">Customer Intelligence & Demographics</h2>
+            <p className="text-gray-600 mt-1">Customer behavior and demographic insights</p>
+          </div>
+
+          {/* New vs Returning Customers */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>New vs Returning Customers</CardTitle>
+              <CardDescription>Customer acquisition and retention over the last 6 months</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <ResponsiveContainer width="100%" height={350}>
+                <BarChart data={customerIntel.newVsReturning}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="new" fill="#3b82f6" name="New Customers" stackId="a" />
+                  <Bar dataKey="returning" fill="#10b981" name="Returning Customers" stackId="a" />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+
+          <div className="grid md:grid-cols-3 gap-8 mb-8">
+            {/* Churn Rate */}
+            <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+              <CardHeader>
+                <CardTitle className="text-red-900">Churn Rate</CardTitle>
+                <CardDescription>Customers inactive for 3+ months</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-5xl font-bold text-red-900">{customerIntel.churnRate.toFixed(1)}%</p>
+              </CardContent>
+            </Card>
+
+            {/* Gender Distribution */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Gender Distribution</CardTitle>
+                <CardDescription>Customer gender breakdown</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={200}>
+                  <PieChart>
+                    <Pie
+                      data={customerIntel.genderDistribution}
+                      cx="50%"
+                      cy="50%"
+                      labelLine={false}
+                      label={(props: any) => props.count > 0 ? `${props.gender}: ${props.count}` : ''}
+                      outerRadius={80}
+                      fill="#8884d8"
+                      dataKey="count"
+                      nameKey="gender"
+                    >
+                      {customerIntel.genderDistribution.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={GENDER_COLORS[entry.gender as keyof typeof GENDER_COLORS] || '#9ca3af'}
+                        />
+                      ))}
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Age Distribution */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Age Distribution</CardTitle>
+                <CardDescription>Customer age breakdown</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={200}>
+                  <BarChart data={customerIntel.ageDistribution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="ageRange" tick={{ fontSize: 10 }} />
+                    <YAxis />
+                    <Tooltip />
+                    <Bar dataKey="count" fill="#8b5cf6">
+                      {customerIntel.ageDistribution.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={AGE_COLORS[index % AGE_COLORS.length]} />
+                      ))}
+                    </Bar>
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
+
+      {/* ========== SECTION 4: MARKETING & ACQUISITION ========== */}
+      {marketingPerf && (
+        <>
+          <div className="mt-12 mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">Marketing & Acquisition Performance</h2>
+            <p className="text-gray-600 mt-1">Marketing effectiveness and customer acquisition metrics</p>
+          </div>
+
+          {/* Marketing KPIs */}
+          <div className="grid md:grid-cols-3 gap-6 mb-8">
+            <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
+              <CardHeader>
+                <CardTitle className="text-indigo-900">Cost Per Acquisition</CardTitle>
+                <CardDescription>Average cost to acquire a customer</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-bold text-indigo-900">฿{marketingPerf.cpa.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
+              <CardHeader>
+                <CardTitle className="text-emerald-900">Customer Lifetime Value</CardTitle>
+                <CardDescription>Average LTV per customer</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-bold text-emerald-900">฿{marketingPerf.ltv.toLocaleString()}</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+              <CardHeader>
+                <CardTitle className="text-yellow-900">Return on Investment</CardTitle>
+                <CardDescription>Marketing ROI ratio</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-bold text-yellow-900">{marketingPerf.roi.toFixed(2)}x</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* Acquisition by Channel */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Customer Acquisition by Channel</CardTitle>
+                <CardDescription>Where your customers are coming from</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={marketingPerf.acquisitionByChannel}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="channel" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="customers" fill="#8b5cf6" name="Customers" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Conversion Funnel */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Conversion Funnel</CardTitle>
+                <CardDescription>Customer journey from awareness to booking</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {marketingPerf.funnelData.map((stage, index) => {
+                    const maxCount = Math.max(...marketingPerf.funnelData.map(s => s.count));
+                    const percentage = (stage.count / maxCount) * 100;
+                    const conversionRate = index > 0
+                      ? ((stage.count / marketingPerf.funnelData[index - 1].count) * 100).toFixed(1)
+                      : '100.0';
+
+                    return (
+                      <div key={index} className="relative">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-sm font-medium text-gray-700">{stage.stage}</span>
+                          <span className="text-sm text-gray-600">{stage.count} ({conversionRate}%)</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-8">
+                          <div
+                            className="bg-gradient-to-r from-blue-500 to-purple-500 h-8 rounded-full flex items-center justify-center text-white text-xs font-semibold"
+                            style={{ width: `${percentage}%` }}
+                          >
+                            {percentage.toFixed(0)}%
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </>
+      )}
+
+      {/* ========== SECTION 5: RETENTION & ENGAGEMENT ========== */}
+      {retentionInsights && (
+        <>
+          <div className="mt-12 mb-6">
+            <h2 className="text-3xl font-bold text-gray-900">Retention, Engagement & Growth Insights</h2>
+            <p className="text-gray-600 mt-1">Long-term customer value and engagement patterns</p>
+          </div>
+
+          {/* Cohort Retention Analysis */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Cohort Retention Analysis</CardTitle>
+              <CardDescription>Customer retention by signup month (% of original cohort still active)</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left p-2 font-semibold">Cohort</th>
+                      <th className="text-center p-2 font-semibold">Month 0</th>
+                      <th className="text-center p-2 font-semibold">Month 1</th>
+                      <th className="text-center p-2 font-semibold">Month 2</th>
+                      <th className="text-center p-2 font-semibold">Month 3</th>
+                      <th className="text-center p-2 font-semibold">Month 4</th>
+                      <th className="text-center p-2 font-semibold">Month 5</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {retentionInsights.cohorts.map((cohort, index) => (
+                      <tr key={index} className="border-b hover:bg-gray-50">
+                        <td className="p-2 font-medium">{cohort.cohort}</td>
+                        <td className="text-center p-2">
+                          <span className="inline-block px-2 py-1 rounded bg-green-100 text-green-800 font-semibold">
+                            {cohort.month0}%
+                          </span>
+                        </td>
+                        <td className="text-center p-2">
+                          <span className={`inline-block px-2 py-1 rounded font-semibold ${
+                            cohort.month1 >= 80 ? 'bg-green-100 text-green-800' :
+                            cohort.month1 >= 60 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {cohort.month1}%
+                          </span>
+                        </td>
+                        <td className="text-center p-2">
+                          <span className={`inline-block px-2 py-1 rounded font-semibold ${
+                            cohort.month2 >= 70 ? 'bg-green-100 text-green-800' :
+                            cohort.month2 >= 50 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {cohort.month2}%
+                          </span>
+                        </td>
+                        <td className="text-center p-2">
+                          <span className={`inline-block px-2 py-1 rounded font-semibold ${
+                            cohort.month3 >= 60 ? 'bg-green-100 text-green-800' :
+                            cohort.month3 >= 40 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {cohort.month3}%
+                          </span>
+                        </td>
+                        <td className="text-center p-2">
+                          <span className={`inline-block px-2 py-1 rounded font-semibold ${
+                            cohort.month4 >= 50 ? 'bg-green-100 text-green-800' :
+                            cohort.month4 >= 30 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {cohort.month4}%
+                          </span>
+                        </td>
+                        <td className="text-center p-2">
+                          <span className={`inline-block px-2 py-1 rounded font-semibold ${
+                            cohort.month5 >= 40 ? 'bg-green-100 text-green-800' :
+                            cohort.month5 >= 20 ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                            {cohort.month5}%
+                          </span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </CardContent>
+          </Card>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            {/* LTV Over Time */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Customer Lifetime Value Trend</CardTitle>
+                <CardDescription>Average LTV over the last 12 months</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <AreaChart data={retentionInsights.ltvOverTime}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip formatter={(value) => `฿${Number(value).toLocaleString()}`} />
+                    <Legend />
+                    <Area type="monotone" dataKey="ltv" stroke="#10b981" fill="#10b98150" name="LTV (฿)" />
+                  </AreaChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            {/* Time to First Purchase */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Time to First Purchase</CardTitle>
+                <CardDescription>Days from signup to first package purchase</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={retentionInsights.purchaseTimeDistribution}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="range" tick={{ fontSize: 10 }} />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="count" fill="#f59e0b" name="Customers" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Peak Usage Heatmap */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Peak Usage Heatmap</CardTitle>
+              <CardDescription>Session bookings by day and hour</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <div className="grid grid-cols-25 gap-1 text-xs">
+                  {/* Header row */}
+                  <div className="col-span-1"></div>
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <div key={i} className="text-center font-semibold text-gray-600">
+                      {i}h
+                    </div>
+                  ))}
+
+                  {/* Data rows */}
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                    <>
+                      <div key={`${day}-label`} className="font-semibold text-gray-600 flex items-center">
+                        {day}
+                      </div>
+                      {Array.from({ length: 24 }, (_, hour) => {
+                        const dataPoint = retentionInsights.peakUsage.find(
+                          p => p.day === day && p.hour === hour
+                        );
+                        const sessions = dataPoint?.sessions || 0;
+                        const maxSessions = Math.max(...retentionInsights.peakUsage.map(p => p.sessions));
+                        const intensity = maxSessions > 0 ? (sessions / maxSessions) * 100 : 0;
+
+                        let bgColor = 'bg-gray-100';
+                        if (intensity > 75) bgColor = 'bg-green-600';
+                        else if (intensity > 50) bgColor = 'bg-green-400';
+                        else if (intensity > 25) bgColor = 'bg-green-200';
+                        else if (intensity > 0) bgColor = 'bg-green-100';
+
+                        return (
+                          <div
+                            key={`${day}-${hour}`}
+                            className={`${bgColor} h-8 flex items-center justify-center rounded cursor-pointer hover:ring-2 hover:ring-primary-500`}
+                            title={`${day} ${hour}:00 - ${sessions} sessions`}
+                          >
+                            {sessions > 0 && <span className="text-xs font-semibold">{sessions}</span>}
+                          </div>
+                        );
+                      })}
+                    </>
+                  ))}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </>
+      )}
     </div>
   );
 }
