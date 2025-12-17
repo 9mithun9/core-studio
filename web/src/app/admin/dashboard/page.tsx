@@ -1276,7 +1276,7 @@ export default function AdminDashboard() {
                           </div>
                         );
                       })}
-                    </>
+                    </React.Fragment>
                   ))}
                 </div>
               </div>
