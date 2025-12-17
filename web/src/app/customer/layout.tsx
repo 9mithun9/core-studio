@@ -3,13 +3,16 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { authService } from '@/lib/auth';
+import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import NotificationBell from '@/components/NotificationBell';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const [user, setUser] = useState<any>(null);
+  const [customerProfile, setCustomerProfile] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,6 +30,15 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       }
 
       setUser(storedUser);
+
+      // Fetch customer profile to get profilePhoto
+      try {
+        const profile: any = await apiClient.get('/customers/me/overview');
+        setCustomerProfile(profile.customer);
+      } catch (error) {
+        console.error('Failed to fetch customer profile:', error);
+      }
+
       setLoading(false);
     };
 
@@ -77,13 +89,32 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
               </Link>
             </nav>
 
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 border-l pl-6">
               <NotificationBell />
               <Link
                 href="/customer/profile"
-                className="text-sm text-gray-600 hover:text-primary-600 transition-colors"
+                className="flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 font-medium cursor-pointer"
               >
-                Hi, {user?.name}
+                {customerProfile?.profilePhoto ? (
+                  customerProfile.profilePhoto.startsWith('http') ? (
+                    <img
+                      src={customerProfile.profilePhoto}
+                      alt={user?.name}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-primary-200"
+                    />
+                  ) : (
+                    <img
+                      src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${customerProfile.profilePhoto}`}
+                      alt={user?.name}
+                      className="w-8 h-8 rounded-full object-cover border-2 border-primary-200"
+                    />
+                  )
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                    {user?.name.charAt(0).toUpperCase()}
+                  </div>
+                )}
+                <span>{user?.name}</span>
               </Link>
               <Button variant="outline" size="sm" onClick={handleLogout}>
                 Logout

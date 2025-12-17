@@ -26,7 +26,10 @@
       "Bash(ping:*)",
       "Bash(npx tsx:*)",
       "Bash(move \"fixPackageRemainingSession s.ts\" fixPackageRemainingSessions.ts)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git config:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

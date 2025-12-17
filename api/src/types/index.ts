@@ -307,6 +307,39 @@ export interface MarkAttendanceRequest {
 }
 
 // =====================================================
+// SESSION REVIEW
+// =====================================================
+
+export interface ISessionReview extends Document {
+  _id: Types.ObjectId;
+  bookingId: Types.ObjectId | IBooking;
+  teacherId: Types.ObjectId | ITeacher;
+  customerId: Types.ObjectId | ICustomer;
+  ratings: {
+    control: number;
+    postureAlignment: number;
+    strength: number;
+    flexibilityMobility: number;
+    bodyAwarenessFocus: number;
+  };
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateReviewRequest {
+  bookingId: string;
+  ratings: {
+    control: number;
+    postureAlignment: number;
+    strength: number;
+    flexibilityMobility: number;
+    bodyAwarenessFocus: number;
+  };
+  notes?: string;
+}
+
+// =====================================================
 // EXPRESS REQUEST EXTENSIONS
 // =====================================================
 

@@ -11,3 +11,4 @@ export { PromoCampaign } from './PromoCampaign';
 export { CalendarConnection } from './CalendarConnection';
 export { RegistrationRequest } from './RegistrationRequest';
 export { PackageRequest } from './PackageRequest';
+export { SessionReview } from './SessionReview';

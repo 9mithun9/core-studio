@@ -9,6 +9,7 @@ import calendarsRoutes from '@/modules/calendars/calendars.routes';
 import lineRoutes from '@/modules/line/line.routes';
 import adminRoutes from '@/modules/admin/admin.routes';
 import notificationsRoutes from '@/modules/notifications/notifications.routes';
+import reviewsRoutes from '@/modules/reviews/reviews.routes';
 
 const router = Router();
 
@@ -22,6 +23,7 @@ router.use('/calendars', calendarsRoutes);
 router.use('/line', lineRoutes);
 router.use('/admin', adminRoutes);
 router.use('/notifications', notificationsRoutes);
+router.use('/reviews', reviewsRoutes);
 
 // Health check endpoint
 router.get('/health', (req, res) => {

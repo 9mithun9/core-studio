@@ -5,23 +5,31 @@ import { useRouter } from 'next/navigation';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatStudioTime } from '@/lib/date';
 import toast, { Toaster } from 'react-hot-toast';
 
 interface Booking {
   _id: string;
   customerId: {
+    _id: string;
     userId: {
       name: string;
       email: string;
       phone?: string;
     };
     healthNotes?: string;
+    medicalNotes?: string;
+    dateOfBirth?: string;
+    height?: number;
+    weight?: number;
+    gender?: string;
+    profilePhoto?: string;
   };
   packageId?: {
     name: string;
     type: string;
-    sessionsRemaining?: number;
+    remainingSessions?: number;
     totalSessions?: number;
   };
   startTime: string;
@@ -30,6 +38,8 @@ interface Booking {
   status: string;
   notes?: string;
   sessionNumber?: number;
+  hasReview?: boolean;
+  review?: any;
 }
 
 export default function TeacherDashboard() {
@@ -42,11 +52,90 @@ export default function TeacherDashboard() {
   const [sessionFilter, setSessionFilter] = useState<'today' | 'tomorrow' | 'date'>('today');
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [timeUntilNext, setTimeUntilNext] = useState<string>('');
+  const [selectedStudent, setSelectedStudent] = useState<Booking | null>(null);
+  const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
+  const [studentPackages, setStudentPackages] = useState<any[]>([]);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [selectedSessionForReview, setSelectedSessionForReview] = useState<Booking | null>(null);
+  const [reviewRatings, setReviewRatings] = useState({
+    control: 0,
+    postureAlignment: 0,
+    strength: 0,
+    flexibilityMobility: 0,
+    bodyAwarenessFocus: 0,
+  });
+  const [reviewNotes, setReviewNotes] = useState('');
   const [stats, setStats] = useState({
     totalCompleted: 0,
     thisWeek: 0,
     thisMonth: 0,
   });
+
+  const calculateAge = (dateOfBirth: string | undefined): number | null => {
+    if (!dateOfBirth) return null;
+    const today = new Date();
+    const birthDate = new Date(dateOfBirth);
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
+
+  const handleStudentClick = async (session: Booking) => {
+    setSelectedStudent(session);
+    setIsStudentModalOpen(true);
+
+    // Fetch the student's current active packages
+    try {
+      const response: any = await apiClient.get(`/packages/customer/${session.customerId._id}/view`);
+      const activePackages = response.packages?.filter((pkg: any) => pkg.status === 'active') || [];
+      setStudentPackages(activePackages);
+    } catch (error) {
+      console.error('Failed to fetch student packages:', error);
+      setStudentPackages([]);
+    }
+  };
+
+  const handleOpenReviewModal = (session: Booking) => {
+    setSelectedSessionForReview(session);
+    setIsReviewModalOpen(true);
+    // Reset ratings
+    setReviewRatings({
+      control: 0,
+      postureAlignment: 0,
+      strength: 0,
+      flexibilityMobility: 0,
+      bodyAwarenessFocus: 0,
+    });
+    setReviewNotes('');
+  };
+
+  const handleSubmitReview = async () => {
+    if (!selectedSessionForReview) return;
+
+    // Check if all ratings are provided
+    const ratingValues = Object.values(reviewRatings);
+    if (ratingValues.some(rating => rating === 0)) {
+      toast.error('Please provide all ratings');
+      return;
+    }
+
+    const loadingToast = toast.loading('Submitting review...');
+    try {
+      await apiClient.post('/reviews', {
+        bookingId: selectedSessionForReview._id,
+        ratings: reviewRatings,
+        notes: reviewNotes || undefined,
+      });
+      toast.success('Review submitted successfully', { id: loadingToast });
+      setIsReviewModalOpen(false);
+      fetchDashboardData(); // Refresh data
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Failed to submit review', { id: loadingToast });
+    }
+  };
 
   useEffect(() => {
     fetchDashboardData();
@@ -462,7 +551,10 @@ export default function TeacherDashboard() {
                       {/* Header Section */}
                       <div className="flex justify-between items-start mb-4 pb-4 border-b border-gray-100">
                         <div className="flex-1">
-                          <h4 className="text-xl font-bold text-gray-900 mb-1">
+                          <h4
+                            className="text-xl font-bold text-primary-600 mb-1 cursor-pointer hover:text-primary-700 hover:underline"
+                            onClick={() => handleStudentClick(session)}
+                          >
                             {session.customerId.userId.name}
                           </h4>
                           <div className="flex flex-col gap-1 text-sm text-gray-600">
@@ -547,17 +639,33 @@ export default function TeacherDashboard() {
                         </div>
                       )}
 
-                      {/* Cancel Button */}
-                      {session.status !== 'cancelled' && canCancelSession(session.startTime) && (
-                        <div className="pt-4 border-t border-gray-100 flex justify-end">
+                      {/* Action Buttons */}
+                      <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                        {/* Review Button for Completed Sessions */}
+                        {session.status === 'completed' && !session.hasReview && (
+                          <button
+                            onClick={() => handleOpenReviewModal(session)}
+                            className="px-6 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border-2 border-primary-300 hover:border-primary-400 rounded-lg hover:bg-primary-50 transition-all"
+                          >
+                            Write Review
+                          </button>
+                        )}
+                        {session.status === 'completed' && session.hasReview && (
+                          <span className="px-6 py-2 text-sm font-medium text-green-600 bg-green-50 border-2 border-green-300 rounded-lg">
+                            ✓ Reviewed
+                          </span>
+                        )}
+
+                        {/* Cancel Button */}
+                        {session.status !== 'cancelled' && canCancelSession(session.startTime) && (
                           <button
                             onClick={() => handleCancelSession(session._id, session.startTime)}
                             className="px-6 py-2 text-sm font-medium text-red-600 hover:text-red-700 border-2 border-red-300 hover:border-red-400 rounded-lg hover:bg-red-50 transition-all"
                           >
                             Cancel Session
                           </button>
-                        </div>
-                      )}
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -566,6 +674,313 @@ export default function TeacherDashboard() {
           </Card>
         </div>
       </div>
+
+      {/* Student Info Modal */}
+      <Dialog open={isStudentModalOpen} onOpenChange={setIsStudentModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedStudent && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Student Information</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                {/* Profile Section */}
+                <div className="flex items-center gap-4 pb-4 border-b">
+                  {selectedStudent.customerId.profilePhoto ? (
+                    selectedStudent.customerId.profilePhoto.startsWith('http') ? (
+                      <img
+                        src={selectedStudent.customerId.profilePhoto}
+                        alt={selectedStudent.customerId.userId.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-primary-200"
+                      />
+                    ) : (
+                      <img
+                        src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedStudent.customerId.profilePhoto}`}
+                        alt={selectedStudent.customerId.userId.name}
+                        className="w-20 h-20 rounded-full object-cover border-2 border-primary-200"
+                      />
+                    )
+                  ) : (
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-3xl font-bold">
+                      {selectedStudent.customerId.userId.name.charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="text-2xl font-bold text-gray-900">{selectedStudent.customerId.userId.name}</h3>
+                    <p className="text-gray-600">{selectedStudent.customerId.userId.email}</p>
+                  </div>
+                </div>
+
+                {/* Basic Info Grid */}
+                <div className="grid grid-cols-2 gap-4">
+                  {calculateAge(selectedStudent.customerId.dateOfBirth) !== null && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-1">Age</div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        {calculateAge(selectedStudent.customerId.dateOfBirth)} years
+                      </div>
+                    </div>
+                  )}
+                  {selectedStudent.customerId.gender && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-1">Gender</div>
+                      <div className="text-lg font-semibold text-gray-900 capitalize">
+                        {selectedStudent.customerId.gender}
+                      </div>
+                    </div>
+                  )}
+                  {selectedStudent.customerId.height && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-1">Height</div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        {selectedStudent.customerId.height} cm
+                      </div>
+                    </div>
+                  )}
+                  {selectedStudent.customerId.weight && (
+                    <div className="bg-gray-50 rounded-lg p-4">
+                      <div className="text-sm text-gray-500 mb-1">Weight</div>
+                      <div className="text-lg font-semibold text-gray-900">
+                        {selectedStudent.customerId.weight} kg
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Package Info */}
+                {studentPackages.length > 0 && (
+                  <div className="space-y-3">
+                    <div className="text-sm font-medium text-gray-700">Active Packages</div>
+                    {studentPackages.map((pkg: any) => (
+                      <div key={pkg._id} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                        <div className="space-y-2">
+                          <div className="flex justify-between items-center">
+                            <span className="text-gray-700 font-medium">{pkg.name}</span>
+                            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold capitalize">
+                              {pkg.type}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm">
+                            <span className="text-gray-600">Sessions Remaining</span>
+                            <span className="font-semibold text-gray-900">
+                              {pkg.remainingSessions} / {pkg.totalSessions}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-xs text-gray-500">
+                            <span>Valid until</span>
+                            <span>{new Date(pkg.validTo).toLocaleDateString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                {/* Medical Conditions */}
+                {(selectedStudent.customerId.healthNotes || selectedStudent.customerId.medicalNotes) && (
+                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                    <div className="flex items-start gap-2">
+                      <span className="text-2xl">⚠️</span>
+                      <div className="flex-1">
+                        <div className="text-sm font-medium text-orange-600 mb-2">Medical Conditions</div>
+                        {selectedStudent.customerId.healthNotes && (
+                          <p className="text-gray-700 mb-2">{selectedStudent.customerId.healthNotes}</p>
+                        )}
+                        {selectedStudent.customerId.medicalNotes && (
+                          <p className="text-gray-700">{selectedStudent.customerId.medicalNotes}</p>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Review Modal */}
+      <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedSessionForReview && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Session Review</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                {/* Session Info */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="font-semibold text-gray-900 mb-1">
+                    {selectedSessionForReview.customerId.userId.name}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {formatStudioTime(selectedSessionForReview.startTime, 'EEEE, MMM d, yyyy')} at {formatStudioTime(selectedSessionForReview.startTime, 'h:mm a')}
+                  </div>
+                </div>
+
+                {/* Rating Categories */}
+                <div className="space-y-4">
+                  <div className="text-sm font-medium text-gray-700 mb-3">Rate the student's performance (1-5 stars):</div>
+
+                  {/* Control */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Control</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setReviewRatings(prev => ({ ...prev, control: rating }))}
+                            className="focus:outline-none"
+                          >
+                            <svg
+                              className={`w-8 h-8 ${reviewRatings.control >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Posture & Alignment */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Posture & Alignment</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setReviewRatings(prev => ({ ...prev, postureAlignment: rating }))}
+                            className="focus:outline-none"
+                          >
+                            <svg
+                              className={`w-8 h-8 ${reviewRatings.postureAlignment >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Strength */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Strength</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setReviewRatings(prev => ({ ...prev, strength: rating }))}
+                            className="focus:outline-none"
+                          >
+                            <svg
+                              className={`w-8 h-8 ${reviewRatings.strength >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Flexibility / Mobility */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Flexibility / Mobility</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setReviewRatings(prev => ({ ...prev, flexibilityMobility: rating }))}
+                            className="focus:outline-none"
+                          >
+                            <svg
+                              className={`w-8 h-8 ${reviewRatings.flexibilityMobility >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Body Awareness / Focus */}
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Body Awareness / Focus</span>
+                      <div className="flex gap-1">
+                        {[1, 2, 3, 4, 5].map((rating) => (
+                          <button
+                            key={rating}
+                            onClick={() => setReviewRatings(prev => ({ ...prev, bodyAwarenessFocus: rating }))}
+                            className="focus:outline-none"
+                          >
+                            <svg
+                              className={`w-8 h-8 ${reviewRatings.bodyAwarenessFocus >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24"
+                            >
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes (Optional) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Additional Notes (Optional)
+                  </label>
+                  <textarea
+                    value={reviewNotes}
+                    onChange={(e) => setReviewNotes(e.target.value)}
+                    placeholder="Add any additional comments about the session..."
+                    rows={4}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <div className="flex justify-end gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={() => setIsReviewModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button onClick={handleSubmitReview}>
+                    Submit Review
+                  </Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Toaster position="top-right" />
     </div>

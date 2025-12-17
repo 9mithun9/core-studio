@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import path from 'path';
 import fs from 'fs';
-import { Teacher, Booking, Customer, User, Package } from '@/models';
+import { Teacher, Booking, Customer, User, Package, SessionReview } from '@/models';
 import { AppError, asyncHandler } from '@/middlewares';
 import { toStudioTime } from '@/utils/time';
 import { startOfDay, endOfDay, format } from 'date-fns';
@@ -30,18 +30,30 @@ export const getTodaySessions = asyncHandler(async (req: Request, res: Response)
   })
     .populate({
       path: 'customerId',
-      select: 'userId healthNotes',
+      select: 'userId healthNotes medicalNotes dateOfBirth height weight gender profilePhoto',
       populate: {
         path: 'userId',
         select: 'name email phone'
       }
     })
-    .populate('packageId', 'name type')
+    .populate('packageId', 'name type totalSessions remainingSessions')
     .sort({ startTime: 1 })
     .lean();
 
+  // Fetch reviews for these sessions
+  const sessionIds = sessions.map(s => s._id);
+  const reviews = await SessionReview.find({ bookingId: { $in: sessionIds } }).lean();
+  const reviewMap = new Map(reviews.map(r => [r.bookingId.toString(), r]));
+
+  // Attach review info to sessions
+  const sessionsWithReviews = sessions.map(session => ({
+    ...session,
+    hasReview: reviewMap.has(session._id.toString()),
+    review: reviewMap.get(session._id.toString()) || null,
+  }));
+
   res.json({
-    sessions,
+    sessions: sessionsWithReviews,
   });
 });
 
@@ -80,18 +92,30 @@ export const getTeacherSessions = asyncHandler(async (req: Request, res: Respons
   const sessions = await Booking.find(query)
     .populate({
       path: 'customerId',
-      select: 'userId healthNotes',
+      select: 'userId healthNotes medicalNotes dateOfBirth height weight gender profilePhoto',
       populate: {
         path: 'userId',
         select: 'name email phone'
       }
     })
-    .populate('packageId', 'name type')
+    .populate('packageId', 'name type totalSessions remainingSessions')
     .sort({ startTime: -1 })
     .lean();
 
+  // Fetch reviews for these sessions
+  const sessionIds = sessions.map(s => s._id);
+  const reviews = await SessionReview.find({ bookingId: { $in: sessionIds } }).lean();
+  const reviewMap = new Map(reviews.map(r => [r.bookingId.toString(), r]));
+
+  // Attach review info to sessions
+  const sessionsWithReviews = sessions.map(session => ({
+    ...session,
+    hasReview: reviewMap.has(session._id.toString()),
+    review: reviewMap.get(session._id.toString()) || null,
+  }));
+
   res.json({
-    sessions,
+    sessions: sessionsWithReviews,
   });
 });
 

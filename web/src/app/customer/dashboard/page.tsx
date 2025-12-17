@@ -5,8 +5,26 @@ import Link from 'next/link';
 import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { formatStudioTime } from '@/lib/date';
 import toast, { Toaster } from 'react-hot-toast';
+
+interface SessionReview {
+  _id: string;
+  ratings: {
+    control: number;
+    postureAlignment: number;
+    strength: number;
+    flexibilityMobility: number;
+    bodyAwarenessFocus: number;
+  };
+  notes?: string;
+  teacherId: {
+    userId: {
+      name: string;
+    };
+  };
+}
 
 export default function CustomerDashboard() {
   const [overview, setOverview] = useState<any>(null);
@@ -17,6 +35,8 @@ export default function CustomerDashboard() {
   const [error, setError] = useState('');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestForm, setRequestForm] = useState({ packageType: 'private', sessions: 10, notes: '' });
+  const [selectedReview, setSelectedReview] = useState<SessionReview | null>(null);
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
 
   useEffect(() => {
     loadData();
@@ -52,11 +72,77 @@ export default function CustomerDashboard() {
       const packageBookings = bookings.bookings.filter(
         (b: any) => b.packageId?._id === pkg._id
       );
-      setPackageSessions(packageBookings);
+
+      // Fetch reviews for completed sessions
+      const completedBookings = packageBookings.filter(
+        (b: any) => b.status === 'completed' || (b.status === 'confirmed' && new Date(b.endTime) < new Date())
+      );
+
+      // Fetch reviews in parallel for all completed sessions
+      const reviewPromises = completedBookings.map(async (booking: any) => {
+        try {
+          const response = await apiClient.get(`/reviews/booking/${booking._id}`);
+          return { bookingId: booking._id, review: response.review };
+        } catch {
+          return { bookingId: booking._id, review: null };
+        }
+      });
+
+      const reviewResults = await Promise.all(reviewPromises);
+      const reviewMap = new Map(reviewResults.map(r => [r.bookingId, r.review]));
+
+      // Attach reviews to bookings
+      const bookingsWithReviews = packageBookings.map((booking: any) => ({
+        ...booking,
+        review: reviewMap.get(booking._id) || null,
+      }));
+
+      setPackageSessions(bookingsWithReviews);
     } catch (err) {
       console.error('Failed to load package sessions', err);
       setPackageSessions([]);
     }
+  };
+
+  const calculateAverageRating = (ratings: SessionReview['ratings']) => {
+    const values = Object.values(ratings);
+    return values.reduce((sum, rating) => sum + rating, 0) / values.length;
+  };
+
+  const renderStars = (rating: number, size: 'sm' | 'md' | 'lg' = 'md') => {
+    const sizeClasses = {
+      sm: 'w-4 h-4',
+      md: 'w-5 h-5',
+      lg: 'w-6 h-6',
+    };
+
+    return (
+      <div className="flex gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <svg
+            key={star}
+            className={`${sizeClasses[size]} ${
+              rating >= star ? 'text-yellow-400 fill-current' : 'text-gray-300'
+            }`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1}
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+            />
+          </svg>
+        ))}
+      </div>
+    );
+  };
+
+  const handleOpenReviewModal = (review: SessionReview) => {
+    setSelectedReview(review);
+    setIsReviewModalOpen(true);
   };
 
   const handleRequestPackage = async () => {
@@ -334,18 +420,49 @@ export default function CustomerDashboard() {
                                   ? 'Confirmed'
                                   : session.status}
                               </span>
+
+                              {/* Review Display - under completed tag */}
+                              {session.review && (session.status === 'completed' || (session.status === 'confirmed' && new Date(session.endTime) < new Date())) && (
+                                <button
+                                  onClick={() => handleOpenReviewModal(session.review)}
+                                  className="flex items-center gap-2 hover:opacity-80 transition"
+                                >
+                                  {renderStars(calculateAverageRating(session.review.ratings), 'sm')}
+                                  <span className="text-xs text-gray-600">
+                                    ({calculateAverageRating(session.review.ratings).toFixed(1)})
+                                  </span>
+                                  <span className="text-xs text-primary-600">View Details</span>
+                                </button>
+                              )}
                               {session.status === 'confirmed' && new Date(session.startTime) > new Date() && (() => {
                                 const now = new Date();
                                 const hoursUntil = (new Date(session.startTime).getTime() - now.getTime()) / (1000 * 60 * 60);
                                 const canCancel = hoursUntil >= 6;
+
+                                if (!canCancel) {
+                                  return (
+                                    <div className="relative group">
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-xs cursor-not-allowed opacity-60"
+                                        disabled={true}
+                                      >
+                                        Cannot Cancel
+                                      </Button>
+                                      <div className="absolute right-0 bottom-full mb-2 hidden group-hover:block w-48 p-2 bg-gray-900 text-white text-xs rounded shadow-lg z-10">
+                                        Cannot cancel within 6 hours of session start time
+                                        <div className="absolute top-full right-4 w-2 h-2 bg-gray-900 transform rotate-45 -mt-1"></div>
+                                      </div>
+                                    </div>
+                                  );
+                                }
 
                                 return (
                                   <Button
                                     variant="outline"
                                     size="sm"
                                     className="text-xs"
-                                    disabled={!canCancel}
-                                    title={!canCancel ? 'Cannot cancel within 6 hours of booking' : ''}
                                     onClick={async () => {
                                       const reason = prompt('Reason for cancellation (optional):');
                                       if (reason !== null) {
@@ -367,7 +484,7 @@ export default function CustomerDashboard() {
                                       }
                                     }}
                                   >
-                                    {canCancel ? 'Cancel' : 'Cannot Cancel'}
+                                    Cancel
                                   </Button>
                                 );
                               })()}
@@ -483,6 +600,120 @@ export default function CustomerDashboard() {
           </div>
         </div>
       )}
+
+      {/* Review Details Modal */}
+      <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          {selectedReview && (
+            <>
+              <DialogHeader>
+                <DialogTitle className="text-2xl">Session Review</DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-6">
+                {/* Teacher Info */}
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <div className="text-sm text-gray-600">Review by</div>
+                  <div className="font-semibold text-gray-900 mt-1">
+                    {selectedReview.teacherId?.userId?.name || 'Your Instructor'}
+                  </div>
+                </div>
+
+                {/* Overall Rating */}
+                <div className="text-center py-4 border-b">
+                  <div className="text-sm text-gray-600 mb-2">Overall Rating</div>
+                  <div className="flex justify-center mb-2">
+                    {renderStars(calculateAverageRating(selectedReview.ratings), 'lg')}
+                  </div>
+                  <div className="text-3xl font-bold text-gray-900">
+                    {calculateAverageRating(selectedReview.ratings).toFixed(1)} / 5.0
+                  </div>
+                </div>
+
+                {/* Individual Category Ratings */}
+                <div className="space-y-4">
+                  <h3 className="font-semibold text-lg">Performance Breakdown</h3>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Control</span>
+                      <div className="flex items-center gap-2">
+                        {renderStars(selectedReview.ratings.control, 'sm')}
+                        <span className="text-sm text-gray-600 w-8">
+                          {selectedReview.ratings.control.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Posture & Alignment</span>
+                      <div className="flex items-center gap-2">
+                        {renderStars(selectedReview.ratings.postureAlignment, 'sm')}
+                        <span className="text-sm text-gray-600 w-8">
+                          {selectedReview.ratings.postureAlignment.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Strength</span>
+                      <div className="flex items-center gap-2">
+                        {renderStars(selectedReview.ratings.strength, 'sm')}
+                        <span className="text-sm text-gray-600 w-8">
+                          {selectedReview.ratings.strength.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Flexibility / Mobility</span>
+                      <div className="flex items-center gap-2">
+                        {renderStars(selectedReview.ratings.flexibilityMobility, 'sm')}
+                        <span className="text-sm text-gray-600 w-8">
+                          {selectedReview.ratings.flexibilityMobility.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex justify-between items-center mb-2">
+                      <span className="text-sm font-medium text-gray-700">Body Awareness / Focus</span>
+                      <div className="flex items-center gap-2">
+                        {renderStars(selectedReview.ratings.bodyAwarenessFocus, 'sm')}
+                        <span className="text-sm text-gray-600 w-8">
+                          {selectedReview.ratings.bodyAwarenessFocus.toFixed(1)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Notes */}
+                {selectedReview.notes && (
+                  <div>
+                    <h3 className="font-semibold text-lg mb-2">Instructor Notes</h3>
+                    <div className="bg-gray-50 rounded-lg p-4 text-sm text-gray-700">
+                      {selectedReview.notes}
+                    </div>
+                  </div>
+                )}
+
+                {/* Close Button */}
+                <div className="flex justify-end">
+                  <Button onClick={() => setIsReviewModalOpen(false)}>Close</Button>
+                </div>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
 
       <Toaster position="top-right" />
     </div>
