@@ -28,8 +28,17 @@ export const getExecutiveOverview = asyncHandler(async (req: Request, res: Respo
     ? ((thisMonthRevenue - lastMonthRevenue) / lastMonthRevenue) * 100
     : 0;
 
-  // Active Customers (customers with active packages)
-  const activeCustomers = await Package.distinct('customerId', { status: 'active' });
+  // Active Customers (customers with active packages this month)
+  const activeCustomersThisMonth = await Package.distinct('customerId', {
+    status: 'active',
+    createdAt: { $lte: thisMonthEnd }
+  });
+
+  // Active Customers Last Month
+  const activeCustomersLastMonth = await Package.distinct('customerId', {
+    status: 'active',
+    createdAt: { $lte: lastMonthEnd }
+  });
 
   // ARPU (Average Revenue Per Customer)
   const totalCustomers = await Customer.countDocuments();
@@ -46,8 +55,9 @@ export const getExecutiveOverview = asyncHandler(async (req: Request, res: Respo
   res.json({
     totalRevenue: thisMonthRevenue,
     revenueGrowth: parseFloat(revenueGrowth.toFixed(2)),
-    activeCustomers: activeCustomers.length,
-    arpu: parseFloat(arpu.toFixed(2)),
+    activeCustomers: activeCustomersThisMonth.length,
+    activeCustomersLastMonth: activeCustomersLastMonth.length,
+    averageRevenuePerUser: parseFloat(arpu.toFixed(2)),
     sessionCompletionRate: parseFloat(completionRate.toFixed(2)),
     lastMonthRevenue,
   });

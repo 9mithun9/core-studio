@@ -806,7 +806,7 @@ export default function AdminDashboard() {
             <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
               <CardContent className="pt-6">
                 <p className="text-sm font-medium text-orange-700 mb-2">Avg Revenue Per User</p>
-                <p className="text-3xl font-bold text-orange-900">฿{executiveOverview.averageRevenuePerUser.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-orange-900">฿{(executiveOverview.averageRevenuePerUser || 0).toLocaleString()}</p>
                 <p className="text-xs text-orange-600 mt-1">ARPU</p>
               </CardContent>
             </Card>
@@ -815,7 +815,7 @@ export default function AdminDashboard() {
             <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
               <CardContent className="pt-6">
                 <p className="text-sm font-medium text-teal-700 mb-2">Completion Rate</p>
-                <p className="text-3xl font-bold text-teal-900">{executiveOverview.sessionCompletionRate.toFixed(1)}%</p>
+                <p className="text-3xl font-bold text-teal-900">{(executiveOverview.sessionCompletionRate || 0).toFixed(1)}%</p>
                 <p className="text-xs text-teal-600 mt-1">Sessions completed</p>
               </CardContent>
             </Card>
