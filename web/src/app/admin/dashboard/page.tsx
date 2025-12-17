@@ -1002,6 +1002,12 @@ export default function AdminDashboard() {
           <div className="mt-12 mb-6">
             <h2 className="text-3xl font-bold text-gray-900">Marketing & Acquisition Performance</h2>
             <p className="text-gray-600 mt-1">Marketing effectiveness and customer acquisition metrics</p>
+            <div className="mt-3 bg-amber-50 border border-amber-200 rounded-lg p-4">
+              <p className="text-sm text-amber-800">
+                <strong>Note:</strong> This section currently displays placeholder data. Marketing attribution tracking has not yet been implemented.
+                Acquisition channel data, CPA, and ROI metrics are estimated values for demonstration purposes.
+              </p>
+            </div>
           </div>
 
           {/* Marketing KPIs */}
@@ -1233,51 +1239,82 @@ export default function AdminDashboard() {
           <Card className="mb-8">
             <CardHeader>
               <CardTitle>Peak Usage Heatmap</CardTitle>
-              <CardDescription>Session bookings by day and hour</CardDescription>
+              <CardDescription>Session bookings by day and hour (7 AM - 10 PM)</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="overflow-x-auto">
-                <div className="grid grid-cols-25 gap-1 text-xs">
+                <div className="inline-grid gap-1 text-xs" style={{ gridTemplateColumns: 'auto repeat(16, minmax(0, 1fr))' }}>
                   {/* Header row */}
-                  <div className="col-span-1"></div>
-                  {Array.from({ length: 24 }, (_, i) => (
-                    <div key={i} className="text-center font-semibold text-gray-600">
-                      {i}h
-                    </div>
-                  ))}
+                  <div className="p-2"></div>
+                  {Array.from({ length: 16 }, (_, i) => {
+                    const hour = i + 7;
+                    return (
+                      <div key={hour} className="text-center font-semibold text-gray-600 p-2">
+                        {hour === 12 ? '12PM' : hour > 12 ? `${hour - 12}PM` : `${hour}AM`}
+                      </div>
+                    );
+                  })}
 
                   {/* Data rows */}
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
                     <React.Fragment key={day}>
-                      <div className="font-semibold text-gray-600 flex items-center">
+                      <div className="font-semibold text-gray-700 flex items-center justify-end pr-3">
                         {day}
                       </div>
-                      {Array.from({ length: 24 }, (_, hour) => {
+                      {Array.from({ length: 16 }, (_, i) => {
+                        const hour = i + 7;
                         const dataPoint = retentionInsights.peakUsage.find(
                           p => p.day === day && p.hour === hour
                         );
                         const sessions = dataPoint?.sessions || 0;
-                        const maxSessions = Math.max(...retentionInsights.peakUsage.map(p => p.sessions));
-                        const intensity = maxSessions > 0 ? (sessions / maxSessions) * 100 : 0;
+                        const maxSessions = Math.max(...retentionInsights.peakUsage.map(p => p.sessions), 1);
+                        const intensity = (sessions / maxSessions) * 100;
 
-                        let bgColor = 'bg-gray-100';
-                        if (intensity > 75) bgColor = 'bg-green-600';
-                        else if (intensity > 50) bgColor = 'bg-green-400';
-                        else if (intensity > 25) bgColor = 'bg-green-200';
-                        else if (intensity > 0) bgColor = 'bg-green-100';
+                        let bgColor = 'bg-gray-50';
+                        let textColor = 'text-gray-400';
+                        if (intensity > 75) {
+                          bgColor = 'bg-green-600';
+                          textColor = 'text-white';
+                        } else if (intensity > 50) {
+                          bgColor = 'bg-green-500';
+                          textColor = 'text-white';
+                        } else if (intensity > 25) {
+                          bgColor = 'bg-green-300';
+                          textColor = 'text-gray-800';
+                        } else if (intensity > 10) {
+                          bgColor = 'bg-green-100';
+                          textColor = 'text-gray-700';
+                        }
 
                         return (
                           <div
                             key={`${day}-${hour}`}
-                            className={`${bgColor} h-8 flex items-center justify-center rounded cursor-pointer hover:ring-2 hover:ring-primary-500`}
-                            title={`${day} ${hour}:00 - ${sessions} sessions`}
+                            className={`${bgColor} h-12 flex items-center justify-center rounded border border-gray-200 cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all`}
+                            title={`${day} ${hour}:00 - ${sessions} session${sessions !== 1 ? 's' : ''}`}
                           >
-                            {sessions > 0 && <span className="text-xs font-semibold">{sessions}</span>}
+                            {sessions > 0 && (
+                              <span className={`text-xs font-semibold ${textColor}`}>
+                                {sessions}
+                              </span>
+                            )}
                           </div>
                         );
                       })}
                     </React.Fragment>
                   ))}
+                </div>
+
+                {/* Legend */}
+                <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
+                  <span>Less</span>
+                  <div className="flex gap-1">
+                    <div className="w-6 h-6 bg-gray-50 border border-gray-200 rounded"></div>
+                    <div className="w-6 h-6 bg-green-100 border border-gray-200 rounded"></div>
+                    <div className="w-6 h-6 bg-green-300 border border-gray-200 rounded"></div>
+                    <div className="w-6 h-6 bg-green-500 border border-gray-200 rounded"></div>
+                    <div className="w-6 h-6 bg-green-600 border border-gray-200 rounded"></div>
+                  </div>
+                  <span>More</span>
                 </div>
               </div>
             </CardContent>

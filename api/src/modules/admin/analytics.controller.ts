@@ -316,44 +316,40 @@ export const getRetentionInsights = asyncHandler(async (req: Request, res: Respo
     });
   }
 
-  // Peak Usage Time (mock data - would need booking time tracking)
+  // Peak Usage Time - Heatmap data (7 AM - 10 PM)
   const peakUsage = [];
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-  const hours = ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM'];
+  const hoursRange = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM (22)
 
   // Get actual booking distribution by day/hour
   const bookings = await Booking.find({ status: { $in: ['completed', 'confirmed'] } });
-  const usageMap: Record<string, Record<string, number>> = {};
+  const usageMap: Record<string, Record<number, number>> = {};
 
+  // Initialize the map
   days.forEach(day => {
     usageMap[day] = {};
-    hours.forEach(hour => {
+    hoursRange.forEach(hour => {
       usageMap[day][hour] = 0;
     });
   });
 
+  // Count bookings by day and hour
   bookings.forEach(booking => {
     const date = new Date(booking.startTime);
     const dayIndex = date.getDay();
     const dayName = days[dayIndex === 0 ? 6 : dayIndex - 1]; // Adjust for Monday start
     const hour = date.getHours();
 
-    let hourBucket = '6AM';
-    if (hour >= 6 && hour < 9) hourBucket = '6AM';
-    else if (hour >= 9 && hour < 12) hourBucket = '9AM';
-    else if (hour >= 12 && hour < 15) hourBucket = '12PM';
-    else if (hour >= 15 && hour < 18) hourBucket = '3PM';
-    else if (hour >= 18 && hour < 21) hourBucket = '6PM';
-    else if (hour >= 21) hourBucket = '9PM';
-
-    if (usageMap[dayName]) {
-      usageMap[dayName][hourBucket]++;
+    // Only count if within business hours (7 AM - 10 PM)
+    if (hour >= 7 && hour <= 22 && usageMap[dayName]) {
+      usageMap[dayName][hour] = (usageMap[dayName][hour] || 0) + 1;
     }
   });
 
+  // Convert to array format for frontend
   Object.entries(usageMap).forEach(([day, hours]) => {
-    Object.entries(hours).forEach(([hour, count]) => {
-      peakUsage.push({ day, hour, count });
+    Object.entries(hours).forEach(([hour, sessions]) => {
+      peakUsage.push({ day, hour: parseInt(hour), sessions });
     });
   });
 
