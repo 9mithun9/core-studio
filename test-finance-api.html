@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Finance API</title>
+</head>
+<body>
+    <h1>Test Finance API Endpoint</h1>
+    <button onclick="testAPI()">Test API</button>
+    <pre id="result"></pre>
+
+    <script>
+        async function testAPI() {
+            const resultEl = document.getElementById('result');
+            resultEl.textContent = 'Testing...';
+
+            try {
+                // Get token first (you'll need to replace with actual admin credentials)
+                const loginResponse = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'admin@corestudio.com',
+                        password: 'admin123'
+                    })
+                });
+
+                const loginData = await loginResponse.json();
+
+                if (!loginResponse.ok) {
+                    resultEl.textContent = 'Login failed:\n' + JSON.stringify(loginData, null, 2);
+                    return;
+                }
+
+                const token = loginData.token;
+
+                // Now test finance endpoint
+                const financeResponse = await fetch('http://localhost:5000/api/admin/finance?month=12&year=2025', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                const financeData = await financeResponse.json();
+
+                resultEl.textContent = 'Status: ' + financeResponse.status + '\n\n' + JSON.stringify(financeData, null, 2);
+            } catch (error) {
+                resultEl.textContent = 'Error: ' + error.message + '\n\n' + error.stack;
+            }
+        }
+    </script>
+</body>
+</html>

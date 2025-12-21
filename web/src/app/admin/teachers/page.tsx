@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -105,6 +107,7 @@ const TEACHER_COLORS = [
 ];
 
 export default function AdminTeachersPage() {
+  const { t } = useTranslation('admin');
   const [teachers, setTeachers] = useState<TeacherWithDetails[]>([]);
   const [filteredTeachers, setFilteredTeachers] = useState<TeacherWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
@@ -169,11 +172,11 @@ export default function AdminTeachersPage() {
 
   const handleCreateTeacher = async () => {
     if (!createForm.name || !createForm.email || !createForm.password) {
-      toast.error('Please fill in all required fields');
+      toast.error(t('teachers.createModal.fillRequired'));
       return;
     }
 
-    const loadingToast = toast.loading('Creating teacher account...');
+    const loadingToast = toast.loading(t('teachers.createModal.creating'));
 
     try {
       const specialtiesArray = createForm.specialties
@@ -195,7 +198,7 @@ export default function AdminTeachersPage() {
 
       await apiClient.post('/admin/teachers', payload);
 
-      toast.success('Teacher account created successfully!', { id: loadingToast });
+      toast.success(t('teachers.createModal.success'), { id: loadingToast });
       setShowCreateModal(false);
       setCreateForm({
         name: '',
@@ -208,7 +211,7 @@ export default function AdminTeachersPage() {
       });
       fetchTeachers();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to create teacher account', {
+      toast.error(error.response?.data?.error || t('teachers.createModal.failed'), {
         id: loadingToast,
       });
     }
@@ -255,39 +258,41 @@ export default function AdminTeachersPage() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="text-center text-gray-600">{t('common.loading')}</div>
+    </div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Teacher Management</h1>
-        <Button onClick={() => setShowCreateModal(true)} size="lg">
-          + Create Teacher
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
+        <h1 className="text-2xl md:text-3xl font-bold">{t('teachers.title')}</h1>
+        <Button onClick={() => setShowCreateModal(true)} size="sm" className="text-xs md:text-sm w-full sm:w-auto">
+          {t('teachers.createTeacher')}
         </Button>
       </div>
 
       {/* Teacher Sessions Graph */}
-      <Card className="mb-6">
+      <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle>Teacher Sessions Over Time</CardTitle>
-              <CardDescription>Completed sessions by teacher per month</CardDescription>
+              <CardTitle className="text-base md:text-lg">{t('teachers.sessionsOverTime')}</CardTitle>
+              <CardDescription className="text-xs md:text-sm">{t('teachers.completedByMonth')}</CardDescription>
             </div>
             <Select value={trendPeriod} onValueChange={setTrendPeriod}>
-              <SelectTrigger className="w-[180px]">
+              <SelectTrigger className="w-full sm:w-[180px] text-xs md:text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="6">Last 6 Months</SelectItem>
-                <SelectItem value="12">Last 12 Months</SelectItem>
+                <SelectItem value="6">{t('teachers.last6Months')}</SelectItem>
+                <SelectItem value="12">{t('teachers.last12Months')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </CardHeader>
         <CardContent>
-          <ResponsiveContainer width="100%" height={350}>
+          <ResponsiveContainer width="100%" height={300}>
             <LineChart data={trendsData}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="monthYear" />
@@ -311,37 +316,37 @@ export default function AdminTeachersPage() {
       </Card>
 
       {/* Two Column Layout */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Left: Teacher List */}
         <Card>
           <CardHeader>
-            <CardTitle>All Teachers ({teachers.length})</CardTitle>
-            <CardDescription>Click on a teacher to view details</CardDescription>
+            <CardTitle className="text-base md:text-lg">{t('teachers.allTeachers', { count: teachers.length })}</CardTitle>
+            <CardDescription className="text-xs md:text-sm">{t('teachers.clickToView')}</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Search */}
-            <div className="mb-4">
+            <div className="mb-3 md:mb-4">
               <input
                 type="text"
-                placeholder="Search by name, email, phone, or specialties..."
+                placeholder={t('teachers.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full px-3 md:px-4 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
               />
 
               {searchQuery && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Showing {filteredTeachers.length} of {teachers.length} teachers
+                <p className="text-xs md:text-sm text-gray-600 mt-2">
+                  {t('teachers.showingOf', { count: filteredTeachers.length, total: teachers.length })}
                 </p>
               )}
             </div>
 
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-2 md:space-y-3 max-h-[600px] overflow-y-auto">
               {filteredTeachers.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">
                   {searchQuery
-                    ? 'No teachers found matching your search'
-                    : 'No teachers yet'}
+                    ? t('teachers.noTeachersFound')
+                    : t('teachers.noTeachers')}
                 </p>
               ) : (
                 filteredTeachers.map((teacher) => {
@@ -351,25 +356,25 @@ export default function AdminTeachersPage() {
                     <div
                       key={teacher._id}
                       onClick={() => handleSelectTeacher(teacher)}
-                      className={`border rounded-lg p-4 cursor-pointer transition ${
+                      className={`border rounded-lg p-3 md:p-4 cursor-pointer transition ${
                         selectedTeacher?._id === teacher._id
                           ? 'border-primary-600 bg-primary-50'
                           : 'hover:border-primary-300 hover:bg-gray-50'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
-                            <p className="font-semibold">{teacher.userId.name}</p>
+                            <p className="text-sm md:text-base font-semibold truncate">{teacher.userId.name}</p>
                             {!teacher.isActive && (
-                              <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded">
-                                Inactive
+                              <span className="text-xs px-2 py-0.5 bg-red-100 text-red-700 rounded flex-shrink-0">
+                                {t('teachers.inactive')}
                               </span>
                             )}
                           </div>
-                          <p className="text-sm text-gray-600">{teacher.userId.email}</p>
+                          <p className="text-xs md:text-sm text-gray-600 truncate">{teacher.userId.email}</p>
                           {teacher.userId.phone && (
-                            <p className="text-sm text-gray-500">{teacher.userId.phone}</p>
+                            <p className="text-xs md:text-sm text-gray-500">{teacher.userId.phone}</p>
                           )}
                           {teacher.specialties.length > 0 && (
                             <div className="flex flex-wrap gap-1 mt-2">
@@ -393,16 +398,16 @@ export default function AdminTeachersPage() {
                           <div className="flex gap-2 mt-2">
                             {daysInactive !== null && daysInactive > 30 && (
                               <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
-                                Inactive {daysInactive} days
+                                {t('teachers.inactiveDays', { days: daysInactive })}
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-primary-600">
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xl md:text-2xl font-bold text-primary-600">
                             {teacher.totalStudents}
                           </p>
-                          <p className="text-xs text-gray-500">students</p>
+                          <p className="text-xs text-gray-500">{t('teachers.students')}</p>
                         </div>
                       </div>
                     </div>
@@ -418,106 +423,106 @@ export default function AdminTeachersPage() {
           {selectedTeacher ? (
             <Card>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                  <div className="flex items-center gap-3 md:gap-4">
                     {/* Profile photo */}
                     <div className="flex-shrink-0">
                       {selectedTeacher.imageUrl ? (
                         <img
                           src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedTeacher.imageUrl}`}
                           alt="Profile"
-                          className="w-16 h-16 rounded-full object-cover border-4 border-primary-100 shadow-md"
+                          className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-4 border-primary-100 shadow-md"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-gray-200 flex items-center justify-center text-2xl font-bold text-gray-500 border-4 border-gray-300">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl md:text-2xl font-bold text-gray-500 border-4 border-gray-300">
                           {selectedTeacher.userId.name.charAt(0).toUpperCase()}
                         </div>
                       )}
                     </div>
-                    <div>
-                      <CardTitle>{selectedTeacher.userId.name}</CardTitle>
-                      <CardDescription>{selectedTeacher.userId.email}</CardDescription>
+                    <div className="min-w-0">
+                      <CardTitle className="text-base md:text-lg truncate">{selectedTeacher.userId.name}</CardTitle>
+                      <CardDescription className="text-xs md:text-sm truncate">{selectedTeacher.userId.email}</CardDescription>
                     </div>
                   </div>
                   {!selectedTeacher.isActive && (
-                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded text-sm font-medium">
-                      Inactive
+                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded text-xs md:text-sm font-medium self-start sm:self-center">
+                      {t('teachers.inactive')}
                     </span>
                   )}
                 </div>
 
                 {/* Quick Stats */}
-                <div className="grid grid-cols-4 gap-4 mt-4">
-                  <div className="text-center p-3 bg-gray-50 rounded">
-                    <p className="text-2xl font-bold text-gray-800">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mt-3 md:mt-4">
+                  <div className="text-center p-2 md:p-3 bg-gray-50 rounded">
+                    <p className="text-xl md:text-2xl font-bold text-gray-800">
                       {selectedTeacher.completedSessions}
                     </p>
-                    <p className="text-xs text-gray-500">Completed</p>
+                    <p className="text-xs text-gray-500">{t('teachers.stats.completed')}</p>
                   </div>
-                  <div className="text-center p-3 bg-blue-50 rounded">
-                    <p className="text-2xl font-bold text-blue-600">
+                  <div className="text-center p-2 md:p-3 bg-blue-50 rounded">
+                    <p className="text-xl md:text-2xl font-bold text-blue-600">
                       {selectedTeacher.todaySessions}
                     </p>
-                    <p className="text-xs text-gray-500">Today</p>
+                    <p className="text-xs text-gray-500">{t('teachers.stats.today')}</p>
                   </div>
-                  <div className="text-center p-3 bg-green-50 rounded">
-                    <p className="text-2xl font-bold text-green-600">
+                  <div className="text-center p-2 md:p-3 bg-green-50 rounded">
+                    <p className="text-xl md:text-2xl font-bold text-green-600">
                       {selectedTeacher.thisWeekSessions}
                     </p>
-                    <p className="text-xs text-gray-500">This Week</p>
+                    <p className="text-xs text-gray-500">{t('teachers.stats.thisWeek')}</p>
                   </div>
-                  <div className="text-center p-3 bg-purple-50 rounded">
-                    <p className="text-2xl font-bold text-purple-600">
+                  <div className="text-center p-2 md:p-3 bg-purple-50 rounded">
+                    <p className="text-xl md:text-2xl font-bold text-purple-600">
                       {selectedTeacher.totalStudents}
                     </p>
-                    <p className="text-xs text-gray-500">Students</p>
+                    <p className="text-xs text-gray-500">{t('teachers.stats.students')}</p>
                   </div>
                 </div>
               </CardHeader>
 
               <CardContent>
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="overview">Overview</TabsTrigger>
-                    <TabsTrigger value="students">Students</TabsTrigger>
-                    <TabsTrigger value="sessions">Sessions</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 text-xs md:text-sm">
+                    <TabsTrigger value="overview">{t('teachers.tabs.overview')}</TabsTrigger>
+                    <TabsTrigger value="students">{t('teachers.tabs.students')}</TabsTrigger>
+                    <TabsTrigger value="sessions">{t('teachers.tabs.sessions')}</TabsTrigger>
+                    <TabsTrigger value="analytics">{t('teachers.tabs.analytics')}</TabsTrigger>
                   </TabsList>
 
                   {/* Overview Tab */}
-                  <TabsContent value="overview" className="space-y-4">
-                    <div className="space-y-3">
+                  <TabsContent value="overview" className="space-y-3 md:space-y-4">
+                    <div className="space-y-2 md:space-y-3">
                       <div>
-                        <p className="text-sm font-medium text-gray-600">Email</p>
-                        <p className="text-sm">{selectedTeacher.userId.email}</p>
+                        <p className="text-xs md:text-sm font-medium text-gray-600">{t('teachers.overview.email')}</p>
+                        <p className="text-xs md:text-sm break-all">{selectedTeacher.userId.email}</p>
                       </div>
                       {selectedTeacher.userId.phone && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Phone</p>
-                          <p className="text-sm">{selectedTeacher.userId.phone}</p>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">{t('teachers.overview.phone')}</p>
+                          <p className="text-xs md:text-sm">{selectedTeacher.userId.phone}</p>
                         </div>
                       )}
                       {selectedTeacher.hourlyRate && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Hourly Rate</p>
-                          <p className="text-sm">฿{selectedTeacher.hourlyRate}</p>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">{t('teachers.overview.hourlyRate')}</p>
+                          <p className="text-xs md:text-sm">฿{selectedTeacher.hourlyRate}</p>
                         </div>
                       )}
                       {selectedTeacher.defaultLocation && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Location</p>
-                          <p className="text-sm">{selectedTeacher.defaultLocation}</p>
+                          <p className="text-xs md:text-sm font-medium text-gray-600">{t('teachers.overview.location')}</p>
+                          <p className="text-xs md:text-sm">{selectedTeacher.defaultLocation}</p>
                         </div>
                       )}
                       {selectedTeacher.bio && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600 mb-1">Bio</p>
-                          <p className="text-sm text-gray-700 p-3 bg-gray-50 rounded">{selectedTeacher.bio}</p>
+                          <p className="text-xs md:text-sm font-medium text-gray-600 mb-1">{t('teachers.overview.bio')}</p>
+                          <p className="text-xs md:text-sm text-gray-700 p-2 md:p-3 bg-gray-50 rounded">{selectedTeacher.bio}</p>
                         </div>
                       )}
                       {selectedTeacher.specialties.length > 0 && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600 mb-2">Specialties</p>
+                          <p className="text-xs md:text-sm font-medium text-gray-600 mb-2">{t('teachers.overview.specialties')}</p>
                           <div className="flex flex-wrap gap-1">
                             {selectedTeacher.specialties.map((specialty, idx) => (
                               <span
@@ -536,26 +541,26 @@ export default function AdminTeachersPage() {
                   {/* Students Tab */}
                   <TabsContent value="students">
                     {detailsLoading ? (
-                      <p className="text-gray-500 text-center py-8">Loading...</p>
+                      <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.studentsTab.loading')}</p>
                     ) : teacherStudents.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">No students yet</p>
+                      <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.studentsTab.noStudents')}</p>
                     ) : (
-                      <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                      <div className="space-y-2 md:space-y-3 max-h-[500px] overflow-y-auto">
                         {teacherStudents.map((student) => (
-                          <div key={student.customer._id} className="border rounded-lg p-3">
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium">{student.customer.userId.name}</p>
-                                <p className="text-sm text-gray-600">{student.customer.userId.email}</p>
+                          <div key={student.customer._id} className="border rounded-lg p-2 md:p-3">
+                            <div className="flex items-center justify-between gap-3">
+                              <div className="min-w-0 flex-1">
+                                <p className="text-sm md:text-base font-medium truncate">{student.customer.userId.name}</p>
+                                <p className="text-xs md:text-sm text-gray-600 truncate">{student.customer.userId.email}</p>
                                 {student.customer.userId.phone && (
-                                  <p className="text-sm text-gray-500">{student.customer.userId.phone}</p>
+                                  <p className="text-xs md:text-sm text-gray-500">{student.customer.userId.phone}</p>
                                 )}
                               </div>
-                              <div className="text-right">
-                                <p className="text-lg font-bold">
+                              <div className="text-right flex-shrink-0">
+                                <p className="text-base md:text-lg font-bold">
                                   {student.completedBookings}/{student.totalBookings}
                                 </p>
-                                <p className="text-xs text-gray-500">completed</p>
+                                <p className="text-xs text-gray-500">{t('teachers.studentsTab.completed')}</p>
                               </div>
                             </div>
                           </div>
@@ -567,11 +572,11 @@ export default function AdminTeachersPage() {
                   {/* Sessions Tab */}
                   <TabsContent value="sessions">
                     {detailsLoading ? (
-                      <p className="text-gray-500 text-center py-8">Loading...</p>
+                      <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.sessionsTab.loading')}</p>
                     ) : teacherSessions.length === 0 ? (
-                      <p className="text-gray-500 text-center py-8">No sessions yet</p>
+                      <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.sessionsTab.noSessions')}</p>
                     ) : (
-                      <div className="space-y-3 max-h-[500px] overflow-y-auto">
+                      <div className="space-y-2 md:space-y-3 max-h-[500px] overflow-y-auto">
                         {teacherSessions.map((session) => {
                           const isUpcoming = new Date(session.startTime) > new Date();
                           let statusClass = 'bg-gray-100 text-gray-800';
@@ -589,30 +594,30 @@ export default function AdminTeachersPage() {
                           return (
                             <div
                               key={session._id}
-                              className={`border rounded-lg p-3 ${
+                              className={`border rounded-lg p-2 md:p-3 ${
                                 isUpcoming ? 'bg-blue-50 border-blue-200' : ''
                               }`}
                             >
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  <p className="font-medium">
+                              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-sm md:text-base font-medium">
                                     {formatStudioTime(session.startTime, 'PPP')}
                                   </p>
-                                  <p className="text-sm text-gray-600">
+                                  <p className="text-xs md:text-sm text-gray-600">
                                     {formatStudioTime(session.startTime, 'p')} -{' '}
                                     {formatStudioTime(session.endTime, 'p')}
                                   </p>
-                                  <p className="text-sm text-gray-600">
-                                    Student: {session.customerId.userId.name}
+                                  <p className="text-xs md:text-sm text-gray-600 truncate">
+                                    {t('teachers.sessionsTab.student')} {session.customerId.userId.name}
                                   </p>
-                                  <p className="text-sm text-gray-500">Type: {session.type}</p>
+                                  <p className="text-xs md:text-sm text-gray-500">{t('teachers.sessionsTab.type')} {session.type}</p>
                                   {session.packageId && (
-                                    <p className="text-sm text-gray-500">
-                                      Package: {session.packageId.name}
+                                    <p className="text-xs md:text-sm text-gray-500">
+                                      {t('teachers.sessionsTab.package')} {session.packageId.name}
                                     </p>
                                   )}
                                 </div>
-                                <span className={`px-3 py-1 rounded text-xs font-medium ${statusClass}`}>
+                                <span className={`px-2 md:px-3 py-1 rounded text-xs font-medium ${statusClass} self-start sm:self-center flex-shrink-0`}>
                                   {session.status}
                                 </span>
                               </div>
@@ -626,48 +631,48 @@ export default function AdminTeachersPage() {
                   {/* Analytics Tab */}
                   <TabsContent value="analytics">
                     {detailsLoading ? (
-                      <p className="text-gray-500 text-center py-8">Loading...</p>
+                      <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.analytics.loading')}</p>
                     ) : !deepAnalysis ? (
-                      <p className="text-gray-500 text-center py-8">No analytics data available</p>
+                      <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.analytics.noData')}</p>
                     ) : (
-                      <div className="space-y-6">
+                      <div className="space-y-4 md:space-y-6">
                         {/* Average Sessions */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Activity Metrics</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="border rounded-lg p-4 text-center">
-                              <p className="text-3xl font-bold text-primary-600">
+                          <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">{t('teachers.analytics.activityMetrics')}</h3>
+                          <div className="grid grid-cols-2 gap-3 md:gap-4">
+                            <div className="border rounded-lg p-3 md:p-4 text-center">
+                              <p className="text-2xl md:text-3xl font-bold text-primary-600">
                                 {deepAnalysis.avgSessionsPerDay}
                               </p>
-                              <p className="text-sm text-gray-600 mt-1">Avg Sessions/Day</p>
+                              <p className="text-xs md:text-sm text-gray-600 mt-1">{t('teachers.analytics.avgSessionsPerDay')}</p>
                             </div>
-                            <div className="border rounded-lg p-4 text-center">
-                              <p className="text-3xl font-bold text-blue-600">
+                            <div className="border rounded-lg p-3 md:p-4 text-center">
+                              <p className="text-2xl md:text-3xl font-bold text-blue-600">
                                 {deepAnalysis.avgSessionsPerMonth}
                               </p>
-                              <p className="text-sm text-gray-600 mt-1">Avg Sessions/Month</p>
+                              <p className="text-xs md:text-sm text-gray-600 mt-1">{t('teachers.analytics.avgSessionsPerMonth')}</p>
                             </div>
                           </div>
                         </div>
 
                         {/* Top Clients */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Top Clients</h3>
+                          <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">{t('teachers.analytics.topClients')}</h3>
                           {deepAnalysis.topClients.length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">No clients yet</p>
+                            <p className="text-xs md:text-sm text-gray-500 text-center py-3 md:py-4">{t('teachers.analytics.noClients')}</p>
                           ) : (
                             <div className="space-y-2">
                               {deepAnalysis.topClients.map((client, idx) => (
-                                <div key={idx} className="border rounded-lg p-3 flex items-center justify-between">
-                                  <div>
-                                    <p className="font-medium">{client.name}</p>
-                                    <p className="text-sm text-gray-600">{client.email}</p>
+                                <div key={idx} className="border rounded-lg p-2 md:p-3 flex items-center justify-between gap-3">
+                                  <div className="min-w-0 flex-1">
+                                    <p className="text-sm md:text-base font-medium truncate">{client.name}</p>
+                                    <p className="text-xs md:text-sm text-gray-600 truncate">{client.email}</p>
                                   </div>
-                                  <div className="text-right">
-                                    <p className="text-xl font-bold text-primary-600">
+                                  <div className="text-right flex-shrink-0">
+                                    <p className="text-lg md:text-xl font-bold text-primary-600">
                                       {client.completedSessions}
                                     </p>
-                                    <p className="text-xs text-gray-500">sessions</p>
+                                    <p className="text-xs text-gray-500">{t('teachers.analytics.sessions')}</p>
                                   </div>
                                 </div>
                               ))}
@@ -677,16 +682,16 @@ export default function AdminTeachersPage() {
 
                         {/* Popular Package Types */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Popular Package Types</h3>
+                          <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">{t('teachers.analytics.popularPackageTypes')}</h3>
                           {deepAnalysis.popularPackageTypes.length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">No package data</p>
+                            <p className="text-xs md:text-sm text-gray-500 text-center py-3 md:py-4">{t('teachers.analytics.noPackageData')}</p>
                           ) : (
                             <div className="space-y-2">
                               {deepAnalysis.popularPackageTypes.map((pkg, idx) => (
-                                <div key={idx} className="border rounded-lg p-3 flex items-center justify-between">
-                                  <span className="text-sm font-medium capitalize">{pkg.type}</span>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                                <div key={idx} className="border rounded-lg p-2 md:p-3 flex items-center justify-between gap-2">
+                                  <span className="text-xs md:text-sm font-medium capitalize flex-shrink-0">{pkg.type}</span>
+                                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="w-20 md:w-32 bg-gray-200 rounded-full h-2">
                                       <div
                                         className="bg-primary-600 h-2 rounded-full"
                                         style={{
@@ -694,7 +699,7 @@ export default function AdminTeachersPage() {
                                         }}
                                       />
                                     </div>
-                                    <span className="text-sm font-bold w-12 text-right">{pkg.count}</span>
+                                    <span className="text-xs md:text-sm font-bold w-8 md:w-12 text-right flex-shrink-0">{pkg.count}</span>
                                   </div>
                                 </div>
                               ))}
@@ -704,16 +709,16 @@ export default function AdminTeachersPage() {
 
                         {/* Popular Session Types */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Popular Session Types</h3>
+                          <h3 className="text-base md:text-lg font-semibold mb-2 md:mb-3">{t('teachers.analytics.popularSessionTypes')}</h3>
                           {deepAnalysis.popularSessionTypes.length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">No session data</p>
+                            <p className="text-xs md:text-sm text-gray-500 text-center py-3 md:py-4">{t('teachers.analytics.noSessionData')}</p>
                           ) : (
                             <div className="space-y-2">
                               {deepAnalysis.popularSessionTypes.map((sessionType, idx) => (
-                                <div key={idx} className="border rounded-lg p-3 flex items-center justify-between">
-                                  <span className="text-sm font-medium capitalize">{sessionType.type}</span>
-                                  <div className="flex items-center gap-2">
-                                    <div className="w-32 bg-gray-200 rounded-full h-2">
+                                <div key={idx} className="border rounded-lg p-2 md:p-3 flex items-center justify-between gap-2">
+                                  <span className="text-xs md:text-sm font-medium capitalize flex-shrink-0">{sessionType.type}</span>
+                                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                                    <div className="w-20 md:w-32 bg-gray-200 rounded-full h-2">
                                       <div
                                         className="bg-blue-600 h-2 rounded-full"
                                         style={{
@@ -721,7 +726,7 @@ export default function AdminTeachersPage() {
                                         }}
                                       />
                                     </div>
-                                    <span className="text-sm font-bold w-12 text-right">{sessionType.count}</span>
+                                    <span className="text-xs md:text-sm font-bold w-8 md:w-12 text-right flex-shrink-0">{sessionType.count}</span>
                                   </div>
                                 </div>
                               ))}
@@ -736,8 +741,8 @@ export default function AdminTeachersPage() {
             </Card>
           ) : (
             <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-gray-500">Select a teacher to view details</p>
+              <CardContent className="py-8 md:py-12 text-center">
+                <p className="text-xs md:text-sm text-gray-500">{t('teachers.selectToView')}</p>
               </CardContent>
             </Card>
           )}
@@ -746,129 +751,129 @@ export default function AdminTeachersPage() {
 
       {/* Create Teacher Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Create Teacher Account</h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-3 md:mb-4">
+              <h2 className="text-lg md:text-xl font-bold">{t('teachers.createModal.title')}</h2>
               <button
                 onClick={() => setShowCreateModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Name *
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.name')}
                 </label>
                 <input
                   type="text"
                   value={createForm.name}
                   onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Full name"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t('teachers.createModal.namePlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Email *
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.email')}
                 </label>
                 <input
                   type="email"
                   value={createForm.email}
                   onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="teacher@example.com"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t('teachers.createModal.emailPlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Password *
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.password')}
                 </label>
                 <input
                   type="password"
                   value={createForm.password}
                   onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Minimum 6 characters"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t('teachers.createModal.passwordPlaceholder')}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3 md:gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Phone
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                    {t('teachers.createModal.phone')}
                   </label>
                   <input
                     type="tel"
                     value={createForm.phone}
                     onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="+66..."
+                    className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={t('teachers.createModal.phonePlaceholder')}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Years of Experience
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                    {t('teachers.createModal.yearsOfExperience')}
                   </label>
                   <input
                     type="number"
                     value={createForm.yearsOfExperience}
                     onChange={(e) => setCreateForm({ ...createForm, yearsOfExperience: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="5"
+                    className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    placeholder={t('teachers.createModal.experiencePlaceholder')}
                     min="0"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Bio
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.bio')}
                 </label>
                 <textarea
                   value={createForm.bio}
                   onChange={(e) => setCreateForm({ ...createForm, bio: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Brief bio..."
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t('teachers.createModal.bioPlaceholder')}
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Specialties
+                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.specialties')}
                 </label>
                 <input
                   type="text"
                   value={createForm.specialties}
                   onChange={(e) => setCreateForm({ ...createForm, specialties: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  placeholder="Reformer, Mat, Props (comma separated)"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t('teachers.createModal.specialtiesPlaceholder')}
                 />
-                <p className="text-xs text-gray-500 mt-1">Separate multiple specialties with commas</p>
+                <p className="text-xs text-gray-500 mt-1">{t('teachers.createModal.specialtiesHelp')}</p>
               </div>
 
-              <div className="flex gap-3 mt-6">
+              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 mt-4 md:mt-6">
                 <Button
                   variant="outline"
                   onClick={() => setShowCreateModal(false)}
-                  className="flex-1"
+                  className="flex-1 text-xs md:text-sm"
                 >
-                  Cancel
+                  {t('teachers.createModal.cancel')}
                 </Button>
                 <Button
                   onClick={handleCreateTeacher}
-                  className="flex-1"
+                  className="flex-1 text-xs md:text-sm"
                 >
-                  Create Teacher
+                  {t('teachers.createModal.create')}
                 </Button>
               </div>
             </div>

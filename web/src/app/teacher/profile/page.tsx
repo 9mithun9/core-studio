@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -38,6 +40,7 @@ const SPECIALTY_OPTIONS = [
 ];
 
 export default function TeacherProfilePage() {
+  const { t } = useTranslation('teacher');
   const [profile, setProfile] = useState<TeacherProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -199,34 +202,34 @@ export default function TeacherProfilePage() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">{t('common.loading')}</div>;
   }
 
   if (!profile) {
-    return <div className="container mx-auto px-4 py-8">Profile not found</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">{t('profile.not_found')}</div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('profile.title')}</h1>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid md:grid-cols-3 gap-6 md:gap-8">
         {/* Profile Photo Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Profile Photo</CardTitle>
-            <CardDescription>Your profile picture</CardDescription>
+            <CardTitle className="text-lg md:text-xl">{t('profile.photo_title')}</CardTitle>
+            <CardDescription className="text-xs md:text-sm">{t('profile.photo_description')}</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex flex-col items-center space-y-4">
+            <div className="flex flex-col items-center space-y-3 md:space-y-4">
               {previewUrl ? (
                 <img
                   src={previewUrl}
                   alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-primary-100"
+                  className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-primary-100"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-primary-100 flex items-center justify-center text-4xl font-bold text-primary-600">
+                <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-primary-100 flex items-center justify-center text-3xl md:text-4xl font-bold text-primary-600">
                   {profile.userId.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -236,46 +239,47 @@ export default function TeacherProfilePage() {
                   type="file"
                   accept="image/*"
                   onChange={handleFileSelect}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                  className="w-full text-xs md:text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs md:file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                 />
 
                 {selectedFile && (
                   <div className="flex flex-col gap-2">
                     <p className="text-xs text-gray-600">
-                      Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
+                      {t('profile.selected')}: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
                     </p>
                     <Button
                       type="button"
                       onClick={handlePhotoUpload}
                       disabled={uploading}
                       className="w-full"
+                      size="sm"
                     >
-                      {uploading ? 'Uploading...' : 'Upload Photo'}
+                      <span className="text-xs md:text-sm">{uploading ? t('profile.uploading') : t('profile.upload_photo')}</span>
                     </Button>
                   </div>
                 )}
               </div>
 
               <p className="text-xs text-gray-500 text-center">
-                Upload an image from your device (Max 5MB)
+                {t('profile.upload_note')}
               </p>
             </div>
 
-            <div className="mt-6 pt-6 border-t">
+            <div className="mt-4 md:mt-6 pt-4 md:pt-6 border-t">
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-gray-600">Status</span>
+                  <span className="text-xs md:text-sm text-gray-600">{t('profile.status')}</span>
                   <span className={`px-2 py-1 rounded text-xs font-medium ${
                     profile.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                   }`}>
-                    {profile.isActive ? 'Active' : 'Inactive'}
+                    {profile.isActive ? t('profile.active') : t('profile.inactive')}
                   </span>
                 </div>
                 {profile.yearsOfExperience !== undefined && profile.yearsOfExperience > 0 && (
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-600">Experience</span>
-                    <span className="text-sm font-medium text-gray-900">
-                      {profile.yearsOfExperience} {profile.yearsOfExperience === 1 ? 'year' : 'years'}
+                    <span className="text-xs md:text-sm text-gray-600">{t('profile.experience')}</span>
+                    <span className="text-xs md:text-sm font-medium text-gray-900">
+                      {profile.yearsOfExperience} {profile.yearsOfExperience === 1 ? t('profile.year') : t('profile.years')}
                     </span>
                   </div>
                 )}

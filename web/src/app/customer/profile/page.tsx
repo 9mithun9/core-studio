@@ -1,9 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import toast, { Toaster } from 'react-hot-toast';
 
 interface CustomerProfile {
   _id: string;
@@ -25,6 +28,7 @@ interface CustomerProfile {
 }
 
 export default function CustomerProfilePage() {
+  const { t } = useTranslation('customer');
   const [profile, setProfile] = useState<CustomerProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -113,10 +117,10 @@ export default function CustomerProfilePage() {
       }
 
       await apiClient.patch('/customers/me/profile', updates);
-      alert('Profile updated successfully!');
+      toast.success(t('profile.updateSuccess'));
       fetchProfile();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to update profile');
+      toast.error(error.response?.data?.error || t('profile.updateError'));
     } finally {
       setSaving(false);
     }
@@ -134,13 +138,13 @@ export default function CustomerProfilePage() {
     if (file) {
       // Validate file type
       if (!file.type.startsWith('image/')) {
-        alert('Please select an image file');
+        toast.error(t('profile.photo.invalidType'));
         return;
       }
 
       // Validate file size (5MB max)
       if (file.size > 5 * 1024 * 1024) {
-        alert('File size must be less than 5MB');
+        toast.error(t('profile.photo.fileTooLarge'));
         return;
       }
 
@@ -157,7 +161,7 @@ export default function CustomerProfilePage() {
 
   const handlePhotoUpload = async () => {
     if (!selectedFile) {
-      alert('Please select a file first');
+      toast.error(t('profile.photo.selectFile'));
       return;
     }
 
@@ -179,14 +183,13 @@ export default function CustomerProfilePage() {
       );
 
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ error: 'Upload failed' }));
-        throw new Error(errorData.error || `Upload failed with status ${response.status}`);
+        const errorData = await response.json().catch(() => ({ error: t('profile.photo.uploadFailed') }));
+        throw new Error(errorData.error || t('profile.photo.uploadFailed'));
       }
 
       const data = await response.json();
 
       // Immediately update the preview URL with the uploaded photo
-      // Remove /api from the URL since uploads are served from root
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000/api';
       const baseUrl = apiBaseUrl.replace('/api', '');
       const fullPhotoUrl = `${baseUrl}${data.photoUrl}`;
@@ -196,36 +199,44 @@ export default function CustomerProfilePage() {
         profilePhoto: data.photoUrl,
       }));
 
-      alert('Profile photo uploaded successfully!');
+      toast.success(t('profile.photo.uploadSuccess'));
       setSelectedFile(null);
 
       // Refetch profile to sync with server
       await fetchProfile();
     } catch (error: any) {
-      alert(error.message || 'Failed to upload photo');
+      toast.error(error.message || t('profile.photo.uploadFailed'));
     } finally {
       setUploading(false);
     }
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-gray-600">{t('profile.loading')}</div>
+      </div>
+    );
   }
 
   if (!profile) {
-    return <div className="container mx-auto px-4 py-8">Profile not found</div>;
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center text-gray-600">{t('profile.notFound')}</div>
+      </div>
+    );
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Profile</h1>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('profile.title')}</h1>
 
-      <div className="grid md:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
         {/* Profile Photo Section */}
         <Card>
           <CardHeader>
-            <CardTitle>Profile Photo</CardTitle>
-            <CardDescription>Your profile picture</CardDescription>
+            <CardTitle className="text-lg md:text-xl">{t('profile.photo.title')}</CardTitle>
+            <CardDescription className="text-xs md:text-sm">{t('profile.photo.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-col items-center space-y-4">
@@ -233,10 +244,10 @@ export default function CustomerProfilePage() {
                 <img
                   src={previewUrl}
                   alt="Profile"
-                  className="w-32 h-32 rounded-full object-cover border-4 border-primary-100"
+                  className="w-24 h-24 sm:w-32 sm:h-32 rounded-full object-cover border-4 border-primary-100"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full bg-gray-200 flex items-center justify-center text-4xl font-bold text-gray-500">
+                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gray-200 flex items-center justify-center text-3xl sm:text-4xl font-bold text-gray-500">
                   {profile.userId.name.charAt(0).toUpperCase()}
                 </div>
               )}
@@ -246,28 +257,28 @@ export default function CustomerProfilePage() {
                   type="file"
                   accept="image/*"
                   onChange={handleFileSelect}
-                  className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
+                  className="w-full text-xs md:text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-xs md:file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100"
                 />
 
                 {selectedFile && (
                   <div className="flex flex-col gap-2">
                     <p className="text-xs text-gray-600">
-                      Selected: {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
+                      {t('profile.photo.selected')} {selectedFile.name} ({(selectedFile.size / 1024).toFixed(2)} KB)
                     </p>
                     <Button
                       type="button"
                       onClick={handlePhotoUpload}
                       disabled={uploading}
-                      className="w-full"
+                      className="w-full text-sm"
                     >
-                      {uploading ? 'Uploading...' : 'Upload Photo'}
+                      {uploading ? t('profile.photo.uploading') : t('profile.photo.uploadButton')}
                     </Button>
                   </div>
                 )}
               </div>
 
               <p className="text-xs text-gray-500 text-center">
-                Upload an image from your device (Max 5MB)
+                {t('profile.photo.uploadInstruction')}
               </p>
             </div>
           </CardContent>
@@ -277,119 +288,119 @@ export default function CustomerProfilePage() {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Personal Information</CardTitle>
-              <CardDescription>Update your personal details</CardDescription>
+              <CardTitle className="text-lg md:text-xl">{t('profile.personalInfo')}</CardTitle>
+              <CardDescription className="text-xs md:text-sm">{t('profile.personalInfoDesc')}</CardDescription>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-6">
+              <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
                 {/* Basic Info */}
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Full Name</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fields.fullName')}</label>
                     <input
                       type="text"
                       value={profile.userId.name}
                       disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                      className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Contact admin to change name</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('profile.fields.contactAdminName')}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fields.email')}</label>
                     <input
                       type="email"
                       value={profile.userId.email}
                       disabled
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
+                      className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Contact admin to change email</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('profile.fields.contactAdminEmail')}</p>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Phone Number</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.fields.phone')}</label>
                   <input
                     type="tel"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="+66-XXX-XXX-XXXX"
+                    className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder={t('profile.fields.phonePlaceholder')}
                   />
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Date of Birth</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fields.dateOfBirth')}</label>
                     <input
                       type="date"
                       name="dateOfBirth"
                       value={formData.dateOfBirth}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Gender</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fields.gender')}</label>
                     <select
                       name="gender"
                       value={formData.gender}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                     >
-                      <option value="">Select Gender</option>
-                      <option value="male">Male</option>
-                      <option value="female">Female</option>
-                      <option value="other">Other</option>
+                      <option value="">{t('profile.fields.genderSelect')}</option>
+                      <option value="male">{t('profile.fields.genderMale')}</option>
+                      <option value="female">{t('profile.fields.genderFemale')}</option>
+                      <option value="other">{t('profile.fields.genderOther')}</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Profession</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.fields.profession')}</label>
                   <select
                     name="profession"
                     value={formData.profession}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
-                    <option value="">Select Profession</option>
-                    <option value="student">Student</option>
-                    <option value="employed">Employed</option>
-                    <option value="retired">Retired</option>
-                    <option value="homemaker">Homemaker</option>
+                    <option value="">{t('profile.fields.professionSelect')}</option>
+                    <option value="student">{t('profile.fields.professionStudent')}</option>
+                    <option value="employed">{t('profile.fields.professionEmployed')}</option>
+                    <option value="retired">{t('profile.fields.professionRetired')}</option>
+                    <option value="homemaker">{t('profile.fields.professionHomemaker')}</option>
                   </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    Select the category that best describes your current profession
+                    {t('profile.fields.professionNote')}
                   </p>
                 </div>
 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Height (cm)</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fields.height')}</label>
                     <input
                       type="number"
                       name="height"
                       value={formData.height}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="170"
+                      className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder={t('profile.fields.heightPlaceholder')}
                       min="0"
                       step="0.1"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Weight (kg)</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fields.weight')}</label>
                     <input
                       type="number"
                       name="weight"
                       value={formData.weight}
                       onChange={handleChange}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="65"
+                      className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      placeholder={t('profile.fields.weightPlaceholder')}
                       min="0"
                       step="0.1"
                     />
@@ -398,58 +409,58 @@ export default function CustomerProfilePage() {
 
                 <div>
                   <label className="block text-sm font-medium mb-2">
-                    Medical Notes / Conditions
+                    {t('profile.fields.medicalNotes')}
                   </label>
                   <textarea
                     name="medicalNotes"
                     value={formData.medicalNotes}
                     onChange={handleChange}
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="Any medical conditions, injuries, or health notes that teachers should be aware of..."
+                    className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    placeholder={t('profile.fields.medicalNotesPlaceholder')}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    This information will be visible to teachers and admin for your safety
+                    {t('profile.fields.medicalNotesNote')}
                   </p>
                 </div>
 
                 {/* Emergency Contact */}
                 <div className="pt-4 border-t">
-                  <h3 className="font-semibold mb-4">Emergency Contact</h3>
+                  <h3 className="font-semibold mb-4 text-base md:text-lg">{t('profile.emergency.title')}</h3>
 
-                  <div className="grid md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Contact Name</label>
+                      <label className="block text-sm font-medium mb-2">{t('profile.emergency.name')}</label>
                       <input
                         type="text"
                         name="emergencyContactName"
                         value={formData.emergencyContactName}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="John Doe"
+                        className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder={t('profile.emergency.namePlaceholder')}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium mb-2">Contact Phone</label>
+                      <label className="block text-sm font-medium mb-2">{t('profile.emergency.phone')}</label>
                       <input
                         type="tel"
                         name="emergencyContactPhone"
                         value={formData.emergencyContactPhone}
                         onChange={handleChange}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                        placeholder="+66-XXX-XXX-XXXX"
+                        className="w-full px-3 py-2 text-sm md:text-base border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                        placeholder={t('profile.emergency.phonePlaceholder')}
                       />
                     </div>
                   </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
-                  <Button type="submit" disabled={saving}>
-                    {saving ? 'Saving...' : 'Save Changes'}
+                <div className="flex flex-col sm:flex-row gap-3 pt-4">
+                  <Button type="submit" disabled={saving} className="w-full sm:w-auto">
+                    {saving ? t('profile.buttons.saving') : t('profile.buttons.save')}
                   </Button>
-                  <Button type="button" variant="outline" onClick={fetchProfile}>
-                    Cancel
+                  <Button type="button" variant="outline" onClick={fetchProfile} className="w-full sm:w-auto">
+                    {t('profile.buttons.cancel')}
                   </Button>
                 </div>
               </form>
@@ -457,6 +468,8 @@ export default function CustomerProfilePage() {
           </Card>
         </div>
       </div>
+
+      <Toaster position="top-right" />
     </div>
   );
 }

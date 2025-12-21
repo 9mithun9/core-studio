@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -66,6 +68,7 @@ interface TrendData {
 }
 
 export default function AdminFinancePage() {
+  const { t } = useTranslation('admin');
   const [financeData, setFinanceData] = useState<MonthlyFinance | null>(null);
   const [trendsData, setTrendsData] = useState<TrendData[]>([]);
   const [loading, setLoading] = useState(true);
@@ -76,18 +79,18 @@ export default function AdminFinancePage() {
 
   // Generate month options
   const months = [
-    { value: '1', label: 'January' },
-    { value: '2', label: 'February' },
-    { value: '3', label: 'March' },
-    { value: '4', label: 'April' },
-    { value: '5', label: 'May' },
-    { value: '6', label: 'June' },
-    { value: '7', label: 'July' },
-    { value: '8', label: 'August' },
-    { value: '9', label: 'September' },
-    { value: '10', label: 'October' },
-    { value: '11', label: 'November' },
-    { value: '12', label: 'December' },
+    { value: '1', label: t('finance.months.january') },
+    { value: '2', label: t('finance.months.february') },
+    { value: '3', label: t('finance.months.march') },
+    { value: '4', label: t('finance.months.april') },
+    { value: '5', label: t('finance.months.may') },
+    { value: '6', label: t('finance.months.june') },
+    { value: '7', label: t('finance.months.july') },
+    { value: '8', label: t('finance.months.august') },
+    { value: '9', label: t('finance.months.september') },
+    { value: '10', label: t('finance.months.october') },
+    { value: '11', label: t('finance.months.november') },
+    { value: '12', label: t('finance.months.december') },
   ];
 
   // Generate year options (current year and previous 2 years)
@@ -140,16 +143,16 @@ export default function AdminFinancePage() {
   };
 
   if (loading && !financeData) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-8">{t('common.loading')}</div>;
   }
 
   const monthName =
     selectedMonth === 'all'
-      ? 'All Time'
+      ? t('finance.allTime')
       : months.find((m) => m.value === selectedMonth)?.label || '';
   const displayPeriod =
     selectedMonth === 'all' || selectedYear.toString() === 'all'
-      ? 'All Time'
+      ? t('finance.allTime')
       : `${monthName} ${selectedYear}`;
 
   // Create selected month identifier for highlighting (e.g., "Jan 2025")
@@ -167,7 +170,7 @@ export default function AdminFinancePage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">Finance Analytics</h1>
+        <h1 className="text-3xl font-bold">{t('finance.title')}</h1>
 
         {/* Month and Year Selectors */}
         <div className="flex gap-4">
@@ -179,10 +182,10 @@ export default function AdminFinancePage() {
             }}
           >
             <SelectTrigger className="w-[180px]">
-              <SelectValue placeholder="Select month" />
+              <SelectValue placeholder={t('finance.selectMonth')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
+              <SelectItem value="all">{t('finance.allTime')}</SelectItem>
               {months.map((month) => (
                 <SelectItem key={month.value} value={month.value}>
                   {month.label}
@@ -208,10 +211,10 @@ export default function AdminFinancePage() {
             disabled={selectedMonth === 'all'}
           >
             <SelectTrigger className="w-[120px]">
-              <SelectValue placeholder="Select year" />
+              <SelectValue placeholder={t('finance.selectYear')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Time</SelectItem>
+              <SelectItem value="all">{t('finance.allTime')}</SelectItem>
               {years.map((year) => (
                 <SelectItem key={year} value={year.toString()}>
                   {year}
@@ -225,7 +228,7 @@ export default function AdminFinancePage() {
       {!financeData ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-gray-500">No data available for the selected period</p>
+            <p className="text-gray-500">{t('finance.noData')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -237,7 +240,7 @@ export default function AdminFinancePage() {
                 <CardTitle className="text-4xl font-bold text-primary-600">
                   {financeData.packages.total}
                 </CardTitle>
-                <CardDescription>Packages Sold</CardDescription>
+                <CardDescription>{t('finance.packagesSold')}</CardDescription>
               </CardHeader>
             </Card>
 
@@ -246,7 +249,7 @@ export default function AdminFinancePage() {
                 <CardTitle className="text-4xl font-bold text-blue-600">
                   {totalSessionsSold}
                 </CardTitle>
-                <CardDescription>Sessions Sold</CardDescription>
+                <CardDescription>{t('finance.sessionsSold')}</CardDescription>
               </CardHeader>
             </Card>
 
@@ -255,7 +258,7 @@ export default function AdminFinancePage() {
                 <CardTitle className="text-4xl font-bold text-green-600">
                   {financeData.sessions.completed}
                 </CardTitle>
-                <CardDescription>Sessions Taken</CardDescription>
+                <CardDescription>{t('finance.sessionsTaken')}</CardDescription>
               </CardHeader>
             </Card>
 
@@ -264,7 +267,7 @@ export default function AdminFinancePage() {
                 <CardTitle className="text-4xl font-bold text-emerald-600">
                   ฿{financeData.revenue.total.toLocaleString()}
                 </CardTitle>
-                <CardDescription>Total Revenue</CardDescription>
+                <CardDescription>{t('finance.totalRevenue')}</CardDescription>
               </CardHeader>
             </Card>
           </div>
@@ -273,7 +276,7 @@ export default function AdminFinancePage() {
           <div className="space-y-6">
             {/* Graph Controls */}
             <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-bold">Trends Over Time</h2>
+              <h2 className="text-2xl font-bold">{t('finance.trendsOverTime')}</h2>
               <div className="flex gap-3">
                 {/* Graph Type Toggle */}
                 <div className="flex border border-gray-300 rounded-lg overflow-hidden">
@@ -285,7 +288,7 @@ export default function AdminFinancePage() {
                         : 'bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Revenue
+                    {t('finance.revenue')}
                   </button>
                   <button
                     onClick={() => setGraphType('sessions')}
@@ -295,7 +298,7 @@ export default function AdminFinancePage() {
                         : 'bg-white text-gray-700 hover:bg-gray-50'
                     }`}
                   >
-                    Sessions
+                    {t('finance.sessions')}
                   </button>
                 </div>
 
@@ -305,8 +308,8 @@ export default function AdminFinancePage() {
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="6">Last 6 Months</SelectItem>
-                    <SelectItem value="12">Last 12 Months</SelectItem>
+                    <SelectItem value="6">{t('finance.last6Months')}</SelectItem>
+                    <SelectItem value="12">{t('finance.last12Months')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -316,12 +319,12 @@ export default function AdminFinancePage() {
             <Card>
               <CardHeader>
                 <CardTitle>
-                  {graphType === 'revenue' ? 'Revenue Over Time' : 'Sessions Analysis'}
+                  {graphType === 'revenue' ? t('finance.revenueOverTime') : t('finance.sessionsAnalysis')}
                 </CardTitle>
                 <CardDescription>
                   {graphType === 'revenue'
-                    ? 'Monthly revenue trends'
-                    : 'Sessions sold vs sessions taken'}
+                    ? t('finance.monthlyRevenueTrends')
+                    : t('finance.sessionsSoldVsTaken')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -407,15 +410,18 @@ export default function AdminFinancePage() {
           {/* Packages Sold - Individual Cards */}
           <Card>
             <CardHeader>
-              <CardTitle>Packages Sold - {displayPeriod}</CardTitle>
+              <CardTitle>{t('finance.packagesSoldPeriod', { period: displayPeriod })}</CardTitle>
               <CardDescription>
-                {financeData.packages.total} package{financeData.packages.total !== 1 ? 's' : ''} sold -
-                ฿{financeData.revenue.total.toLocaleString()} total revenue
+                {t('finance.packageDetails', {
+                  count: financeData.packages.total,
+                  plural: financeData.packages.total !== 1 ? 's' : '',
+                  revenue: financeData.revenue.total.toLocaleString()
+                })}
               </CardDescription>
             </CardHeader>
             <CardContent>
               {financeData.packages.details.length === 0 ? (
-                <p className="text-gray-500">No packages sold in this period</p>
+                <p className="text-gray-500">{t('finance.noPackagesSold')}</p>
               ) : (
                 <div className="grid md:grid-cols-2 gap-4">
                   {financeData.packages.details.map((pkg) => (
@@ -442,7 +448,7 @@ export default function AdminFinancePage() {
 
                       {/* Customer Info */}
                       <div className="border-t pt-2">
-                        <p className="text-xs text-gray-500 mb-1">Customer</p>
+                        <p className="text-xs text-gray-500 mb-1">{t('finance.customer')}</p>
                         <p className="font-medium text-sm">{pkg.customerId.userId.name}</p>
                         <p className="text-xs text-gray-600">{pkg.customerId.userId.email}</p>
                         {pkg.customerId.userId.phone && (
@@ -452,11 +458,11 @@ export default function AdminFinancePage() {
 
                       {/* Teacher Info */}
                       <div className="border-t pt-2">
-                        <p className="text-xs text-gray-500 mb-1">Primary Teacher</p>
+                        <p className="text-xs text-gray-500 mb-1">{t('finance.primaryTeacher')}</p>
                         {pkg.teacher ? (
                           <p className="font-medium text-sm">{pkg.teacher.userId.name}</p>
                         ) : (
-                          <p className="text-xs text-gray-400 italic">No sessions booked yet</p>
+                          <p className="text-xs text-gray-400 italic">{t('finance.noSessionsBooked')}</p>
                         )}
                       </div>
                     </div>
@@ -469,29 +475,29 @@ export default function AdminFinancePage() {
           {/* Sessions by Teacher */}
           <Card>
             <CardHeader>
-              <CardTitle>Sessions Completed - {displayPeriod}</CardTitle>
-              <CardDescription>Teacher performance breakdown</CardDescription>
+              <CardTitle>{t('finance.sessionsCompletedPeriod', { period: displayPeriod })}</CardTitle>
+              <CardDescription>{t('finance.teacherPerformance')}</CardDescription>
             </CardHeader>
             <CardContent>
               {financeData.sessions.byTeacher.length === 0 ? (
-                <p className="text-gray-500">No sessions completed in this period</p>
+                <p className="text-gray-500">{t('finance.noSessionsCompleted')}</p>
               ) : (
                 <div className="space-y-4">
                   {financeData.sessions.byTeacher.map((teacher, index) => (
                     <div key={index} className="border rounded-lg p-4 flex items-center justify-between">
                       <div>
                         <p className="font-semibold text-lg">{teacher.teacherName}</p>
-                        <p className="text-sm text-gray-600">Sessions completed</p>
+                        <p className="text-sm text-gray-600">{t('finance.sessionsCompleted')}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-3xl font-bold text-blue-600">{teacher.sessionsCount}</p>
-                        <p className="text-sm text-gray-500">sessions</p>
+                        <p className="text-sm text-gray-500">{t('finance.sessions').toLowerCase()}</p>
                       </div>
                     </div>
                   ))}
                   <div className="border-t pt-4 mt-4">
                     <div className="flex items-center justify-between">
-                      <p className="font-bold text-lg">Total Sessions</p>
+                      <p className="font-bold text-lg">{t('finance.totalSessions')}</p>
                       <p className="text-3xl font-bold text-primary-600">
                         {financeData.sessions.completed}
                       </p>

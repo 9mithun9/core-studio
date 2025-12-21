@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function AdminCalendarIntegration() {
+  const { t } = useTranslation('admin');
   const [connected, setConnected] = useState(false);
   const [loading, setLoading] = useState(true);
   const [connectionData, setConnectionData] = useState<any>(null);
@@ -54,7 +57,7 @@ export default function AdminCalendarIntegration() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-8">{t('common.loading')}</div>;
   }
 
   return (

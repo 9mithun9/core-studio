@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -58,6 +60,7 @@ interface Session {
 }
 
 export default function TeacherStudentsPage() {
+  const { t } = useTranslation('teacher');
   const [students, setStudents] = useState<Student[]>([]);
   const [filteredStudents, setFilteredStudents] = useState<Student[]>([]);
   const [loading, setLoading] = useState(true);
@@ -368,45 +371,45 @@ export default function TeacherStudentsPage() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">{t('students.loading')}</div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">My Students</h1>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('students.title')}</h1>
 
       {/* Two Column Layout */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid md:grid-cols-2 gap-4 md:gap-6">
         {/* Left: Student List */}
         <Card>
           <CardHeader>
-            <CardTitle>All Students ({students.length})</CardTitle>
-            <CardDescription>Click on a student to view details and add sessions</CardDescription>
+            <CardTitle className="text-lg md:text-xl">{t('students.all_students')} ({students.length})</CardTitle>
+            <CardDescription className="text-xs md:text-sm">{t('students.click_to_view')}</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Search */}
             <div className="mb-4">
               <input
                 type="text"
-                placeholder="Search by name, email, or phone..."
+                placeholder={t('students.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 text-xs md:text-sm"
               />
 
               {searchQuery && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Showing {filteredStudents.length} of {students.length} students
+                <p className="text-xs md:text-sm text-gray-600 mt-2">
+                  {t('students.showing')} {filteredStudents.length} {t('students.of')} {students.length} {t('students.students')}
                 </p>
               )}
             </div>
 
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
               {filteredStudents.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-gray-500 text-center py-8 text-xs md:text-sm">
                   {searchQuery
-                    ? 'No students found matching your search'
-                    : 'No students yet'}
+                    ? t('students.no_match')
+                    : t('students.no_students')}
                 </p>
               ) : (
                 filteredStudents.map((student) => {
@@ -416,7 +419,7 @@ export default function TeacherStudentsPage() {
                     <div
                       key={student._id}
                       onClick={() => setSelectedStudent(student)}
-                      className={`border rounded-lg p-4 cursor-pointer transition ${
+                      className={`border rounded-lg p-3 md:p-4 cursor-pointer transition ${
                         selectedStudent?._id === student._id
                           ? 'border-primary-600 bg-primary-50'
                           : 'hover:border-primary-300 hover:bg-gray-50'
@@ -424,26 +427,26 @@ export default function TeacherStudentsPage() {
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex-1">
-                          <p className="font-semibold">{student.userId.name}</p>
-                          <p className="text-sm text-gray-600">{student.userId.email}</p>
+                          <p className="font-semibold text-sm md:text-base">{student.userId.name}</p>
+                          <p className="text-xs md:text-sm text-gray-600">{student.userId.email}</p>
                           {student.userId.phone && (
-                            <p className="text-sm text-gray-500">{student.userId.phone}</p>
+                            <p className="text-xs md:text-sm text-gray-500">{student.userId.phone}</p>
                           )}
 
                           {/* Status badges */}
                           <div className="flex gap-2 mt-2">
                             {activePackages.length === 0 && (
                               <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
-                                No active packages
+                                {t('students.no_active_packages')}
                               </span>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-2xl font-bold text-primary-600">
+                          <p className="text-xl md:text-2xl font-bold text-primary-600">
                             {student.completedSessions}
                           </p>
-                          <p className="text-xs text-gray-500">sessions</p>
+                          <p className="text-xs text-gray-500">{t('students.sessions')}</p>
                         </div>
                       </div>
                     </div>
@@ -457,48 +460,50 @@ export default function TeacherStudentsPage() {
         {/* Right: Student Details */}
         <div>
           {selectedStudent ? (
-            <div className="space-y-6">
+            <div className="space-y-4 md:space-y-6">
               {/* Student Info */}
               <Card>
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
+                  <div className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3 md:gap-4">
                       {selectedStudent.profilePhoto ? (
                         selectedStudent.profilePhoto.startsWith('http') ? (
                           <img
                             src={selectedStudent.profilePhoto}
                             alt={selectedStudent.userId.name}
-                            className="w-16 h-16 rounded-full object-cover border-2 border-primary-200"
+                            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-primary-200"
                           />
                         ) : (
                           <img
                             src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedStudent.profilePhoto}`}
                             alt={selectedStudent.userId.name}
-                            className="w-16 h-16 rounded-full object-cover border-2 border-primary-200"
+                            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-primary-200"
                           />
                         )
                       ) : (
-                        <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-2xl font-bold">
+                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xl md:text-2xl font-bold">
                           {selectedStudent.userId.name.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <CardTitle>{selectedStudent.userId.name}</CardTitle>
+                      <CardTitle className="text-lg md:text-xl">{selectedStudent.userId.name}</CardTitle>
                     </div>
                     {selectedStudent.packages.filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0).length > 0 && (
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           onClick={() => setBookFutureDialog(true)}
                           size="sm"
                           variant="default"
+                          className="w-full sm:w-auto"
                         >
-                          Book Future Session
+                          <span className="text-xs md:text-sm">{t('students.book_future')}</span>
                         </Button>
                         <Button
                           onClick={() => setAddSessionDialog(true)}
                           size="sm"
                           variant="outline"
+                          className="w-full sm:w-auto"
                         >
-                          Record Past Session
+                          <span className="text-xs md:text-sm">{t('students.record_past')}</span>
                         </Button>
                       </div>
                     )}

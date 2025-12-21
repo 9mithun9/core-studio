@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +24,7 @@ interface RegistrationRequest {
 }
 
 export default function AdminRegistrationsPage() {
+  const { t } = useTranslation('admin');
   const [pendingRequests, setPendingRequests] = useState<RegistrationRequest[]>([]);
   const [allRequests, setAllRequests] = useState<RegistrationRequest[]>([]);
   const [loading, setLoading] = useState(true);
@@ -91,86 +94,92 @@ export default function AdminRegistrationsPage() {
     e.preventDefault();
 
     if (!packageForm.packageName.trim()) {
-      alert('Please enter a package name');
+      alert(t('registrations.enterPackageName'));
       return;
     }
 
     try {
       await apiClient.patch(`/admin/registration-requests/${approvingRequest}/approve`, packageForm);
-      alert('Registration approved successfully and package created');
+      alert(t('registrations.approvedSuccess'));
       setApprovingRequest(null);
       fetchRequests();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to approve registration');
+      alert(error.response?.data?.error || t('registrations.failedToApprove'));
     }
   };
 
   const handleReject = async (requestId: string) => {
-    const reason = prompt('Please provide a reason for rejection:');
+    const reason = prompt(t('registrations.rejectionReason'));
     if (!reason) return;
 
     try {
       await apiClient.patch(`/admin/registration-requests/${requestId}/reject`, { reason });
-      alert('Registration rejected');
+      alert(t('registrations.rejectedSuccess'));
       fetchRequests();
     } catch (error: any) {
-      alert(error.response?.data?.error || 'Failed to reject registration');
+      alert(error.response?.data?.error || t('registrations.failedToReject'));
     }
   };
 
   const displayRequests = filter === 'pending' ? pendingRequests : allRequests;
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="text-center text-gray-600">{t('common.loading')}</div>
+    </div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-8">
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h1 className="text-3xl font-bold">Registration Requests</h1>
-          <p className="text-gray-600 mt-2">
-            Review and approve new customer registrations
+          <h1 className="text-2xl md:text-3xl font-bold">{t('registrations.title')}</h1>
+          <p className="text-sm md:text-base text-gray-600 mt-1 md:mt-2">
+            {t('registrations.subtitle')}
           </p>
         </div>
         <div className="flex gap-2">
           <Button
             variant={filter === 'pending' ? 'default' : 'outline'}
             onClick={() => setFilter('pending')}
+            size="sm"
+            className="text-xs md:text-sm"
           >
-            Pending ({pendingRequests.length})
+            {t('registrations.pending')} ({pendingRequests.length})
           </Button>
           <Button
             variant={filter === 'all' ? 'default' : 'outline'}
             onClick={() => setFilter('all')}
+            size="sm"
+            className="text-xs md:text-sm"
           >
-            All Requests
+            {t('registrations.allRequests')}
           </Button>
         </div>
       </div>
 
       {displayRequests.length === 0 ? (
         <Card>
-          <CardContent className="py-12 text-center">
-            <p className="text-gray-500">
-              {filter === 'pending' ? 'No pending registration requests' : 'No registration requests found'}
+          <CardContent className="py-8 md:py-12 text-center">
+            <p className="text-sm md:text-base text-gray-500">
+              {filter === 'pending' ? t('registrations.noPending') : t('registrations.noRequests')}
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-4 md:space-y-6">
           {displayRequests.map((request) => (
             <Card key={request._id}>
               <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>{request.name}</CardTitle>
-                    <CardDescription>
-                      Requested on {formatStudioTime(request.createdAt, 'PPP p')}
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 sm:gap-4">
+                  <div className="flex-1">
+                    <CardTitle className="text-base md:text-lg">{request.name}</CardTitle>
+                    <CardDescription className="text-xs md:text-sm">
+                      {t('registrations.requestedOn')} {formatStudioTime(request.createdAt, 'PPP p')}
                     </CardDescription>
                   </div>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    className={`px-2 md:px-3 py-1 rounded-full text-xs font-medium self-start ${
                       request.status === 'pending'
                         ? 'bg-yellow-100 text-yellow-800'
                         : request.status === 'approved'
@@ -184,25 +193,25 @@ export default function AdminRegistrationsPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-600">Email:</span>
-                    <span className="text-sm">{request.email}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span className="text-xs md:text-sm font-medium text-gray-600">{t('registrations.email')}</span>
+                    <span className="text-xs md:text-sm break-all">{request.email}</span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-gray-600">Phone:</span>
-                    <span className="text-sm">{request.phone}</span>
+                  <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+                    <span className="text-xs md:text-sm font-medium text-gray-600">{t('registrations.phone')}</span>
+                    <span className="text-xs md:text-sm">{request.phone}</span>
                   </div>
 
                   {request.status !== 'pending' && request.reviewedAt && (
-                    <div className="mt-4 pt-4 border-t">
-                      <p className="text-sm text-gray-600">
-                        {request.status === 'approved' ? 'Approved' : 'Rejected'} on{' '}
+                    <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t">
+                      <p className="text-xs md:text-sm text-gray-600">
+                        {request.status === 'approved' ? t('registrations.approved') : t('registrations.rejected')} {t('common.date').toLowerCase()}{' '}
                         {formatStudioTime(request.reviewedAt, 'PPP p')}
-                        {request.reviewedBy && ` by ${request.reviewedBy.name}`}
+                        {request.reviewedBy && ` ${t('registrations.by')} ${request.reviewedBy.name}`}
                       </p>
                       {request.rejectionReason && (
-                        <p className="text-sm text-red-600 mt-1">
-                          Reason: {request.rejectionReason}
+                        <p className="text-xs md:text-sm text-red-600 mt-1">
+                          {t('registrations.reason')} {request.rejectionReason}
                         </p>
                       )}
                     </div>
@@ -211,15 +220,15 @@ export default function AdminRegistrationsPage() {
                   {request.status === 'pending' && (
                     <>
                       {approvingRequest === request._id ? (
-                        <form onSubmit={handleApproveSubmit} className="mt-4 pt-4 border-t space-y-3">
-                          <h4 className="font-semibold text-sm">Create Package for Customer</h4>
+                        <form onSubmit={handleApproveSubmit} className="mt-3 md:mt-4 pt-3 md:pt-4 border-t space-y-3">
+                          <h4 className="font-semibold text-xs md:text-sm">{t('registrations.createPackage')}</h4>
 
                           <div>
-                            <label className="block text-xs font-medium mb-1">Package Name</label>
+                            <label className="block text-xs font-medium mb-1">{t('registrations.packageName')}</label>
                             <select
                               value={packageForm.packageName}
                               onChange={(e) => handlePackageNameChange(e.target.value)}
-                              className="w-full px-2 py-1 text-sm border rounded"
+                              className="w-full px-2 py-1.5 md:py-2 text-xs md:text-sm border rounded"
                               required
                             >
                               {packageOptions.map((pkg) => (
@@ -231,83 +240,86 @@ export default function AdminRegistrationsPage() {
                           </div>
 
                           <div>
-                            <label className="block text-xs font-medium mb-1">Package Type</label>
+                            <label className="block text-xs font-medium mb-1">{t('registrations.packageType')}</label>
                             <select
                               value={packageForm.packageType}
                               onChange={(e) => setPackageForm({ ...packageForm, packageType: e.target.value as 'private' | 'duo' | 'group' })}
-                              className="w-full px-2 py-1 text-sm border rounded"
+                              className="w-full px-2 py-1.5 md:py-2 text-xs md:text-sm border rounded"
                             >
-                              <option value="private">Private</option>
-                              <option value="duo">Duo</option>
-                              <option value="group">Group</option>
+                              <option value="private">{t('registrations.private')}</option>
+                              <option value="duo">{t('registrations.duo')}</option>
+                              <option value="group">{t('registrations.group')}</option>
                             </select>
                           </div>
 
-                          <div className="grid grid-cols-3 gap-2">
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
-                              <label className="block text-xs font-medium mb-1">Sessions</label>
+                              <label className="block text-xs font-medium mb-1">{t('registrations.sessions')}</label>
                               <input
                                 type="number"
                                 value={packageForm.totalSessions}
                                 onChange={(e) => setPackageForm({ ...packageForm, totalSessions: parseInt(e.target.value) || 0 })}
                                 min="1"
-                                className="w-full px-2 py-1 text-sm border rounded"
+                                className="w-full px-2 py-1.5 md:py-2 text-xs md:text-sm border rounded"
                                 required
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium mb-1">Validity (months)</label>
+                              <label className="block text-xs font-medium mb-1">{t('registrations.validityMonths')}</label>
                               <input
                                 type="number"
                                 value={packageForm.validityMonths}
                                 onChange={(e) => setPackageForm({ ...packageForm, validityMonths: parseInt(e.target.value) || 0 })}
                                 min="1"
-                                className="w-full px-2 py-1 text-sm border rounded"
+                                className="w-full px-2 py-1.5 md:py-2 text-xs md:text-sm border rounded"
                                 required
                               />
                             </div>
                             <div>
-                              <label className="block text-xs font-medium mb-1">Price (THB)</label>
+                              <label className="block text-xs font-medium mb-1">{t('registrations.priceTHB')}</label>
                               <input
                                 type="number"
                                 value={packageForm.price}
                                 onChange={(e) => setPackageForm({ ...packageForm, price: parseFloat(e.target.value) || 0 })}
                                 min="0"
                                 step="0.01"
-                                className="w-full px-2 py-1 text-sm border rounded"
+                                className="w-full px-2 py-1.5 md:py-2 text-xs md:text-sm border rounded"
                                 required
                               />
                             </div>
                           </div>
 
-                          <div className="flex gap-2">
-                            <Button type="submit" size="sm">
-                              Confirm Approval
+                          <div className="flex flex-col sm:flex-row gap-2">
+                            <Button type="submit" size="sm" className="text-xs md:text-sm">
+                              {t('registrations.confirmApproval')}
                             </Button>
                             <Button
                               type="button"
                               onClick={() => setApprovingRequest(null)}
                               variant="outline"
                               size="sm"
+                              className="text-xs md:text-sm"
                             >
-                              Cancel
+                              {t('common.cancel')}
                             </Button>
                           </div>
                         </form>
                       ) : (
-                        <div className="flex gap-2 mt-4">
+                        <div className="flex flex-col sm:flex-row gap-2 mt-3 md:mt-4">
                           <Button
                             onClick={() => handleApproveClick(request._id)}
                             size="sm"
+                            className="text-xs md:text-sm"
                           >
-                            Approve
+                            {t('registrations.approve')}
                           </Button>
                           <Button
                             onClick={() => handleReject(request._id)}
                             variant="destructive"
                             size="sm"
+                            className="text-xs md:text-sm"
                           >
-                            Reject
+                            {t('registrations.reject')}
                           </Button>
                         </div>
                       )}

@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,6 +13,7 @@ import { addDays, startOfWeek, endOfWeek, set } from 'date-fns';
 import { createTeacherColorMap } from '@/lib/teacherColors';
 
 export default function TeacherMyCalendar() {
+  const { t } = useTranslation('teacher');
   const [events, setEvents] = useState<any[]>([]);
   const [teachers, setTeachers] = useState<any[]>([]);
   const [selectedTeacher, setSelectedTeacher] = useState<string>('me'); // 'me' or 'all'
@@ -238,15 +241,15 @@ export default function TeacherMyCalendar() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading calendar...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">{t('my_calendar.loading')}</div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex items-center justify-between mb-6">
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6 gap-4">
         <div>
-          <h1 className="text-3xl font-bold">My Calendar</h1>
-          <p className="text-gray-600 mt-2">View schedules and block time slots</p>
+          <h1 className="text-2xl md:text-3xl font-bold">{t('my_calendar.title')}</h1>
+          <p className="text-gray-600 mt-2 text-xs md:text-sm">{t('my_calendar.subtitle')}</p>
         </div>
         <div className="flex gap-2">
           <Button
@@ -254,27 +257,28 @@ export default function TeacherMyCalendar() {
               setSelectedSlot({ date: new Date(), hour: 9 });
               setShowBlockModal(true);
             }}
+            size="sm"
           >
-            Block Time
+            <span className="text-xs md:text-sm">{t('my_calendar.block_time')}</span>
           </Button>
         </div>
       </div>
 
       {/* Teacher Filter */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2">View Schedule:</label>
+        <label className="block text-xs md:text-sm font-medium mb-2">{t('my_calendar.view_schedule')}:</label>
         <select
           value={selectedTeacher}
           onChange={(e) => setSelectedTeacher(e.target.value)}
-          className="px-3 py-2 border border-gray-300 rounded-lg"
+          className="px-3 py-2 border border-gray-300 rounded-lg text-xs md:text-sm"
         >
-          <option value="me">My Schedule Only</option>
-          <option value="all">All Teachers</option>
+          <option value="me">{t('my_calendar.my_schedule_only')}</option>
+          <option value="all">{t('my_calendar.all_teachers')}</option>
         </select>
       </div>
 
-      <Card className="mb-6">
-        <CardContent className="pt-6">
+      <Card className="mb-4 md:mb-6">
+        <CardContent className="pt-4 md:pt-6">
           <WeekCalendar
             events={events}
             onSlotClick={handleSlotClick}
@@ -289,17 +293,17 @@ export default function TeacherMyCalendar() {
 
       {/* Teacher Legend - Only show when viewing all teachers */}
       {selectedTeacher === 'all' && teachers.length > 0 && (
-        <Card className="mb-6">
-          <CardContent className="pt-6">
-            <h3 className="font-semibold mb-3">Teachers</h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+        <Card className="mb-4 md:mb-6">
+          <CardContent className="pt-4 md:pt-6">
+            <h3 className="font-semibold mb-3 text-sm md:text-base">{t('my_calendar.teachers')}</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {teachers.map((teacher) => (
                 <div key={teacher._id} className="flex items-center gap-2">
                   <div
                     className="w-4 h-4 rounded"
                     style={{ backgroundColor: teacherColorMap.get(teacher._id) }}
                   ></div>
-                  <span className="text-sm">{teacher.userId?.name || 'Unknown'}</span>
+                  <span className="text-xs md:text-sm">{teacher.userId?.name || t('my_calendar.unknown')}</span>
                 </div>
               ))}
             </div>
@@ -309,31 +313,31 @@ export default function TeacherMyCalendar() {
 
       {/* Block Time Modal */}
       {showBlockModal && selectedSlot && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">Block Time</h2>
+              <h2 className="text-lg md:text-xl font-bold">{t('my_calendar.block_time_title')}</h2>
               <button
                 onClick={() => setShowBlockModal(false)}
                 className="text-gray-400 hover:text-gray-600"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 md:space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-2">Block Type</label>
+                <label className="block text-xs md:text-sm font-medium mb-2">{t('my_calendar.block_type')}</label>
                 <select
                   value={blockForm.blockType}
                   onChange={(e) => setBlockForm({ ...blockForm, blockType: e.target.value as 'single' | 'multi-day' | 'recurring' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs md:text-sm"
                 >
-                  <option value="single">Single Time Slot</option>
-                  <option value="multi-day">Multiple Days (e.g., Holiday)</option>
-                  <option value="recurring">Recurring Block</option>
+                  <option value="single">{t('my_calendar.single_slot')}</option>
+                  <option value="multi-day">{t('my_calendar.multiple_days')}</option>
+                  <option value="recurring">{t('my_calendar.recurring_block')}</option>
                 </select>
               </div>
 

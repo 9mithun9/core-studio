@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -29,6 +31,7 @@ interface Booking {
 type FilterType = 'all' | 'today' | 'pending-decision';
 
 export default function TeacherSessionsPage() {
+  const { t } = useTranslation('teacher');
   const [sessions, setSessions] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<FilterType>('pending-decision');
@@ -130,27 +133,28 @@ export default function TeacherSessionsPage() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading sessions...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">{t('sessions.loading')}</div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold mb-2">Session Management</h1>
-        <p className="text-gray-600">
-          Manage your sessions, mark them as complete or no-show
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="mb-4 md:mb-6">
+        <h1 className="text-2xl md:text-3xl font-bold mb-2">{t('sessions.title')}</h1>
+        <p className="text-gray-600 text-xs md:text-sm">
+          {t('sessions.subtitle')}
         </p>
       </div>
 
       {/* Filters */}
-      <Card className="mb-6">
-        <CardContent className="pt-6">
-          <div className="flex gap-3">
+      <Card className="mb-4 md:mb-6">
+        <CardContent className="pt-4 md:pt-6">
+          <div className="flex flex-wrap gap-2 md:gap-3">
             <Button
               variant={filter === 'pending-decision' ? 'default' : 'outline'}
               onClick={() => setFilter('pending-decision')}
+              size="sm"
             >
-              Pending Decision
+              <span className="text-xs md:text-sm">{t('sessions.pending_decision')}</span>
               {filter === 'pending-decision' && sessions.length > 0 && (
                 <span className="ml-2 bg-white text-primary-600 px-2 py-0.5 rounded-full text-xs font-bold">
                   {sessions.length}
@@ -160,14 +164,16 @@ export default function TeacherSessionsPage() {
             <Button
               variant={filter === 'today' ? 'default' : 'outline'}
               onClick={() => setFilter('today')}
+              size="sm"
             >
-              Today's Sessions
+              <span className="text-xs md:text-sm">{t('sessions.todays_sessions')}</span>
             </Button>
             <Button
               variant={filter === 'all' ? 'default' : 'outline'}
               onClick={() => setFilter('all')}
+              size="sm"
             >
-              All Confirmed Sessions
+              <span className="text-xs md:text-sm">{t('sessions.all_confirmed')}</span>
             </Button>
           </div>
         </CardContent>
@@ -177,17 +183,17 @@ export default function TeacherSessionsPage() {
       {sessions.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
-            <p className="text-gray-500">
+            <p className="text-gray-500 text-sm md:text-base">
               {filter === 'pending-decision'
-                ? 'No sessions pending decision. Great job!'
+                ? t('sessions.no_pending')
                 : filter === 'today'
-                ? 'No sessions scheduled for today'
-                : 'No confirmed sessions found'}
+                ? t('sessions.no_today')
+                : t('sessions.no_confirmed')}
             </p>
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3 md:space-y-4">
           {sessions.map((session) => {
             const isPast = isPastSession(session);
             const isProcessing = processingId === session._id;
@@ -197,11 +203,11 @@ export default function TeacherSessionsPage() {
                 key={session._id}
                 className={isPast ? 'border-orange-200 bg-orange-50' : ''}
               >
-                <CardContent className="pt-6">
-                  <div className="flex items-center justify-between">
+                <CardContent className="pt-4 md:pt-6">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
                     <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold">
+                      <div className="flex flex-wrap items-center gap-2 md:gap-3 mb-2">
+                        <h3 className="text-base md:text-lg font-semibold">
                           {session.customerId.userId.name}
                         </h3>
                         <span
@@ -211,54 +217,56 @@ export default function TeacherSessionsPage() {
                               : 'bg-blue-100 text-blue-800'
                           }`}
                         >
-                          {isPast ? 'Needs Decision' : 'Upcoming'}
+                          {isPast ? t('sessions.needs_decision') : t('sessions.upcoming')}
                         </span>
                         <span className="px-3 py-1 rounded text-xs font-medium bg-gray-100 text-gray-800 capitalize">
                           {session.type}
                         </span>
                       </div>
 
-                      <div className="text-sm text-gray-600 space-y-1">
+                      <div className="text-xs md:text-sm text-gray-600 space-y-1">
                         <p>
-                          <strong>Date:</strong> {formatStudioTime(session.startTime, 'PPP')}
+                          <strong>{t('sessions.date')}:</strong> {formatStudioTime(session.startTime, 'PPP')}
                         </p>
                         <p>
-                          <strong>Time:</strong> {formatStudioTime(session.startTime, 'p')} -{' '}
+                          <strong>{t('sessions.time')}:</strong> {formatStudioTime(session.startTime, 'p')} -{' '}
                           {formatStudioTime(session.endTime, 'p')}
                         </p>
                         <p>
-                          <strong>Email:</strong> {session.customerId.userId.email}
+                          <strong>{t('sessions.email')}:</strong> {session.customerId.userId.email}
                         </p>
                         {session.packageId && (
                           <p>
-                            <strong>Package:</strong> {session.packageId.name} (
+                            <strong>{t('sessions.package')}:</strong> {session.packageId.name} (
                             {session.packageId.type})
                           </p>
                         )}
                         {session.notes && (
                           <p>
-                            <strong>Notes:</strong> {session.notes}
+                            <strong>{t('sessions.notes')}:</strong> {session.notes}
                           </p>
                         )}
                       </div>
                     </div>
 
                     {isPast && (
-                      <div className="flex gap-3">
+                      <div className="flex flex-col sm:flex-row gap-3 lg:flex-shrink-0">
                         <Button
                           onClick={() => handleMarkComplete(session._id)}
                           disabled={isProcessing}
                           className="bg-green-600 hover:bg-green-700"
+                          size="sm"
                         >
-                          {isProcessing ? 'Processing...' : 'Mark Complete'}
+                          <span className="text-xs md:text-sm">{isProcessing ? t('sessions.processing') : t('sessions.mark_complete')}</span>
                         </Button>
                         <Button
                           variant="outline"
                           onClick={() => handleMarkNoShow(session._id)}
                           disabled={isProcessing}
                           className="border-red-300 text-red-600 hover:bg-red-50"
+                          size="sm"
                         >
-                          {isProcessing ? 'Processing...' : 'Mark No-Show'}
+                          <span className="text-xs md:text-sm">{isProcessing ? t('sessions.processing') : t('sessions.mark_no_show')}</span>
                         </Button>
                       </div>
                     )}

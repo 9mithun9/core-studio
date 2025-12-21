@@ -1,0 +1,345 @@
+{
+  "dashboard": {
+    "title": "แดชบอร์ดลูกค้า",
+    "welcome": "ยินดีต้อนรับกลับ",
+    "subtitle": "นี่คือการเดินทางพิลาทิสของคุณ",
+    "bookSession": "จองคลาส",
+    "loading": "กำลังโหลดแดชบอร์ดของคุณ...",
+    "submittingRequest": "กำลังส่งคำขอแพ็คเกจ...",
+    "requestSuccess": "ส่งคำขอแพ็คเกจสำเร็จแล้ว! รอการอนุมัติจากผู้ดูแลระบบ",
+    "requestFailed": "ไม่สามารถส่งคำขอได้",
+    "upcomingSessions": "คลาสที่จะถึง",
+    "packageStatus": "สถานะแพ็คเกจ",
+    "remainingSessions": "คลาสที่เหลือ",
+    "sessionsLeft": "คลาสเหลืออยู่",
+    "noSessions": "ไม่มีคลาสที่จะถึง",
+    "bookNow": "จองเลย",
+    "viewPackages": "ดูแพ็คเกจ",
+    "quickActions": "การดำเนินการด่วน",
+    "packageExpired": {
+      "title": "แพ็คเกจของคุณหมดอายุแล้ว",
+      "message": "ดำเนินการเดินทางพิลาทิสของคุณต่อไป! ขอแพ็คเกจใหม่เพื่อให้คุณก้าวหน้าสู่เป้าหมายด้านสุขภาพของคุณ",
+      "action": "ขอแพ็คเกจใหม่"
+    },
+    "lowSessions": {
+      "titleOne": "คลาสสุดท้ายที่เหลืออยู่!",
+      "titleMultiple": "คลาสเหลือน้อย",
+      "message": "คุณมีเพียง",
+      "messagePart2": "เหลืออยู่ใน",
+      "messagePart3": "ขอแพ็คเกจใหม่เพื่อรักษาโมเมนตัมของคุณ!",
+      "action": "ขอแพ็คเกจใหม่",
+      "session": "คลาส",
+      "sessions": "คลาส"
+    },
+    "nextSession": {
+      "title": "คลาสถัดไป",
+      "with": "กับ"
+    },
+    "myPackages": {
+      "title": "แพ็คเกจของฉัน",
+      "description": "แพ็คเกจคลาสทั้งหมดของคุณ",
+      "addRenew": "เพิ่ม/ต่ออายุ",
+      "requestPackage": "ขอแพ็คเกจ",
+      "noPackages": "ยังไม่มีแพ็คเกจ",
+      "noPackagesMessage": "เริ่มต้นการเดินทางพิลาทิสของคุณด้วยการขอแพ็คเกจแรกของคุณ!",
+      "requestFirst": "ขอแพ็คเกจแรกของคุณ",
+      "type": "คลาส",
+      "remaining": "เหลืออยู่",
+      "validUntil": "ใช้ได้ถึง"
+    },
+    "packageDetails": {
+      "title": "รายละเอียดแพ็คเกจและประวัติคลาส",
+      "total": "ทั้งหมด",
+      "completed": "เสร็จสิ้น",
+      "upcoming": "ที่จะมาถึง",
+      "type": "ประเภท:",
+      "validFrom": "เริ่มใช้ได้:",
+      "validUntil": "ใช้ได้ถึง:",
+      "status": "สถานะ:",
+      "sessionHistory": "ประวัติคลาส",
+      "noSessions": "ยังไม่มีคลาสที่จองด้วยแพ็คเกจนี้",
+      "bookFirst": "จองคลาสแรกของคุณ",
+      "selectPackage": "เลือกแพ็คเกจเพื่อดูรายละเอียดและประวัติ"
+    },
+    "sessionStatus": {
+      "completed": "เสร็จสิ้น",
+      "confirmed": "ยืนยันแล้ว",
+      "cancelled": "ยกเลิกแล้ว",
+      "cancellationPending": "รอการยกเลิก",
+      "noShow": "ไม่มาเข้าคลาส",
+      "viewDetails": "ดูรายละเอียด",
+      "cannotCancel": "ไม่สามารถยกเลิก",
+      "cancel": "ยกเลิก",
+      "cancelTooltip": "ไม่สามารถยกเลิกภายใน 6 ชั่วโมงก่อนเวลาเริ่มคลาส"
+    },
+    "requestModal": {
+      "title": "ขอแพ็คเกจ",
+      "packageType": "ประเภทแพ็คเกจ",
+      "sessions": "จำนวนคลาส",
+      "notes": "หมายเหตุ (ไม่บังคับ)",
+      "notesPlaceholder": "คำขอพิเศษหรือความคิดเห็น...",
+      "cancel": "ยกเลิก",
+      "submit": "ส่งคำขอ",
+      "sessions10": "10 คลาส",
+      "sessions20": "20 คลาส",
+      "sessions30": "30 คลาส"
+    },
+    "reviewModal": {
+      "title": "รีวิวคลาส",
+      "reviewBy": "รีวิวโดย",
+      "overallRating": "คะแนนโดยรวม",
+      "performanceBreakdown": "รายละเอียดผลงาน",
+      "control": "การควบคุม",
+      "postureAlignment": "ท่าทางและการจัดตำแหน่ง",
+      "strength": "ความแข็งแรง",
+      "flexibilityMobility": "ความยืดหยุ่น / การเคลื่อนไหว",
+      "bodyAwarenessFocus": "การรับรู้ร่างกาย / สมาธิ",
+      "instructorNotes": "หมายเหตุจากครู",
+      "close": "ปิด"
+    },
+    "cancellation": {
+      "requestingCancellation": "กำลังขอยกเลิก...",
+      "successMessage": "ขอยกเลิกสำเร็จแล้ว",
+      "failedMessage": "การขอยกเลิกล้มเหลว",
+      "reasonPrompt": "เหตุผลในการยกเลิก (ไม่บังคับ):"
+    }
+  },
+  "calendar": {
+    "title": "จองคลาส",
+    "subtitle": "ขอจองคลาสล่วงหน้าอย่างน้อย 24 ชั่วโมง",
+    "selectDate": "เลือกวันที่",
+    "selectTime": "เลือกเวลา",
+    "selectTeacher": "เลือกครู",
+    "availableSlots": "ช่วงเวลาว่าง",
+    "noSlotsAvailable": "ไม่มีช่วงเวลาว่าง",
+    "confirmBooking": "ยืนยันการจอง",
+    "bookingSuccess": "ส่งคำขอจองสำเร็จแล้ว! คุณจะได้รับการยืนยันทาง LINE ในไม่ช้า",
+    "bookingError": "การจองคลาสล้มเหลว",
+    "noPackages": {
+      "title": "พร้อมเริ่มต้นการเดินทางของคุณแล้วหรือยัง?",
+      "message": "คุณยังไม่มีแพ็คเกจที่ใช้งานอยู่ เริ่มต้นด้วยแพ็คเกจที่เหมาะกับเป้าหมายและตารางเวลาของคุณ!",
+      "contactTitle": "ติดต่อเราเพื่อซื้อแพ็คเกจ:",
+      "phone": "+1 (234) 567-890",
+      "lineButton": "ติดต่อเราทาง LINE",
+      "helpText": "ทีมงานของเราจะช่วยคุณเลือกแพ็คเกจที่สมบูรณ์แบบเพื่อบรรลุเป้าหมายด้านสุขภาพของคุณ!"
+    },
+    "selectPackage": {
+      "title": "เลือกแพ็คเกจ",
+      "description": "เลือกแพ็คเกจที่จะใช้สำหรับคลาสนี้",
+      "packageType": "ประเภทแพ็คเกจ:",
+      "completed": "เสร็จสิ้น",
+      "upcoming": "ที่จะมาถึง",
+      "remaining": "เหลืออยู่",
+      "total": "ทั้งหมด:",
+      "sessions": "คลาส",
+      "validUntil": "ใช้ได้ถึง:",
+      "available": "ว่าง"
+    },
+    "selectInstructor": {
+      "title": "เลือกครู",
+      "description": "เลือกครูที่คุณต้องการ"
+    },
+    "selectDateTime": {
+      "title": "เลือกวันและเวลา",
+      "description": "เลือกวันและเวลา (ต้องล่วงหน้าอย่างน้อย 24 ชั่วโมง)",
+      "dateLabel": "วันที่",
+      "timeLabel": "เวลา",
+      "available": "ว่าง",
+      "partiallyBooked": "จองบางส่วน (คุณยังสามารถจองได้)",
+      "fullyBlocked": "เต็มแล้ว",
+      "legend": {
+        "green": "สีเขียว = ว่าง",
+        "yellow": "สีเหลือง = จองบางส่วน (คุณยังสามารถจองได้)",
+        "red": "สีแดง = เต็มแล้ว"
+      }
+    },
+    "notes": {
+      "title": "หมายเหตุเพิ่มเติม (ไม่บังคับ)",
+      "description": "คำขอพิเศษหรือข้อมูลที่เราควรทราบ",
+      "placeholder": "เช่น อาการบาดเจ็บ จุดที่ต้องการเน้น เป็นต้น"
+    },
+    "submit": {
+      "button": "ขอจอง",
+      "submitting": "กำลังส่งคำขอ...",
+      "confirmationMessage": "คำขอของคุณจะได้รับการตรวจสอบและคุณจะได้รับการยืนยันทาง LINE"
+    },
+    "errors": {
+      "selectTime": "กรุณาเลือกช่วงเวลา",
+      "slotBooked": "ช่วงเวลานี้ถูกจองแล้ว กรุณาเลือกเวลาอื่น",
+      "advanceBooking": "การจองต้องขอล่วงหน้าอย่างน้อย 24 ชั่วโมง สำหรับการจองเร่งด่วน กรุณาติดต่อเราทาง LINE",
+      "selectTeacher": "กรุณาเลือกครู",
+      "selectPackage": "กรุณาเลือกแพ็คเกจ",
+      "requestFailed": "ไม่สามารถส่งคำขอจองได้"
+    },
+    "tooltip": {
+      "fullyBooked": "เต็มแล้ว",
+      "cannotBookGroup": "ไม่สามารถจองคลาสกลุ่มเมื่อครูคนอื่นถูกจองแล้ว",
+      "canBookPrivateDuo": "คุณยังสามารถจองช่วงเวลานี้ได้ (ส่วนตัว/คู่เท่านั้น)",
+      "otherBookings": "การจองอื่น:",
+      "teacher": "ครู:",
+      "noInfo": "ไม่มีข้อมูล"
+    }
+  },
+  "packages": {
+    "title": "แพ็คเกจของเรา",
+    "subtitle": "เลือกแพ็คเกจที่เหมาะกับการเดินทางพิลาทิสของคุณ แพ็คเกจทั้งหมดรวมคลาสแบบตัวต่อตัวกับครูผู้เชี่ยวชาญของเรา",
+    "activePackages": "แพ็คเกจที่ใช้งานอยู่",
+    "expiredPackages": "แพ็คเกจที่หมดอายุ",
+    "purchaseDate": "วันที่ซื้อ",
+    "expiryDate": "วันหมดอายุ",
+    "totalSessions": "คลาสทั้งหมด",
+    "usedSessions": "คลาสที่ใช้แล้ว",
+    "remainingSessions": "คลาสเหลืออยู่",
+    "packageType": "ประเภทแพ็คเกจ",
+    "private": "ส่วนตัว",
+    "duo": "คู่",
+    "group": "กลุ่ม",
+    "buyPackage": "ซื้อแพ็คเกจใหม่",
+    "requestPackage": "ขอแพ็คเกจ",
+    "sessions": "คลาส",
+    "popular": "ยอดนิยม",
+    "catalog": {
+      "single": {
+        "title": "คลาสเดี่ยว",
+        "description": "เหมาะสำหรับการทดลองพิลาทิสหรือการฝึกเป็นครั้งคราว",
+        "features": {
+          "feature1": "1 คลาสส่วนตัว",
+          "feature2": "กำหนดตารางได้อย่างยืดหยุ่น",
+          "feature3": "การสอนจากผู้เชี่ยวชาญ"
+        }
+      },
+      "starter": {
+        "title": "แพ็คเกจเริ่มต้น",
+        "description": "เหมาะสำหรับผู้เริ่มต้นการเดินทางพิลาทิส",
+        "features": {
+          "feature1": "5 คลาสส่วนตัว",
+          "feature2": "ใช้ได้ 2 เดือน",
+          "feature3": "โปรแกรมเฉพาะบุคคล"
+        }
+      },
+      "standard": {
+        "title": "แพ็คเกจมาตรฐาน",
+        "description": "ตัวเลือกยอดนิยมสำหรับผู้ฝึกสม่ำเสมอ",
+        "features": {
+          "feature1": "10 คลาสส่วนตัว",
+          "feature2": "ใช้ได้ 3 เดือน",
+          "feature3": "ติดตามความก้าวหน้า"
+        }
+      },
+      "premium": {
+        "title": "แพ็คเกจพรีเมี่ยม",
+        "description": "คุ้มค่าที่สุดสำหรับผู้ฝึกที่มุ่งมั่น",
+        "features": {
+          "feature1": "20 คลาสส่วนตัว",
+          "feature2": "ใช้ได้ 6 เดือน",
+          "feature3": "การจองลำดับความสำคัญ"
+        }
+      }
+    },
+    "cta": {
+      "title": "พร้อมเริ่มต้นหรือต่ออายุแพ็คเกจของคุณแล้วหรือยัง?",
+      "description": "คลิกปุ่มเพื่อขอแพ็คเกจใหม่หรือต่ออายุแพ็คเกจที่มีอยู่ ทีมงานของเราจะติดต่อคุณเพื่อทำการซื้อให้สำเร็จ",
+      "button": "เพิ่ม/ต่ออายุแพ็คเกจ"
+    },
+    "requestModal": {
+      "title": "ขอแพ็คเกจ",
+      "packageTypeLabel": "ประเภทแพ็คเกจ",
+      "sessionsLabel": "จำนวนคลาส",
+      "notesLabel": "หมายเหตุ (ไม่บังคับ)",
+      "notesPlaceholder": "คำขอพิเศษหรือความคิดเห็น...",
+      "cancel": "ยกเลิก",
+      "submit": "ส่งคำขอ",
+      "sessions10": "10 คลาส",
+      "sessions20": "20 คลาส",
+      "sessions30": "30 คลาส",
+      "submitting": "กำลังส่งคำขอแพ็คเกจ...",
+      "success": "ส่งคำขอแพ็คเกจสำเร็จแล้ว! รอการอนุมัติจากผู้ดูแลระบบ",
+      "failed": "ไม่สามารถส่งคำขอได้"
+    }
+  },
+  "profile": {
+    "title": "โปรไฟล์ของฉัน",
+    "loading": "กำลังโหลด...",
+    "notFound": "ไม่พบโปรไฟล์",
+    "personalInfo": "ข้อมูลส่วนตัว",
+    "personalInfoDesc": "อัพเดทรายละเอียดส่วนตัวของคุณ",
+    "contactInfo": "ข้อมูลติดต่อ",
+    "updateProfile": "อัพเดทโปรไฟล์",
+    "changePassword": "เปลี่ยนรหัสผ่าน",
+    "currentPassword": "รหัสผ่านปัจจุบัน",
+    "newPassword": "รหัสผ่านใหม่",
+    "confirmNewPassword": "ยืนยันรหัสผ่านใหม่",
+    "updateSuccess": "อัพเดทโปรไฟล์สำเร็จแล้ว!",
+    "updateError": "การอัพเดทโปรไฟล์ล้มเหลว",
+    "photo": {
+      "title": "รูปโปรไฟล์",
+      "description": "รูปภาพโปรไฟล์ของคุณ",
+      "uploadInstruction": "อัพโหลดรูปภาพจากอุปกรณ์ของคุณ (ขนาดไม่เกิน 5MB)",
+      "uploading": "กำลังอัพโหลด...",
+      "uploadButton": "อัพโหลดรูปภาพ",
+      "uploadSuccess": "อัพโหลดรูปโปรไฟล์สำเร็จแล้ว!",
+      "uploadFailed": "การอัพโหลดรูปภาพล้มเหลว",
+      "selectFile": "กรุณาเลือกไฟล์ก่อน",
+      "invalidType": "กรุณาเลือกไฟล์รูปภาพ",
+      "fileTooLarge": "ขนาดไฟล์ต้องไม่เกิน 5MB",
+      "selected": "เลือกแล้ว:"
+    },
+    "fields": {
+      "fullName": "ชื่อ-นามสกุล",
+      "email": "อีเมล",
+      "phone": "เบอร์โทรศัพท์",
+      "phonePlaceholder": "+66-XXX-XXX-XXXX",
+      "dateOfBirth": "วันเกิด",
+      "gender": "เพศ",
+      "genderSelect": "เลือกเพศ",
+      "genderMale": "ชาย",
+      "genderFemale": "หญิง",
+      "genderOther": "อื่นๆ",
+      "profession": "อาชีพ",
+      "professionSelect": "เลือกอาชีพ",
+      "professionStudent": "นักเรียน/นักศึกษา",
+      "professionEmployed": "ทำงาน",
+      "professionRetired": "เกษียณ",
+      "professionHomemaker": "แม่บ้าน",
+      "professionNote": "เลือกหมวดหมู่ที่อธิบายอาชีพปัจจุบันของคุณได้ดีที่สุด",
+      "height": "ส่วนสูง (ซม.)",
+      "heightPlaceholder": "170",
+      "weight": "น้ำหนัก (กก.)",
+      "weightPlaceholder": "65",
+      "medicalNotes": "หมายเหตุทางการแพทย์ / โรคประจำตัว",
+      "medicalNotesPlaceholder": "โรคประจำตัว การบาดเจ็บ หรือข้อมูลสุขภาพที่ครูควรทราบ...",
+      "medicalNotesNote": "ข้อมูลนี้จะแสดงให้ครูและผู้ดูแลระบบเห็นเพื่อความปลอดภัยของคุณ",
+      "contactAdmin": "ติดต่อผู้ดูแลระบบเพื่อเปลี่ยน",
+      "contactAdminName": "ติดต่อผู้ดูแลระบบเพื่อเปลี่ยนชื่อ",
+      "contactAdminEmail": "ติดต่อผู้ดูแลระบบเพื่อเปลี่ยนอีเมล"
+    },
+    "emergency": {
+      "title": "ผู้ติดต่อฉุกเฉิน",
+      "name": "ชื่อผู้ติดต่อ",
+      "namePlaceholder": "สมชาย ใจดี",
+      "phone": "เบอร์โทรผู้ติดต่อ",
+      "phonePlaceholder": "+66-XXX-XXX-XXXX"
+    },
+    "buttons": {
+      "save": "บันทึกการเปลี่ยนแปลง",
+      "saving": "กำลังบันทึก...",
+      "cancel": "ยกเลิก"
+    }
+  },
+  "teachers": {
+    "title": "ครูของเรา",
+    "subtitle": "พบกับทีมครูพิลาทิสที่ได้รับการรับรองซึ่งทุ่มเทเพื่อช่วยให้คุณบรรลุเป้าหมายด้านสุขภาพ",
+    "loading": "กำลังโหลดข้อมูลครู...",
+    "noTeachers": "ไม่มีครูที่พร้อมให้บริการในขณะนี้",
+    "viewProfile": "ดูโปรไฟล์",
+    "bookWithTeacher": "จองกับครูท่านนี้",
+    "specialization": "ความเชี่ยวชาญ",
+    "specialties": "ความเชี่ยวชาญ:",
+    "experience": "ประสบการณ์",
+    "year": "ปี",
+    "years": "ปี",
+    "yearsExperience": "ของประสบการณ์",
+    "contactLine": "ติดต่อทาง LINE",
+    "certifiedInstructor": "ครูพิลาทิสที่ได้รับการรับรอง"
+  }
+}

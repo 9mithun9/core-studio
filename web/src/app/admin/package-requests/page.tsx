@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +10,7 @@ import { formatStudioTime } from '@/lib/date';
 import toast, { Toaster } from 'react-hot-toast';
 
 export default function AdminPackageRequests() {
+  const { t } = useTranslation('admin');
   const [requests, setRequests] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'pending' | 'all' | 'approved' | 'rejected'>('pending');
@@ -126,14 +129,14 @@ export default function AdminPackageRequests() {
   };
 
   if (loading) {
-    return <div className="text-center py-12">Loading package requests...</div>;
+    return <div className="text-center py-12">{t('common.loading')}</div>;
   }
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Package Requests</h1>
+          <h1 className="text-3xl font-bold">{t('dashboard.packageRequests')}</h1>
           <p className="text-gray-600 mt-2">Manage customer package renewal requests</p>
         </div>
         <div className="flex gap-2">
@@ -141,25 +144,25 @@ export default function AdminPackageRequests() {
             variant={filter === 'pending' ? 'default' : 'outline'}
             onClick={() => setFilter('pending')}
           >
-            Pending
+            {t('registrations.pending')}
           </Button>
           <Button
             variant={filter === 'all' ? 'default' : 'outline'}
             onClick={() => setFilter('all')}
           >
-            All Requests
+            {t('registrations.allRequests')}
           </Button>
           <Button
             variant={filter === 'approved' ? 'default' : 'outline'}
             onClick={() => setFilter('approved')}
           >
-            Approved
+            {t('registrations.approved')}
           </Button>
           <Button
             variant={filter === 'rejected' ? 'default' : 'outline'}
             onClick={() => setFilter('rejected')}
           >
-            Rejected
+            {t('registrations.rejected')}
           </Button>
         </div>
       </div>
@@ -167,7 +170,7 @@ export default function AdminPackageRequests() {
       {requests.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-gray-500">
-            <p>No {filter === 'pending' ? 'pending' : ''} package requests</p>
+            <p>{filter === 'pending' ? t('registrations.noPending') : t('registrations.noRequests')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -253,14 +256,14 @@ export default function AdminPackageRequests() {
                       onClick={() => openApproveModal(request)}
                       className="flex-1"
                     >
-                      Approve & Create Package
+                      {t('registrations.approve')} & {t('registrations.createPackage')}
                     </Button>
                     <Button
                       variant="outline"
                       onClick={() => handleReject(request._id)}
                       className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
                     >
-                      Reject
+                      {t('registrations.reject')}
                     </Button>
                   </div>
                 )}
@@ -314,7 +317,7 @@ export default function AdminPackageRequests() {
               {/* Package Type */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Package Type
+                  {t('registrations.packageType')}
                 </label>
                 <select
                   value={approvalForm.packageType}
@@ -328,16 +331,16 @@ export default function AdminPackageRequests() {
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
-                  <option value="private">Private</option>
-                  <option value="duo">Duo</option>
-                  <option value="group">Group</option>
+                  <option value="private">{t('registrations.private')}</option>
+                  <option value="duo">{t('registrations.duo')}</option>
+                  <option value="group">{t('registrations.group')}</option>
                 </select>
               </div>
 
               {/* Number of Sessions */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Number of Sessions
+                  {t('registrations.sessions')}
                 </label>
                 <select
                   value={approvalForm.sessions}
@@ -351,16 +354,16 @@ export default function AdminPackageRequests() {
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
-                  <option value={10}>10 Sessions</option>
-                  <option value={20}>20 Sessions</option>
-                  <option value={30}>30 Sessions</option>
+                  <option value={10}>10 {t('registrations.sessions')}</option>
+                  <option value={20}>20 {t('registrations.sessions')}</option>
+                  <option value={30}>30 {t('registrations.sessions')}</option>
                 </select>
               </div>
 
               {/* Price */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Price (THB)
+                  {t('registrations.priceTHB')}
                 </label>
                 <input
                   type="number"
@@ -405,13 +408,13 @@ export default function AdminPackageRequests() {
                   onClick={() => setShowApproveModal(false)}
                   className="flex-1"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </Button>
                 <Button
                   onClick={handleApprove}
                   className="flex-1"
                 >
-                  Approve & Create Package
+                  {t('registrations.approve')} & {t('registrations.createPackage')}
                 </Button>
               </div>
             </div>
@@ -581,7 +584,7 @@ export default function AdminPackageRequests() {
             </div>
 
             <div className="mt-6 flex justify-end">
-              <Button onClick={() => setShowCustomerInfo(false)}>Close</Button>
+              <Button onClick={() => setShowCustomerInfo(false)}>{t('common.close')}</Button>
             </div>
           </div>
         </div>

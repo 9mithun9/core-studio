@@ -1,0 +1,345 @@
+{
+  "dashboard": {
+    "title": "Customer Dashboard",
+    "welcome": "Welcome back",
+    "subtitle": "Here's your Pilates journey",
+    "bookSession": "Book a Session",
+    "loading": "Loading your dashboard...",
+    "submittingRequest": "Submitting package request...",
+    "requestSuccess": "Package request submitted successfully! Waiting for admin approval.",
+    "requestFailed": "Failed to submit request",
+    "upcomingSessions": "Upcoming Sessions",
+    "packageStatus": "Package Status",
+    "remainingSessions": "Remaining Sessions",
+    "sessionsLeft": "sessions left",
+    "noSessions": "No upcoming sessions",
+    "bookNow": "Book Now",
+    "viewPackages": "View Packages",
+    "quickActions": "Quick Actions",
+    "packageExpired": {
+      "title": "Your Package Has Expired",
+      "message": "Continue your Pilates journey! Request a new package to keep progressing toward your fitness goals.",
+      "action": "Request New Package"
+    },
+    "lowSessions": {
+      "titleOne": "Last Session Remaining!",
+      "titleMultiple": "Running Low on Sessions",
+      "message": "You have only",
+      "messagePart2": "left in your",
+      "messagePart3": "Request a new package to maintain your momentum!",
+      "action": "Request New Package",
+      "session": "session",
+      "sessions": "sessions"
+    },
+    "nextSession": {
+      "title": "Next Session",
+      "with": "with"
+    },
+    "myPackages": {
+      "title": "My Packages",
+      "description": "All your session packages",
+      "addRenew": "Add/Renew",
+      "requestPackage": "Request Package",
+      "noPackages": "No packages yet",
+      "noPackagesMessage": "Start your Pilates journey by requesting your first package!",
+      "requestFirst": "Request Your First Package",
+      "type": "Sessions",
+      "remaining": "remaining",
+      "validUntil": "Valid until"
+    },
+    "packageDetails": {
+      "title": "Package Details & Session History",
+      "total": "Total",
+      "completed": "Completed",
+      "upcoming": "Upcoming",
+      "type": "Type:",
+      "validFrom": "Valid From:",
+      "validUntil": "Valid Until:",
+      "status": "Status:",
+      "sessionHistory": "Session History",
+      "noSessions": "No sessions booked with this package yet",
+      "bookFirst": "Book Your First Session",
+      "selectPackage": "Select a package to view details and history"
+    },
+    "sessionStatus": {
+      "completed": "Completed",
+      "confirmed": "Confirmed",
+      "cancelled": "Cancelled",
+      "cancellationPending": "Cancellation Pending",
+      "noShow": "No Show",
+      "viewDetails": "View Details",
+      "cannotCancel": "Cannot Cancel",
+      "cancel": "Cancel",
+      "cancelTooltip": "Cannot cancel within 6 hours of session start time"
+    },
+    "requestModal": {
+      "title": "Request Package",
+      "packageType": "Package Type",
+      "sessions": "Number of Sessions",
+      "notes": "Notes (Optional)",
+      "notesPlaceholder": "Any special requests or comments...",
+      "cancel": "Cancel",
+      "submit": "Submit Request",
+      "sessions10": "10 Sessions",
+      "sessions20": "20 Sessions",
+      "sessions30": "30 Sessions"
+    },
+    "reviewModal": {
+      "title": "Session Review",
+      "reviewBy": "Review by",
+      "overallRating": "Overall Rating",
+      "performanceBreakdown": "Performance Breakdown",
+      "control": "Control",
+      "postureAlignment": "Posture & Alignment",
+      "strength": "Strength",
+      "flexibilityMobility": "Flexibility / Mobility",
+      "bodyAwarenessFocus": "Body Awareness / Focus",
+      "instructorNotes": "Instructor Notes",
+      "close": "Close"
+    },
+    "cancellation": {
+      "requestingCancellation": "Requesting cancellation...",
+      "successMessage": "Cancellation requested successfully",
+      "failedMessage": "Failed to request cancellation",
+      "reasonPrompt": "Reason for cancellation (optional):"
+    }
+  },
+  "calendar": {
+    "title": "Book a Session",
+    "subtitle": "Request a session at least 24 hours in advance",
+    "selectDate": "Select Date",
+    "selectTime": "Select Time",
+    "selectTeacher": "Select Teacher",
+    "availableSlots": "Available Slots",
+    "noSlotsAvailable": "No slots available",
+    "confirmBooking": "Confirm Booking",
+    "bookingSuccess": "Booking request submitted successfully! You will receive confirmation via LINE shortly.",
+    "bookingError": "Failed to book session",
+    "noPackages": {
+      "title": "Ready to Start Your Journey?",
+      "message": "You don't have any active packages yet. Get started with a package that fits your goals and schedule!",
+      "contactTitle": "Contact us to purchase a package:",
+      "phone": "+1 (234) 567-890",
+      "lineButton": "Contact us on LINE",
+      "helpText": "Our team will help you choose the perfect package to achieve your fitness goals!"
+    },
+    "selectPackage": {
+      "title": "Select Package",
+      "description": "Choose which package to use for this session",
+      "packageType": "Package Type:",
+      "completed": "Completed",
+      "upcoming": "Upcoming",
+      "remaining": "Remaining",
+      "total": "Total:",
+      "sessions": "sessions",
+      "validUntil": "Valid until:",
+      "available": "available"
+    },
+    "selectInstructor": {
+      "title": "Select Instructor",
+      "description": "Choose your preferred instructor"
+    },
+    "selectDateTime": {
+      "title": "Select Date & Time",
+      "description": "Choose a date and time (must be at least 24 hours in advance)",
+      "dateLabel": "Date",
+      "timeLabel": "Time",
+      "available": "Available",
+      "partiallyBooked": "Partially booked (you can still book)",
+      "fullyBlocked": "Fully blocked",
+      "legend": {
+        "green": "Green = Available",
+        "yellow": "Yellow = Partially booked (you can still book)",
+        "red": "Red = Fully blocked"
+      }
+    },
+    "notes": {
+      "title": "Additional Notes (Optional)",
+      "description": "Any special requests or information we should know",
+      "placeholder": "E.g., injuries, specific focus areas, etc."
+    },
+    "submit": {
+      "button": "Request Booking",
+      "submitting": "Submitting Request...",
+      "confirmationMessage": "Your request will be reviewed and you'll receive confirmation via LINE"
+    },
+    "errors": {
+      "selectTime": "Please select a time slot",
+      "slotBooked": "This time slot is already booked. Please select another time.",
+      "advanceBooking": "Bookings must be requested at least 24 hours in advance. For urgent bookings, please contact us via LINE.",
+      "selectTeacher": "Please select an instructor",
+      "selectPackage": "Please select a package",
+      "requestFailed": "Failed to submit booking request"
+    },
+    "tooltip": {
+      "fullyBooked": "Fully Booked",
+      "cannotBookGroup": "Cannot book GROUP session when another teacher is already booked",
+      "canBookPrivateDuo": "You can still book this slot (Private/Duo only)",
+      "otherBookings": "Other bookings:",
+      "teacher": "Teacher:",
+      "noInfo": "No info available"
+    }
+  },
+  "packages": {
+    "title": "Our Packages",
+    "subtitle": "Choose the perfect package for your Pilates journey. All packages include one-on-one sessions with our expert instructors.",
+    "activePackages": "Active Packages",
+    "expiredPackages": "Expired Packages",
+    "purchaseDate": "Purchase Date",
+    "expiryDate": "Expiry Date",
+    "totalSessions": "Total Sessions",
+    "usedSessions": "Used Sessions",
+    "remainingSessions": "Remaining",
+    "packageType": "Package Type",
+    "private": "Private",
+    "duo": "Duo",
+    "group": "Group",
+    "buyPackage": "Buy New Package",
+    "requestPackage": "Request Package",
+    "sessions": "sessions",
+    "popular": "POPULAR",
+    "catalog": {
+      "single": {
+        "title": "Single Session",
+        "description": "Perfect for trying out Pilates or occasional practice",
+        "features": {
+          "feature1": "1 private session",
+          "feature2": "Flexible scheduling",
+          "feature3": "Expert instruction"
+        }
+      },
+      "starter": {
+        "title": "Starter Package",
+        "description": "Great for beginners starting their Pilates journey",
+        "features": {
+          "feature1": "5 private sessions",
+          "feature2": "Valid for 2 months",
+          "feature3": "Personalized program"
+        }
+      },
+      "standard": {
+        "title": "Standard Package",
+        "description": "Most popular choice for regular practitioners",
+        "features": {
+          "feature1": "10 private sessions",
+          "feature2": "Valid for 3 months",
+          "feature3": "Progress tracking"
+        }
+      },
+      "premium": {
+        "title": "Premium Package",
+        "description": "Best value for committed practitioners",
+        "features": {
+          "feature1": "20 private sessions",
+          "feature2": "Valid for 6 months",
+          "feature3": "Priority booking"
+        }
+      }
+    },
+    "cta": {
+      "title": "Ready to Start or Renew Your Package?",
+      "description": "Click the button to request a new package or renew your existing one. Our team will contact you to complete the purchase.",
+      "button": "Add/Renew Package"
+    },
+    "requestModal": {
+      "title": "Request Package",
+      "packageTypeLabel": "Package Type",
+      "sessionsLabel": "Number of Sessions",
+      "notesLabel": "Notes (Optional)",
+      "notesPlaceholder": "Any special requests or comments...",
+      "cancel": "Cancel",
+      "submit": "Submit Request",
+      "sessions10": "10 Sessions",
+      "sessions20": "20 Sessions",
+      "sessions30": "30 Sessions",
+      "submitting": "Submitting package request...",
+      "success": "Package request submitted successfully! Waiting for admin approval.",
+      "failed": "Failed to submit request"
+    }
+  },
+  "profile": {
+    "title": "My Profile",
+    "loading": "Loading...",
+    "notFound": "Profile not found",
+    "personalInfo": "Personal Information",
+    "personalInfoDesc": "Update your personal details",
+    "contactInfo": "Contact Information",
+    "updateProfile": "Update Profile",
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "updateSuccess": "Profile updated successfully!",
+    "updateError": "Failed to update profile",
+    "photo": {
+      "title": "Profile Photo",
+      "description": "Your profile picture",
+      "uploadInstruction": "Upload an image from your device (Max 5MB)",
+      "uploading": "Uploading...",
+      "uploadButton": "Upload Photo",
+      "uploadSuccess": "Profile photo uploaded successfully!",
+      "uploadFailed": "Failed to upload photo",
+      "selectFile": "Please select a file first",
+      "invalidType": "Please select an image file",
+      "fileTooLarge": "File size must be less than 5MB",
+      "selected": "Selected:"
+    },
+    "fields": {
+      "fullName": "Full Name",
+      "email": "Email",
+      "phone": "Phone Number",
+      "phonePlaceholder": "+66-XXX-XXX-XXXX",
+      "dateOfBirth": "Date of Birth",
+      "gender": "Gender",
+      "genderSelect": "Select Gender",
+      "genderMale": "Male",
+      "genderFemale": "Female",
+      "genderOther": "Other",
+      "profession": "Profession",
+      "professionSelect": "Select Profession",
+      "professionStudent": "Student",
+      "professionEmployed": "Employed",
+      "professionRetired": "Retired",
+      "professionHomemaker": "Homemaker",
+      "professionNote": "Select the category that best describes your current profession",
+      "height": "Height (cm)",
+      "heightPlaceholder": "170",
+      "weight": "Weight (kg)",
+      "weightPlaceholder": "65",
+      "medicalNotes": "Medical Notes / Conditions",
+      "medicalNotesPlaceholder": "Any medical conditions, injuries, or health notes that teachers should be aware of...",
+      "medicalNotesNote": "This information will be visible to teachers and admin for your safety",
+      "contactAdmin": "Contact admin to change",
+      "contactAdminName": "Contact admin to change name",
+      "contactAdminEmail": "Contact admin to change email"
+    },
+    "emergency": {
+      "title": "Emergency Contact",
+      "name": "Contact Name",
+      "namePlaceholder": "John Doe",
+      "phone": "Contact Phone",
+      "phonePlaceholder": "+66-XXX-XXX-XXXX"
+    },
+    "buttons": {
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "cancel": "Cancel"
+    }
+  },
+  "teachers": {
+    "title": "Our Instructors",
+    "subtitle": "Meet our team of certified Pilates instructors dedicated to helping you achieve your fitness goals.",
+    "loading": "Loading teachers...",
+    "noTeachers": "No instructors available at the moment.",
+    "viewProfile": "View Profile",
+    "bookWithTeacher": "Book with this teacher",
+    "specialization": "Specialization",
+    "specialties": "Specialties:",
+    "experience": "Experience",
+    "year": "year",
+    "years": "years",
+    "yearsExperience": "of experience",
+    "contactLine": "Contact on LINE",
+    "certifiedInstructor": "Certified Pilates Instructor"
+  }
+}

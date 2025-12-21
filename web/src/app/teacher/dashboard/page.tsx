@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -44,6 +46,7 @@ interface Booking {
 
 export default function TeacherDashboard() {
   const router = useRouter();
+  const { t } = useTranslation('teacher');
   const [nextSession, setNextSession] = useState<Booking | null>(null);
   const [todaysSessions, setTodaysSessions] = useState<Booking[]>([]);
   const [allTodaySessions, setAllTodaySessions] = useState<Booking[]>([]);
@@ -357,83 +360,83 @@ export default function TeacherDashboard() {
   };
 
   if (loading) {
-    return <div className="p-8 text-center">Loading dashboard...</div>;
+    return <div className="p-4 md:p-8 text-center text-sm md:text-base">Loading dashboard...</div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Dashboard</h1>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Dashboard</h1>
 
       {/* Stats Cards */}
-      <div className="grid md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">Total Completed</CardTitle>
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">Total Completed</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-gray-900">{stats.totalCompleted}</div>
+            <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.totalCompleted}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">This Week</CardTitle>
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">This Week</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-gray-900">{stats.thisWeek}</div>
+            <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.thisWeek}</div>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium text-gray-600">This Month</CardTitle>
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">This Month</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-gray-900">{stats.thisMonth}</div>
+            <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.thisMonth}</div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
         {/* LEFT COLUMN */}
-        <div className="lg:col-span-1 space-y-6">
+        <div className="lg:col-span-1 space-y-4 md:space-y-6">
           {/* Next Session */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Next Session</CardTitle>
+              <CardTitle className="text-base md:text-lg">Next Session</CardTitle>
             </CardHeader>
             <CardContent>
               {nextSession ? (
                 <div>
-                  <div className="text-2xl font-bold text-primary-600 mb-1">
+                  <div className="text-lg md:text-2xl font-bold text-primary-600 mb-1">
                     {formatStudioTime(nextSession.startTime, 'EEEE, MMM d')}
                   </div>
-                  <div className="text-xl font-semibold mb-2">
+                  <div className="text-base md:text-xl font-semibold mb-2">
                     {formatStudioTime(nextSession.startTime, 'h:mm a')} with {nextSession.customerId.userId.name}
                   </div>
 
                   {timeUntilNext && (
-                    <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="text-sm text-blue-600 font-medium">Starts in</div>
-                      <div className="text-2xl font-bold text-blue-700">{timeUntilNext}</div>
+                    <div className="mt-3 p-2 md:p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                      <div className="text-xs md:text-sm text-blue-600 font-medium">Starts in</div>
+                      <div className="text-lg md:text-2xl font-bold text-blue-700">{timeUntilNext}</div>
                     </div>
                   )}
 
-                  <div className="mt-3 flex gap-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(nextSession.status)}`}>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    <span className={`inline-block px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getStatusColor(nextSession.status)}`}>
                       {nextSession.status}
                     </span>
-                    <span className="inline-block px-3 py-1 rounded-full text-sm font-medium bg-purple-100 text-purple-700 capitalize">
+                    <span className="inline-block px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium bg-purple-100 text-purple-700 capitalize">
                       {nextSession.type}
                     </span>
                   </div>
 
                   {nextSession.packageId && (
-                    <div className="mt-3 text-sm text-gray-600">
+                    <div className="mt-3 text-xs md:text-sm text-gray-600">
                       {nextSession.packageId.name} - {nextSession.packageId.type}
                     </div>
                   )}
                 </div>
               ) : (
-                <p className="text-gray-500">No upcoming sessions</p>
+                <p className="text-sm md:text-base text-gray-500">No upcoming sessions</p>
               )}
             </CardContent>
           </Card>
@@ -441,40 +444,40 @@ export default function TeacherDashboard() {
           {/* Pending Booking Requests */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Pending Requests ({pendingRequests.length})</CardTitle>
+              <CardTitle className="text-base md:text-lg">Pending Requests ({pendingRequests.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="mb-3">
                 <button
                   onClick={() => router.push('/teacher/session-requests')}
-                  className="text-primary-600 hover:text-primary-700 text-sm font-medium hover:underline cursor-pointer"
+                  className="text-primary-600 hover:text-primary-700 text-xs md:text-sm font-medium hover:underline cursor-pointer"
                 >
                   View All Requests →
                 </button>
               </div>
               {pendingRequests.length === 0 ? (
-                <p className="text-gray-500">No pending requests</p>
+                <p className="text-sm md:text-base text-gray-500">No pending requests</p>
               ) : (
                 <div className="space-y-3">
                   {pendingRequests.slice(0, 3).map((request) => (
-                    <div key={request._id} className="border border-orange-200 bg-orange-50 rounded-lg p-3">
-                      <div className="flex justify-between items-start mb-2">
+                    <div key={request._id} className="border border-orange-200 bg-orange-50 rounded-lg p-2 md:p-3">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                         <div className="flex-1">
-                          <p className="font-semibold text-gray-900">{request.customerId.userId.name}</p>
-                          <p className="text-sm text-gray-600">{request.customerId.userId.email}</p>
+                          <p className="text-sm md:text-base font-semibold text-gray-900">{request.customerId.userId.name}</p>
+                          <p className="text-xs md:text-sm text-gray-600 break-all">{request.customerId.userId.email}</p>
                         </div>
                       </div>
-                      <div className="text-sm text-gray-700 mb-3">
+                      <div className="text-xs md:text-sm text-gray-700 mb-2 md:mb-3">
                         <div className="font-medium text-orange-600">
                           {formatStudioTime(request.startTime, 'EEE, MMM d')} at {formatStudioTime(request.startTime, 'h:mm a')}
                         </div>
                       </div>
                       {request.notes && (
-                        <p className="text-xs text-gray-600 mb-3">
+                        <p className="text-xs text-gray-600 mb-2 md:mb-3">
                           <span className="font-medium">Notes:</span> {request.notes}
                         </p>
                       )}
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           size="sm"
                           onClick={() => handleApproveRequest(request._id)}
@@ -503,12 +506,12 @@ export default function TeacherDashboard() {
         <div className="lg:col-span-2">
           <Card>
             <CardHeader>
-              <div className="flex items-center justify-between mb-3">
-                <CardTitle className="text-xl">Sessions</CardTitle>
-                <div className="flex gap-2 items-center">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
+                <CardTitle className="text-lg md:text-xl">Sessions</CardTitle>
+                <div className="flex flex-wrap gap-2 items-center">
                   <button
                     onClick={() => handleFilterChange('today')}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm font-medium transition-colors ${
                       sessionFilter === 'today'
                         ? 'bg-primary-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -518,7 +521,7 @@ export default function TeacherDashboard() {
                   </button>
                   <button
                     onClick={() => handleFilterChange('tomorrow')}
-                    className={`px-3 py-1 rounded-md text-sm font-medium transition-colors ${
+                    className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm font-medium transition-colors ${
                       sessionFilter === 'tomorrow'
                         ? 'bg-primary-600 text-white'
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
@@ -530,39 +533,39 @@ export default function TeacherDashboard() {
                     type="date"
                     value={selectedDate}
                     onChange={(e) => handleFilterChange('date', e.target.value)}
-                    className="px-3 py-1 border border-gray-300 rounded-md text-sm"
+                    className="px-2 md:px-3 py-1 border border-gray-300 rounded-md text-xs md:text-sm w-full sm:w-auto"
                   />
                 </div>
               </div>
-              <div className="text-3xl font-bold text-primary-600">
+              <div className="text-2xl md:text-3xl font-bold text-primary-600">
                 {todaysSessions.length} {todaysSessions.length === 1 ? 'Session' : 'Sessions'}
               </div>
             </CardHeader>
             <CardContent>
               {todaysSessions.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-gray-500 text-lg">No sessions scheduled for today</p>
-                  <p className="text-gray-400 text-sm mt-2">Enjoy your free day!</p>
+                <div className="text-center py-8 md:py-12">
+                  <p className="text-gray-500 text-base md:text-lg">No sessions scheduled for today</p>
+                  <p className="text-gray-400 text-xs md:text-sm mt-2">Enjoy your free day!</p>
                 </div>
               ) : (
-                <div className="space-y-4">
+                <div className="space-y-3 md:space-y-4">
                   {todaysSessions.map((session) => (
-                    <div key={session._id} className="border-2 border-gray-200 rounded-xl p-5 hover:shadow-lg transition-all hover:border-primary-300 bg-white">
+                    <div key={session._id} className="border-2 border-gray-200 rounded-xl p-3 md:p-5 hover:shadow-lg transition-all hover:border-primary-300 bg-white">
                       {/* Header Section */}
-                      <div className="flex justify-between items-start mb-4 pb-4 border-b border-gray-100">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3 md:mb-4 pb-3 md:pb-4 border-b border-gray-100">
                         <div className="flex-1">
                           <h4
-                            className="text-xl font-bold text-primary-600 mb-1 cursor-pointer hover:text-primary-700 hover:underline"
+                            className="text-lg md:text-xl font-bold text-primary-600 mb-1 cursor-pointer hover:text-primary-700 hover:underline"
                             onClick={() => handleStudentClick(session)}
                           >
                             {session.customerId.userId.name}
                           </h4>
-                          <div className="flex flex-col gap-1 text-sm text-gray-600">
+                          <div className="flex flex-col gap-1 text-xs md:text-sm text-gray-600">
                             <div className="flex items-center gap-2">
-                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-3 h-3 md:w-4 md:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                               </svg>
-                              {session.customerId.userId.email}
+                              <span className="break-all">{session.customerId.userId.email}</span>
                             </div>
                             {session.customerId.userId.phone && (
                               <a
@@ -571,7 +574,7 @@ export default function TeacherDashboard() {
                                 rel="noopener noreferrer"
                                 className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline transition-colors"
                               >
-                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3 h-3 md:w-4 md:h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314"/>
                                 </svg>
                                 {session.customerId.userId.phone}
@@ -579,31 +582,31 @@ export default function TeacherDashboard() {
                             )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-primary-600">
+                        <div className="text-right sm:text-right">
+                          <div className="text-xl md:text-2xl font-bold text-primary-600">
                             {formatStudioTime(session.startTime, 'h:mm a')}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-xs md:text-sm text-gray-500">
                             {formatStudioTime(session.startTime, 'MMM d, yyyy')}
                           </div>
                         </div>
                       </div>
 
                       {/* Session Info */}
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        <span className={`inline-block px-3 py-1.5 rounded-full text-xs font-semibold ${getStatusColor(session.status)}`}>
+                      <div className="flex flex-wrap gap-2 mb-3 md:mb-4">
+                        <span className={`inline-block px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-semibold ${getStatusColor(session.status)}`}>
                           {session.status}
                         </span>
-                        <span className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 capitalize">
+                        <span className="inline-block px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-semibold bg-purple-100 text-purple-700 capitalize">
                           {session.type}
                         </span>
                         {session.packageId && (
                           <>
-                            <span className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
+                            <span className="inline-block px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">
                               {session.packageId.name}
                             </span>
                             {session.packageId.remainingSessions !== undefined && (
-                              <span className="inline-block px-3 py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
+                              <span className="inline-block px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
                                 {session.packageId.remainingSessions} sessions remaining
                               </span>
                             )}
@@ -613,9 +616,9 @@ export default function TeacherDashboard() {
 
                       {/* Notes Section */}
                       {session.notes && (
-                        <div className="mb-3 p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r text-sm">
+                        <div className="mb-3 p-2 md:p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r text-xs md:text-sm">
                           <div className="flex items-start gap-2">
-                            <svg className="w-4 h-4 mt-0.5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 md:w-4 md:h-4 mt-0.5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                             <div className="flex-1">
@@ -628,9 +631,9 @@ export default function TeacherDashboard() {
 
                       {/* Health Notes */}
                       {session.customerId.healthNotes && (
-                        <div className="mb-3 p-3 bg-orange-50 border-l-4 border-orange-400 rounded-r text-sm">
+                        <div className="mb-3 p-2 md:p-3 bg-orange-50 border-l-4 border-orange-400 rounded-r text-xs md:text-sm">
                           <div className="flex items-start gap-2">
-                            <span className="text-lg">⚠️</span>
+                            <span className="text-base md:text-lg">⚠️</span>
                             <div className="flex-1">
                               <span className="font-semibold text-orange-800">Health Notes:</span>
                               <p className="text-orange-700 mt-1">{session.customerId.healthNotes}</p>
@@ -640,18 +643,18 @@ export default function TeacherDashboard() {
                       )}
 
                       {/* Action Buttons */}
-                      <div className="pt-4 border-t border-gray-100 flex justify-end gap-3">
+                      <div className="pt-3 md:pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-2 md:gap-3">
                         {/* Review Button for Completed Sessions */}
                         {session.status === 'completed' && !session.hasReview && (
                           <button
                             onClick={() => handleOpenReviewModal(session)}
-                            className="px-6 py-2 text-sm font-medium text-primary-600 hover:text-primary-700 border-2 border-primary-300 hover:border-primary-400 rounded-lg hover:bg-primary-50 transition-all"
+                            className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-primary-600 hover:text-primary-700 border-2 border-primary-300 hover:border-primary-400 rounded-lg hover:bg-primary-50 transition-all"
                           >
                             Write Review
                           </button>
                         )}
                         {session.status === 'completed' && session.hasReview && (
-                          <span className="px-6 py-2 text-sm font-medium text-green-600 bg-green-50 border-2 border-green-300 rounded-lg">
+                          <span className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-green-600 bg-green-50 border-2 border-green-300 rounded-lg text-center">
                             ✓ Reviewed
                           </span>
                         )}
@@ -660,7 +663,7 @@ export default function TeacherDashboard() {
                         {session.status !== 'cancelled' && canCancelSession(session.startTime) && (
                           <button
                             onClick={() => handleCancelSession(session._id, session.startTime)}
-                            className="px-6 py-2 text-sm font-medium text-red-600 hover:text-red-700 border-2 border-red-300 hover:border-red-400 rounded-lg hover:bg-red-50 transition-all"
+                            className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-red-600 hover:text-red-700 border-2 border-red-300 hover:border-red-400 rounded-lg hover:bg-red-50 transition-all"
                           >
                             Cancel Session
                           </button>
@@ -677,71 +680,71 @@ export default function TeacherDashboard() {
 
       {/* Student Info Modal */}
       <Dialog open={isStudentModalOpen} onOpenChange={setIsStudentModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
           {selectedStudent && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl">Student Information</DialogTitle>
+                <DialogTitle className="text-xl md:text-2xl">Student Information</DialogTitle>
               </DialogHeader>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Profile Section */}
-                <div className="flex items-center gap-4 pb-4 border-b">
+                <div className="flex items-center gap-3 md:gap-4 pb-3 md:pb-4 border-b">
                   {selectedStudent.customerId.profilePhoto ? (
                     selectedStudent.customerId.profilePhoto.startsWith('http') ? (
                       <img
                         src={selectedStudent.customerId.profilePhoto}
                         alt={selectedStudent.customerId.userId.name}
-                        className="w-20 h-20 rounded-full object-cover border-2 border-primary-200"
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-primary-200"
                       />
                     ) : (
                       <img
                         src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedStudent.customerId.profilePhoto}`}
                         alt={selectedStudent.customerId.userId.name}
-                        className="w-20 h-20 rounded-full object-cover border-2 border-primary-200"
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-primary-200"
                       />
                     )
                   ) : (
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-3xl font-bold">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-2xl md:text-3xl font-bold">
                       {selectedStudent.customerId.userId.name.charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div>
-                    <h3 className="text-2xl font-bold text-gray-900">{selectedStudent.customerId.userId.name}</h3>
-                    <p className="text-gray-600">{selectedStudent.customerId.userId.email}</p>
+                    <h3 className="text-lg md:text-2xl font-bold text-gray-900">{selectedStudent.customerId.userId.name}</h3>
+                    <p className="text-sm md:text-base text-gray-600 break-all">{selectedStudent.customerId.userId.email}</p>
                   </div>
                 </div>
 
                 {/* Basic Info Grid */}
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   {calculateAge(selectedStudent.customerId.dateOfBirth) !== null && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-500 mb-1">Age</div>
-                      <div className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">Age</div>
+                      <div className="text-base md:text-lg font-semibold text-gray-900">
                         {calculateAge(selectedStudent.customerId.dateOfBirth)} years
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.gender && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-500 mb-1">Gender</div>
-                      <div className="text-lg font-semibold text-gray-900 capitalize">
+                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">Gender</div>
+                      <div className="text-base md:text-lg font-semibold text-gray-900 capitalize">
                         {selectedStudent.customerId.gender}
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.height && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-500 mb-1">Height</div>
-                      <div className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">Height</div>
+                      <div className="text-base md:text-lg font-semibold text-gray-900">
                         {selectedStudent.customerId.height} cm
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.weight && (
-                    <div className="bg-gray-50 rounded-lg p-4">
-                      <div className="text-sm text-gray-500 mb-1">Weight</div>
-                      <div className="text-lg font-semibold text-gray-900">
+                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">Weight</div>
+                      <div className="text-base md:text-lg font-semibold text-gray-900">
                         {selectedStudent.customerId.weight} kg
                       </div>
                     </div>
@@ -751,17 +754,17 @@ export default function TeacherDashboard() {
                 {/* Package Info */}
                 {studentPackages.length > 0 && (
                   <div className="space-y-3">
-                    <div className="text-sm font-medium text-gray-700">Active Packages</div>
+                    <div className="text-xs md:text-sm font-medium text-gray-700">Active Packages</div>
                     {studentPackages.map((pkg: any) => (
-                      <div key={pkg._id} className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                      <div key={pkg._id} className="bg-blue-50 rounded-lg p-3 md:p-4 border border-blue-200">
                         <div className="space-y-2">
-                          <div className="flex justify-between items-center">
-                            <span className="text-gray-700 font-medium">{pkg.name}</span>
-                            <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-sm font-semibold capitalize">
+                          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                            <span className="text-sm md:text-base text-gray-700 font-medium">{pkg.name}</span>
+                            <span className="px-2 md:px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs md:text-sm font-semibold capitalize self-start">
                               {pkg.type}
                             </span>
                           </div>
-                          <div className="flex justify-between items-center text-sm">
+                          <div className="flex justify-between items-center text-xs md:text-sm">
                             <span className="text-gray-600">Sessions Remaining</span>
                             <span className="font-semibold text-gray-900">
                               {pkg.remainingSessions} / {pkg.totalSessions}
@@ -779,16 +782,16 @@ export default function TeacherDashboard() {
 
                 {/* Medical Conditions */}
                 {(selectedStudent.customerId.healthNotes || selectedStudent.customerId.medicalNotes) && (
-                  <div className="bg-orange-50 rounded-lg p-4 border border-orange-200">
+                  <div className="bg-orange-50 rounded-lg p-3 md:p-4 border border-orange-200">
                     <div className="flex items-start gap-2">
-                      <span className="text-2xl">⚠️</span>
+                      <span className="text-xl md:text-2xl">⚠️</span>
                       <div className="flex-1">
-                        <div className="text-sm font-medium text-orange-600 mb-2">Medical Conditions</div>
+                        <div className="text-xs md:text-sm font-medium text-orange-600 mb-2">Medical Conditions</div>
                         {selectedStudent.customerId.healthNotes && (
-                          <p className="text-gray-700 mb-2">{selectedStudent.customerId.healthNotes}</p>
+                          <p className="text-xs md:text-sm text-gray-700 mb-2">{selectedStudent.customerId.healthNotes}</p>
                         )}
                         {selectedStudent.customerId.medicalNotes && (
-                          <p className="text-gray-700">{selectedStudent.customerId.medicalNotes}</p>
+                          <p className="text-xs md:text-sm text-gray-700">{selectedStudent.customerId.medicalNotes}</p>
                         )}
                       </div>
                     </div>
@@ -802,32 +805,32 @@ export default function TeacherDashboard() {
 
       {/* Review Modal */}
       <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
           {selectedSessionForReview && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-2xl">Session Review</DialogTitle>
+                <DialogTitle className="text-xl md:text-2xl">Session Review</DialogTitle>
               </DialogHeader>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Session Info */}
-                <div className="bg-gray-50 rounded-lg p-4">
-                  <div className="font-semibold text-gray-900 mb-1">
+                <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                  <div className="text-sm md:text-base font-semibold text-gray-900 mb-1">
                     {selectedSessionForReview.customerId.userId.name}
                   </div>
-                  <div className="text-sm text-gray-600">
+                  <div className="text-xs md:text-sm text-gray-600">
                     {formatStudioTime(selectedSessionForReview.startTime, 'EEEE, MMM d, yyyy')} at {formatStudioTime(selectedSessionForReview.startTime, 'h:mm a')}
                   </div>
                 </div>
 
                 {/* Rating Categories */}
-                <div className="space-y-4">
-                  <div className="text-sm font-medium text-gray-700 mb-3">Rate the student's performance (1-5 stars):</div>
+                <div className="space-y-3 md:space-y-4">
+                  <div className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">Rate the student's performance (1-5 stars):</div>
 
                   {/* Control */}
                   <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Control</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                      <span className="text-xs md:text-sm font-medium text-gray-700">Control</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -836,7 +839,7 @@ export default function TeacherDashboard() {
                             className="focus:outline-none"
                           >
                             <svg
-                              className={`w-8 h-8 ${reviewRatings.control >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              className={`w-6 h-6 md:w-8 md:h-8 ${reviewRatings.control >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -851,8 +854,8 @@ export default function TeacherDashboard() {
 
                   {/* Posture & Alignment */}
                   <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Posture & Alignment</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                      <span className="text-xs md:text-sm font-medium text-gray-700">Posture & Alignment</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -861,7 +864,7 @@ export default function TeacherDashboard() {
                             className="focus:outline-none"
                           >
                             <svg
-                              className={`w-8 h-8 ${reviewRatings.postureAlignment >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              className={`w-6 h-6 md:w-8 md:h-8 ${reviewRatings.postureAlignment >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -876,8 +879,8 @@ export default function TeacherDashboard() {
 
                   {/* Strength */}
                   <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Strength</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                      <span className="text-xs md:text-sm font-medium text-gray-700">Strength</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -886,7 +889,7 @@ export default function TeacherDashboard() {
                             className="focus:outline-none"
                           >
                             <svg
-                              className={`w-8 h-8 ${reviewRatings.strength >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              className={`w-6 h-6 md:w-8 md:h-8 ${reviewRatings.strength >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -901,8 +904,8 @@ export default function TeacherDashboard() {
 
                   {/* Flexibility / Mobility */}
                   <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Flexibility / Mobility</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                      <span className="text-xs md:text-sm font-medium text-gray-700">Flexibility / Mobility</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -911,7 +914,7 @@ export default function TeacherDashboard() {
                             className="focus:outline-none"
                           >
                             <svg
-                              className={`w-8 h-8 ${reviewRatings.flexibilityMobility >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              className={`w-6 h-6 md:w-8 md:h-8 ${reviewRatings.flexibilityMobility >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -926,8 +929,8 @@ export default function TeacherDashboard() {
 
                   {/* Body Awareness / Focus */}
                   <div>
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-sm font-medium text-gray-700">Body Awareness / Focus</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
+                      <span className="text-xs md:text-sm font-medium text-gray-700">Body Awareness / Focus</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -936,7 +939,7 @@ export default function TeacherDashboard() {
                             className="focus:outline-none"
                           >
                             <svg
-                              className={`w-8 h-8 ${reviewRatings.bodyAwarenessFocus >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
+                              className={`w-6 h-6 md:w-8 md:h-8 ${reviewRatings.bodyAwarenessFocus >= rating ? 'text-yellow-400 fill-current' : 'text-gray-300'}`}
                               fill="none"
                               stroke="currentColor"
                               viewBox="0 0 24 24"
@@ -952,7 +955,7 @@ export default function TeacherDashboard() {
 
                 {/* Notes (Optional) */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
                     Additional Notes (Optional)
                   </label>
                   <textarea
@@ -960,19 +963,25 @@ export default function TeacherDashboard() {
                     onChange={(e) => setReviewNotes(e.target.value)}
                     placeholder="Add any additional comments about the session..."
                     rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-xs md:text-sm"
                   />
                 </div>
 
                 {/* Submit Button */}
-                <div className="flex justify-end gap-3">
+                <div className="flex flex-col sm:flex-row justify-end gap-2 md:gap-3">
                   <Button
                     variant="outline"
                     onClick={() => setIsReviewModalOpen(false)}
+                    size="sm"
+                    className="text-xs md:text-sm"
                   >
                     Cancel
                   </Button>
-                  <Button onClick={handleSubmitReview}>
+                  <Button
+                    onClick={handleSubmitReview}
+                    size="sm"
+                    className="text-xs md:text-sm"
+                  >
                     Submit Review
                   </Button>
                 </div>

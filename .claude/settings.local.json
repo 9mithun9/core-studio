@@ -30,7 +30,13 @@
       "Bash(git commit:*)",
       "Bash(git config:*)",
       "Bash(curl:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(for f in admin/*/page.tsx teacher/*/page.tsx customer/*/page.tsx)",
+      "Bash(do grep -q \"useTranslation\" \"$f\")",
+      "Bash(echo \"Missing: $f\")",
+      "Bash(done)"
     ],
     "deny": [],
     "ask": []

@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -71,6 +73,7 @@ interface CustomerWithSessions {
 }
 
 export default function AdminCustomersPage() {
+  const { t } = useTranslation('admin');
   const [customers, setCustomers] = useState<CustomerWithSessions[]>([]);
   const [filteredCustomers, setFilteredCustomers] = useState<CustomerWithSessions[]>([]);
   const [loading, setLoading] = useState(true);
@@ -196,60 +199,62 @@ export default function AdminCustomersPage() {
   }, [searchQuery, filterType, customers]);
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-8">Loading...</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">
+      <div className="text-center text-gray-600">{t('common.loading')}</div>
+    </div>;
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Customer Management</h1>
+    <div className="container mx-auto px-4 py-6 md:py-8">
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('customers.title')}</h1>
 
       {/* Customers List */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Left: Customer List */}
         <Card>
           <CardHeader>
-            <CardTitle>All Customers ({customers.length})</CardTitle>
-            <CardDescription>Click on a customer to view details</CardDescription>
+            <CardTitle className="text-base md:text-lg">{t('customers.allCustomers')} ({customers.length})</CardTitle>
+            <CardDescription className="text-xs md:text-sm">{t('customers.clickToView')}</CardDescription>
           </CardHeader>
           <CardContent>
             {/* Search and Filter */}
-            <div className="mb-4 space-y-3">
-              <div className="flex gap-2">
+            <div className="mb-3 md:mb-4 space-y-3">
+              <div className="flex flex-col sm:flex-row gap-2">
                 <input
                   type="text"
-                  placeholder="Search by name, email, or phone..."
+                  placeholder={t('customers.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="flex-1 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
                 />
 
                 <Select value={filterType} onValueChange={setFilterType}>
-                  <SelectTrigger className="w-[200px]">
-                    <SelectValue placeholder="Filter customers" />
+                  <SelectTrigger className="w-full sm:w-[180px] md:w-[200px] text-xs md:text-sm">
+                    <SelectValue placeholder={t('common.filter')} />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="all">All Customers</SelectItem>
-                    <SelectItem value="new">New (Last 30 Days)</SelectItem>
-                    <SelectItem value="recurrent">Recurrent (2+ packages)</SelectItem>
-                    <SelectItem value="finished">Finished All</SelectItem>
-                    <SelectItem value="absent">Absent 30+ Days</SelectItem>
+                    <SelectItem value="all">{t('customers.filterAll')}</SelectItem>
+                    <SelectItem value="new">{t('customers.filterNew')}</SelectItem>
+                    <SelectItem value="recurrent">{t('customers.filterRecurrent')}</SelectItem>
+                    <SelectItem value="finished">{t('customers.filterFinished')}</SelectItem>
+                    <SelectItem value="absent">{t('customers.filterAbsent')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
               {(searchQuery || filterType !== 'all') && (
-                <p className="text-sm text-gray-600">
-                  Showing {filteredCustomers.length} of {customers.length} customers
+                <p className="text-xs md:text-sm text-gray-600">
+                  {t('customers.showingOf', { count: filteredCustomers.length, total: customers.length })}
                 </p>
               )}
             </div>
 
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-2 md:space-y-3 max-h-[400px] md:max-h-[600px] overflow-y-auto">
               {filteredCustomers.length === 0 ? (
-                <p className="text-gray-500 text-center py-8">
+                <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">
                   {searchQuery || filterType !== 'all'
-                    ? 'No customers found matching your criteria'
-                    : 'No customers yet'}
+                    ? t('customers.noCustomersFound')
+                    : t('customers.noCustomers')}
                 </p>
               ) : (
                 filteredCustomers.map((customer) => {
@@ -260,39 +265,39 @@ export default function AdminCustomersPage() {
                     <div
                       key={customer._id}
                       onClick={() => setSelectedCustomer(customer)}
-                      className={`border rounded-lg p-4 cursor-pointer transition ${
+                      className={`border rounded-lg p-3 md:p-4 cursor-pointer transition ${
                         selectedCustomer?._id === customer._id
                           ? 'border-primary-600 bg-primary-50'
                           : 'hover:border-primary-300 hover:bg-gray-50'
                       }`}
                     >
-                      <div className="flex items-center justify-between">
-                        <div className="flex-1">
-                          <p className="font-semibold">{customer.userId.name}</p>
-                          <p className="text-sm text-gray-600">{customer.userId.email}</p>
+                      <div className="flex items-center justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm md:text-base font-semibold truncate">{customer.userId.name}</p>
+                          <p className="text-xs md:text-sm text-gray-600 truncate">{customer.userId.email}</p>
                           {customer.userId.phone && (
-                            <p className="text-sm text-gray-500">{customer.userId.phone}</p>
+                            <p className="text-xs md:text-sm text-gray-500">{customer.userId.phone}</p>
                           )}
 
                           {/* Status badges */}
-                          <div className="flex gap-2 mt-2">
+                          <div className="flex flex-wrap gap-1.5 md:gap-2 mt-1.5 md:mt-2">
                             {finished && (
-                              <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
-                                All packages finished
+                              <span className="text-xs px-1.5 md:px-2 py-0.5 md:py-1 bg-orange-100 text-orange-700 rounded">
+                                {t('customers.packagesFinished')}
                               </span>
                             )}
                             {daysAbsent !== null && daysAbsent > 30 && (
-                              <span className="text-xs px-2 py-1 bg-red-100 text-red-700 rounded">
-                                Absent {daysAbsent} days
+                              <span className="text-xs px-1.5 md:px-2 py-0.5 md:py-1 bg-red-100 text-red-700 rounded">
+                                {t('customers.absent', { days: daysAbsent })}
                               </span>
                             )}
                           </div>
                         </div>
-                        <div className="text-right">
-                          <p className="text-2xl font-bold text-primary-600">
+                        <div className="text-right flex-shrink-0">
+                          <p className="text-xl md:text-2xl font-bold text-primary-600">
                             {customer.packages.length}
                           </p>
-                          <p className="text-xs text-gray-500">packages</p>
+                          <p className="text-xs text-gray-500">{t('customers.packages')}</p>
                         </div>
                       </div>
                     </div>
@@ -309,20 +314,20 @@ export default function AdminCustomersPage() {
             <Card>
               {/* Header with Profile Photo and Quick Stats */}
               <CardHeader>
-                <div className="flex items-start justify-between gap-6 mb-4">
-                  <div className="flex-1">
-                    <CardTitle className="text-2xl mb-2">{selectedCustomer.userId.name}</CardTitle>
-                    <div className="space-y-1 mt-2">
-                      <p className="text-sm text-muted-foreground">{selectedCustomer.userId.email}</p>
+                <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 mb-3 md:mb-4">
+                  <div className="flex-1 w-full">
+                    <CardTitle className="text-lg md:text-xl lg:text-2xl mb-1 md:mb-2">{selectedCustomer.userId.name}</CardTitle>
+                    <div className="space-y-0.5 md:space-y-1 mt-1 md:mt-2">
+                      <p className="text-xs md:text-sm text-muted-foreground break-all">{selectedCustomer.userId.email}</p>
                       {selectedCustomer.userId.phone && (
-                        <p className="text-sm text-muted-foreground">{selectedCustomer.userId.phone}</p>
+                        <p className="text-xs md:text-sm text-muted-foreground">{selectedCustomer.userId.phone}</p>
                       )}
                       {selectedCustomer.profession && (
-                        <p className="text-sm text-gray-600">Profession: {selectedCustomer.profession}</p>
+                        <p className="text-xs md:text-sm text-gray-600">{t('customers.profile.profession')} {selectedCustomer.profession}</p>
                       )}
                     </div>
                   </div>
-                  <div className="flex-shrink-0">
+                  <div className="flex-shrink-0 mx-auto sm:mx-0">
                     {selectedCustomer.profilePhoto ? (
                       <img
                         src={
@@ -335,10 +340,10 @@ export default function AdminCustomersPage() {
                               })()
                         }
                         alt="Profile"
-                        className="w-24 h-24 rounded-full object-cover border-4 border-primary-100 shadow-md"
+                        className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 md:border-4 border-primary-100 shadow-md"
                       />
                     ) : (
-                      <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center text-3xl font-bold text-gray-500 border-4 border-gray-300">
+                      <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl md:text-3xl font-bold text-gray-500 border-2 md:border-4 border-gray-300">
                         {selectedCustomer.userId.name.charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -346,41 +351,41 @@ export default function AdminCustomersPage() {
                 </div>
 
                 {/* Quick Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pt-3 md:pt-4 border-t">
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-gray-800">
+                    <p className="text-xl md:text-2xl font-bold text-gray-800">
                       {getTotalSessionsPurchased(selectedCustomer)}
                     </p>
-                    <p className="text-xs text-gray-500">Total Sessions</p>
+                    <p className="text-xs text-gray-500">{t('customers.totalSessions')}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-green-600">
+                    <p className="text-xl md:text-2xl font-bold text-green-600">
                       {selectedCustomer.completedSessions}
                     </p>
-                    <p className="text-xs text-gray-500">Completed</p>
+                    <p className="text-xs text-gray-500">{t('customers.completed')}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-blue-600">
+                    <p className="text-xl md:text-2xl font-bold text-blue-600">
                       {getRemainingSessionsTotal(selectedCustomer)}
                     </p>
-                    <p className="text-xs text-gray-500">Remaining</p>
+                    <p className="text-xs text-gray-500">{t('customers.remaining')}</p>
                   </div>
                   <div className="text-center">
-                    <p className="text-2xl font-bold text-red-600">
+                    <p className="text-xl md:text-2xl font-bold text-red-600">
                       {selectedCustomer.sessions.filter((s: any) => s.status === 'cancelled').length}
                     </p>
-                    <p className="text-xs text-gray-500">Cancellations</p>
+                    <p className="text-xs text-gray-500">{t('customers.cancellations')}</p>
                   </div>
                 </div>
               </CardHeader>
 
               <CardContent>
                 <Tabs defaultValue="session-status" className="w-full">
-                  <TabsList className="grid w-full grid-cols-4">
-                    <TabsTrigger value="session-status">Session Status</TabsTrigger>
-                    <TabsTrigger value="packages">Packages & Sessions</TabsTrigger>
-                    <TabsTrigger value="profile">Profile Info</TabsTrigger>
-                    <TabsTrigger value="analytics">Analytics</TabsTrigger>
+                  <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+                    <TabsTrigger value="session-status" className="text-xs md:text-sm">{t('customers.tabs.sessionStatus')}</TabsTrigger>
+                    <TabsTrigger value="packages" className="text-xs md:text-sm">{t('customers.tabs.packages')}</TabsTrigger>
+                    <TabsTrigger value="profile" className="text-xs md:text-sm">{t('customers.tabs.profile')}</TabsTrigger>
+                    <TabsTrigger value="analytics" className="text-xs md:text-sm">{t('customers.tabs.analytics')}</TabsTrigger>
                   </TabsList>
 
                   {/* Session Status Tab */}
@@ -393,10 +398,10 @@ export default function AdminCustomersPage() {
                         return (
                           <div className="text-center py-4">
                             <p className="text-orange-600 font-semibold text-lg mb-2">
-                              All Packages Completed
+                              {t('customers.sessionStatus.allPackagesCompleted')}
                             </p>
                             <p className="text-gray-600 text-sm">
-                              This customer has finished all their packages
+                              {t('customers.sessionStatus.finishedMessage')}
                             </p>
                           </div>
                         );
@@ -409,7 +414,7 @@ export default function AdminCustomersPage() {
                         );
                         return (
                           <div className="border-l-4 border-blue-500 pl-4 py-2">
-                            <p className="font-semibold text-lg">Next Session</p>
+                            <p className="font-semibold text-lg">{t('customers.sessionStatus.nextSession')}</p>
                             <p className="text-gray-700">
                               {formatStudioTime(nextSession.startTime, 'PPP')}
                             </p>
@@ -419,13 +424,13 @@ export default function AdminCustomersPage() {
                             </p>
                             <p className="text-blue-600 font-medium mt-2">
                               {daysUntil === 0
-                                ? 'Today'
+                                ? t('customers.sessionStatus.today')
                                 : daysUntil === 1
-                                ? 'Tomorrow'
-                                : `In ${daysUntil} days`}
+                                ? t('customers.sessionStatus.tomorrow')
+                                : t('customers.sessionStatus.inDays', { days: daysUntil })}
                             </p>
                             <p className="text-sm text-gray-500">
-                              Teacher: {nextSession.teacherId.userId.name}
+                              {t('customers.sessionStatus.teacher')} {nextSession.teacherId.userId.name}
                             </p>
                           </div>
                         );
@@ -449,22 +454,22 @@ export default function AdminCustomersPage() {
                               daysAbsent > 30 ? 'border-red-500' : 'border-yellow-500'
                             }`}
                           >
-                            <p className="font-semibold text-lg">No Upcoming Sessions</p>
+                            <p className="font-semibold text-lg">{t('customers.sessionStatus.noUpcomingSessions')}</p>
                             {finished && (
-                              <p className="text-orange-600 font-medium mb-2">All packages completed</p>
+                              <p className="text-orange-600 font-medium mb-2">{t('customers.sessionStatus.allPackagesCompleted')}</p>
                             )}
                             <p
                               className={`font-medium mt-2 ${
                                 daysAbsent > 30 ? 'text-red-600' : 'text-yellow-600'
                               }`}
                             >
-                              Last session: {daysAbsent} days ago
+                              {t('customers.sessionStatus.lastSession', { days: daysAbsent })}
                             </p>
                             <p className="text-sm text-gray-600 mt-1">
                               {formatStudioTime(lastSession.startTime, 'PPP')}
                             </p>
                             <p className="text-sm text-gray-500">
-                              {daysAbsent > 30 ? 'Long absence - follow up recommended' : 'Customer may need follow-up'}
+                              {daysAbsent > 30 ? t('customers.sessionStatus.longAbsence') : t('customers.sessionStatus.mayNeedFollowup')}
                             </p>
                           </div>
                         );
@@ -474,12 +479,12 @@ export default function AdminCustomersPage() {
                       if (selectedCustomer.packages.length > 0) {
                         return (
                           <div className="border-l-4 border-blue-500 pl-4 py-2">
-                            <p className="font-semibold text-lg text-blue-600">New Customer</p>
+                            <p className="font-semibold text-lg text-blue-600">{t('customers.sessionStatus.newCustomer')}</p>
                             <p className="text-gray-600 mt-2">
-                              No sessions booked yet
+                              {t('customers.sessionStatus.noSessionsBooked')}
                             </p>
                             <p className="text-sm text-gray-500 mt-1">
-                              Has {selectedCustomer.packages.length} package(s) - encourage first booking
+                              {t('customers.sessionStatus.encourageBooking', { count: selectedCustomer.packages.length })}
                             </p>
                           </div>
                         );
@@ -488,8 +493,8 @@ export default function AdminCustomersPage() {
                       // No packages at all
                       return (
                         <div className="text-center py-4 text-gray-500">
-                          <p className="font-semibold">No Packages</p>
-                          <p className="text-sm mt-1">Customer needs to purchase a package</p>
+                          <p className="font-semibold">{t('customers.sessionStatus.noPackages')}</p>
+                          <p className="text-sm mt-1">{t('customers.sessionStatus.needsToPurchase')}</p>
                         </div>
                       );
                     })()}
@@ -500,10 +505,10 @@ export default function AdminCustomersPage() {
                     {/* Packages Section */}
                     <div>
                       <h3 className="text-sm font-medium text-gray-700 mb-3">
-                        Packages ({selectedCustomer.packages.length})
+                        {t('customers.packagesTab.packagesCount', { count: selectedCustomer.packages.length })}
                       </h3>
                       {selectedCustomer.packages.length === 0 ? (
-                        <p className="text-gray-500 text-center py-4">No packages</p>
+                        <p className="text-gray-500 text-center py-4">{t('customers.packagesTab.noPackages')}</p>
                       ) : (
                         <div className="space-y-2 max-h-[300px] overflow-y-auto">
                           {selectedCustomer.packages.map((pkg) => {
@@ -537,11 +542,11 @@ export default function AdminCustomersPage() {
                                       </span>
                                     </div>
                                     <p className="text-sm text-gray-500 mt-1">
-                                      Purchased: {formatStudioTime(pkg.createdAt, 'PPP')}
+                                      {t('customers.packagesTab.purchased')} {formatStudioTime(pkg.createdAt, 'PPP')}
                                     </p>
                                     {pkg.price && (
                                       <p className="text-sm text-gray-600 font-medium mt-1">
-                                        Price: {pkg.price.toLocaleString()} Baht
+                                        {t('common.price')}: {pkg.price.toLocaleString()} Baht
                                       </p>
                                     )}
                                   </div>
@@ -549,7 +554,7 @@ export default function AdminCustomersPage() {
                                     <p className="text-lg font-bold">
                                       {completedForPackage}/{pkg.totalSessions}
                                     </p>
-                                    <p className="text-xs text-gray-500">completed</p>
+                                    <p className="text-xs text-gray-500">{t('customers.packagesTab.completedOf')}</p>
                                     <span
                                       className={`inline-block mt-1 px-2 py-1 rounded text-xs ${
                                         pkg.status === 'active'
@@ -561,7 +566,7 @@ export default function AdminCustomersPage() {
                                           : 'bg-gray-100 text-gray-800'
                                       }`}
                                     >
-                                      {pkg.status}
+                                      {t(`customers.packagesTab.${pkg.status}`)}
                                     </span>
                                   </div>
                                 </div>
@@ -602,31 +607,31 @@ export default function AdminCustomersPage() {
                             <div className="flex items-center justify-between mb-3">
                               <h3 className="text-sm font-medium text-gray-700">
                                 {selectedPackageId
-                                  ? `Sessions for Selected Package (${filteredSessions.length})`
-                                  : `All Sessions (${filteredSessions.length})`
+                                  ? t('customers.packagesTab.sessionsForPackage', { count: filteredSessions.length })
+                                  : t('customers.packagesTab.allSessions', { count: filteredSessions.length })
                                 }
                               </h3>
                               <Select value={sessionFilter} onValueChange={setSessionFilter}>
                                 <SelectTrigger className="w-[180px]">
-                                  <SelectValue placeholder="Filter sessions" />
+                                  <SelectValue placeholder={t('customers.packagesTab.filterSessions')} />
                                 </SelectTrigger>
                                 <SelectContent>
-                                  <SelectItem value="all">All</SelectItem>
-                                  <SelectItem value="completed">Completed</SelectItem>
-                                  <SelectItem value="cancelled">Cancelled</SelectItem>
-                                  <SelectItem value="upcoming">Upcoming</SelectItem>
-                                  <SelectItem value="others">Others</SelectItem>
+                                  <SelectItem value="all">{t('customers.packagesTab.filterAll')}</SelectItem>
+                                  <SelectItem value="completed">{t('customers.packagesTab.filterCompleted')}</SelectItem>
+                                  <SelectItem value="cancelled">{t('customers.packagesTab.filterCancelled')}</SelectItem>
+                                  <SelectItem value="upcoming">{t('customers.packagesTab.filterUpcoming')}</SelectItem>
+                                  <SelectItem value="others">{t('customers.packagesTab.filterOthers')}</SelectItem>
                                 </SelectContent>
                               </Select>
                             </div>
 
                             {selectedCustomer.sessions.length === 0 ? (
-                              <p className="text-gray-500 text-center py-8">No sessions yet</p>
+                              <p className="text-gray-500 text-center py-8">{t('customers.packagesTab.noSessions')}</p>
                             ) : filteredSessions.length === 0 ? (
                               <p className="text-gray-500 text-center py-4">
                                 {selectedPackageId
-                                  ? 'No sessions found for this package'
-                                  : `No ${sessionFilter === 'all' ? '' : sessionFilter} sessions found`
+                                  ? t('customers.packagesTab.noSessionsForPackage')
+                                  : t('customers.packagesTab.noSessionsFiltered', { filter: sessionFilter === 'all' ? '' : t(`customers.packagesTab.${sessionFilter}`) })
                                 }
                               </p>
                             ) : (
@@ -640,24 +645,24 @@ export default function AdminCustomersPage() {
                                   let statusClass = 'bg-gray-100 text-gray-800';
 
                                   if (session.status === 'completed') {
-                                    displayStatus = 'completed';
+                                    displayStatus = t('customers.completed');
                                     statusClass = 'bg-green-100 text-green-800';
                                   } else if (session.status === 'cancelled') {
-                                    displayStatus = 'cancelled';
+                                    displayStatus = t('customers.packagesTab.cancelled');
                                     statusClass = 'bg-red-100 text-red-800';
                                   } else if (session.status === 'confirmed') {
                                     if (isUpcoming) {
-                                      displayStatus = 'upcoming';
+                                      displayStatus = t('customers.packagesTab.upcoming');
                                       statusClass = 'bg-blue-100 text-blue-800';
                                     } else if (isPast) {
-                                      displayStatus = 'pending';
+                                      displayStatus = t('customers.packagesTab.pending');
                                       statusClass = 'bg-yellow-100 text-yellow-800';
                                     } else {
-                                      displayStatus = 'pending';
+                                      displayStatus = t('customers.packagesTab.pending');
                                       statusClass = 'bg-yellow-100 text-yellow-800';
                                     }
                                   } else if (session.status === 'pending') {
-                                    displayStatus = 'pending';
+                                    displayStatus = t('customers.packagesTab.pending');
                                     statusClass = 'bg-yellow-100 text-yellow-800';
                                   }
 
@@ -678,12 +683,12 @@ export default function AdminCustomersPage() {
                                             {formatStudioTime(session.endTime, 'p')}
                                           </p>
                                           <p className="text-sm text-gray-600">
-                                            Teacher: {session.teacherId.userId.name}
+                                            {t('customers.sessionStatus.teacher')} {session.teacherId.userId.name}
                                           </p>
-                                          <p className="text-sm text-gray-500">Type: {session.type}</p>
+                                          <p className="text-sm text-gray-500">{t('common.type')}: {session.type}</p>
                                           {session.packageId && (
                                             <p className="text-sm text-gray-500">
-                                              Package: {session.packageId.name}
+                                              {t('customers.packagesTab.package')} {session.packageId.name}
                                             </p>
                                           )}
                                         </div>
@@ -707,25 +712,25 @@ export default function AdminCustomersPage() {
                     <div className="space-y-3">
                       {selectedCustomer.dateOfBirth && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Date of Birth</p>
+                          <p className="text-sm font-medium text-gray-600">{t('customers.profile.dateOfBirth')}</p>
                           <p className="text-sm">{formatStudioTime(selectedCustomer.dateOfBirth, 'PPP')}</p>
                         </div>
                       )}
                       {selectedCustomer.height && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Height</p>
-                          <p className="text-sm">{selectedCustomer.height} cm</p>
+                          <p className="text-sm font-medium text-gray-600">{t('customers.profile.height')}</p>
+                          <p className="text-sm">{selectedCustomer.height} {t('customers.profile.cm')}</p>
                         </div>
                       )}
                       {selectedCustomer.weight && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Weight</p>
-                          <p className="text-sm">{selectedCustomer.weight} kg</p>
+                          <p className="text-sm font-medium text-gray-600">{t('customers.profile.weight')}</p>
+                          <p className="text-sm">{selectedCustomer.weight} {t('customers.profile.kg')}</p>
                         </div>
                       )}
                       {selectedCustomer.medicalNotes && (
                         <div>
-                          <p className="text-sm font-medium text-gray-600 mb-1">Medical Notes</p>
+                          <p className="text-sm font-medium text-gray-600 mb-1">{t('customers.profile.medicalNotes')}</p>
                           <p className="text-sm text-gray-700 p-3 bg-yellow-50 border border-yellow-200 rounded">
                             {selectedCustomer.medicalNotes}
                           </p>
@@ -733,16 +738,16 @@ export default function AdminCustomersPage() {
                       )}
                       {(selectedCustomer.emergencyContactName || selectedCustomer.emergencyContactPhone) && (
                         <div className="pt-3 border-t">
-                          <p className="text-sm font-medium text-gray-600 mb-2">Emergency Contact</p>
+                          <p className="text-sm font-medium text-gray-600 mb-2">{t('customers.profile.emergencyContact')}</p>
                           {selectedCustomer.emergencyContactName && (
                             <div className="mb-1">
-                              <p className="text-xs text-gray-500">Name</p>
+                              <p className="text-xs text-gray-500">{t('common.name')}</p>
                               <p className="text-sm">{selectedCustomer.emergencyContactName}</p>
                             </div>
                           )}
                           {selectedCustomer.emergencyContactPhone && (
                             <div>
-                              <p className="text-xs text-gray-500">Phone</p>
+                              <p className="text-xs text-gray-500">{t('common.phone')}</p>
                               <p className="text-sm">{selectedCustomer.emergencyContactPhone}</p>
                             </div>
                           )}
@@ -754,7 +759,7 @@ export default function AdminCustomersPage() {
                        !selectedCustomer.medicalNotes &&
                        !selectedCustomer.emergencyContactName &&
                        !selectedCustomer.emergencyContactPhone && (
-                        <p className="text-gray-500 text-center py-8">No profile information available</p>
+                        <p className="text-gray-500 text-center py-8">{t('customers.profile.noProfileInfo')}</p>
                       )}
                     </div>
                   </TabsContent>
@@ -762,44 +767,44 @@ export default function AdminCustomersPage() {
                   {/* Analytics Tab */}
                   <TabsContent value="analytics" className="space-y-4">
                     {!selectedCustomer.analytics ? (
-                      <p className="text-gray-500 text-center py-8">No analytics data available</p>
+                      <p className="text-gray-500 text-center py-8">{t('customers.analytics.noData')}</p>
                     ) : (
                       <div className="space-y-6">
                         {/* Spending Metrics */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Spending Metrics</h3>
+                          <h3 className="text-lg font-semibold mb-3">{t('customers.analytics.spendingMetrics')}</h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="border rounded-lg p-4 text-center">
                               <p className="text-3xl font-bold text-primary-600">
                                 {selectedCustomer.analytics.totalPackagesPurchased}
                               </p>
-                              <p className="text-sm text-gray-600 mt-1">Packages Purchased</p>
+                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.packagesPurchased')}</p>
                             </div>
                             <div className="border rounded-lg p-4 text-center">
                               <p className="text-3xl font-bold text-green-600">
                                 {selectedCustomer.analytics.totalMoneySpent.toLocaleString()}
                               </p>
-                              <p className="text-sm text-gray-600 mt-1">Baht Spent</p>
+                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.bahtSpent')}</p>
                             </div>
                           </div>
                         </div>
 
                         {/* Activity Metrics */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Activity Metrics</h3>
+                          <h3 className="text-lg font-semibold mb-3">{t('customers.analytics.activityMetrics')}</h3>
                           <div className="grid grid-cols-2 gap-4">
                             <div className="border rounded-lg p-4 text-center">
                               <p className="text-3xl font-bold text-blue-600">
                                 {selectedCustomer.analytics.avgDaysBetweenSessions.toFixed(1)}
                               </p>
-                              <p className="text-sm text-gray-600 mt-1">Avg Days Between Sessions</p>
+                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.avgDaysBetweenSessions')}</p>
                             </div>
                             {selectedCustomer.analytics.totalPackagesPurchased > 1 && (
                               <div className="border rounded-lg p-4 text-center">
                                 <p className="text-3xl font-bold text-purple-600">
                                   {selectedCustomer.analytics.avgDaysBetweenPackages.toFixed(1)}
                                 </p>
-                                <p className="text-sm text-gray-600 mt-1">Avg Days Between Packages</p>
+                                <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.avgDaysBetweenPackages')}</p>
                               </div>
                             )}
                           </div>
@@ -807,9 +812,9 @@ export default function AdminCustomersPage() {
 
                         {/* Popular Package Types */}
                         <div>
-                          <h3 className="text-lg font-semibold mb-3">Popular Package Types</h3>
+                          <h3 className="text-lg font-semibold mb-3">{t('customers.analytics.popularPackageTypes')}</h3>
                           {selectedCustomer.analytics.popularPackages.length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">No package data</p>
+                            <p className="text-gray-500 text-center py-4">{t('customers.analytics.noPackageData')}</p>
                           ) : (
                             <div className="space-y-2">
                               {selectedCustomer.analytics.popularPackages.map((pkg, idx) => {
@@ -838,7 +843,7 @@ export default function AdminCustomersPage() {
                         {/* Session Activity Heatmap */}
                         <div>
                           <div className="flex items-center justify-between mb-3">
-                            <h3 className="text-lg font-semibold">Session Activity</h3>
+                            <h3 className="text-lg font-semibold">{t('customers.analytics.sessionActivity')}</h3>
                             {(() => {
                               const completedSessions = selectedCustomer.sessions.filter(s => s.status === 'completed');
                               if (completedSessions.length === 0) return null;
@@ -871,7 +876,7 @@ export default function AdminCustomersPage() {
                               const completedSessions = selectedCustomer.sessions.filter(s => s.status === 'completed');
 
                               if (completedSessions.length === 0) {
-                                return <p className="text-gray-500 text-center py-4">No session activity</p>;
+                                return <p className="text-gray-500 text-center py-4">{t('customers.analytics.noSessionActivity')}</p>;
                               }
 
                               // Create a map of dates to session counts
@@ -978,7 +983,10 @@ export default function AdminCustomersPage() {
 
                                     {/* Summary */}
                                     <div className="mt-4 text-xs text-gray-600 text-center">
-                                      {Object.keys(sessionsByDate).filter(d => new Date(d).getFullYear() === heatmapYear).length} days with sessions in {heatmapYear}
+                                      {t('customers.analytics.daysWithSessions', {
+                                        count: Object.keys(sessionsByDate).filter(d => new Date(d).getFullYear() === heatmapYear).length,
+                                        year: heatmapYear
+                                      })}
                                     </div>
                                   </div>
                                 </div>
@@ -995,7 +1003,7 @@ export default function AdminCustomersPage() {
           ) : (
             <Card>
               <CardContent className="py-12 text-center">
-                <p className="text-gray-500">Hover over or select a customer to view details</p>
+                <p className="text-gray-500">{t('customers.hoverToView')}</p>
               </CardContent>
             </Card>
           )}
