@@ -89,6 +89,13 @@ export class NotificationService {
       type: 'cancellation_requested',
       title: 'Cancellation Request',
       message,
+      titleKey: 'notificationTypes.cancellation_requested.title',
+      messageKey: params.reason ? 'notificationTypes.cancellation_requested.messageWithReason' : 'notificationTypes.cancellation_requested.message',
+      data: {
+        customerName: params.customerName,
+        bookingDate: params.bookingDate.toLocaleDateString(),
+        reason: params.reason,
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });
@@ -109,6 +116,13 @@ export class NotificationService {
       type: 'package_requested',
       title: 'New Package Request',
       message: `${params.customerName} requested a ${params.packageType} package with ${params.sessions} sessions`,
+      titleKey: 'notificationTypes.package_requested.title',
+      messageKey: 'notificationTypes.package_requested.message',
+      data: {
+        customerName: params.customerName,
+        packageType: params.packageType,
+        sessions: params.sessions,
+      },
       relatedId: params.requestId,
       relatedModel: 'PackageRequest',
     });
@@ -128,6 +142,12 @@ export class NotificationService {
       type: 'package_approved',
       title: 'Package Request Approved',
       message: `Your ${params.packageType} package with ${params.sessions} sessions has been approved and activated!`,
+      titleKey: 'notificationTypes.package_approved.title',
+      messageKey: 'notificationTypes.package_approved.message',
+      data: {
+        packageType: params.packageType,
+        sessions: params.sessions,
+      },
       relatedId: params.packageId,
       relatedModel: 'Package',
     });
@@ -150,6 +170,11 @@ export class NotificationService {
       type: 'package_rejected',
       title: 'Package Request Rejected',
       message,
+      titleKey: 'notificationTypes.package_rejected.title',
+      messageKey: params.reason ? 'notificationTypes.package_rejected.messageWithReason' : 'notificationTypes.package_rejected.message',
+      data: {
+        reason: params.reason,
+      },
       relatedId: params.requestId,
       relatedModel: 'PackageRequest',
     });
@@ -168,6 +193,11 @@ export class NotificationService {
       type: 'booking_cancelled',
       title: 'Cancellation Request Approved',
       message: `Your cancellation request for the booking on ${params.bookingDate.toLocaleDateString()} has been approved`,
+      titleKey: 'notificationTypes.booking_cancelled.approvalTitle',
+      messageKey: 'notificationTypes.booking_cancelled.approvalMessage',
+      data: {
+        bookingDate: params.bookingDate.toLocaleDateString(),
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });
@@ -191,6 +221,12 @@ export class NotificationService {
       type: 'cancellation_requested',
       title: 'Cancellation Request Rejected',
       message,
+      titleKey: 'notificationTypes.cancellation_requested.rejectionTitle',
+      messageKey: params.reason ? 'notificationTypes.cancellation_requested.rejectionMessageWithReason' : 'notificationTypes.cancellation_requested.rejectionMessage',
+      data: {
+        bookingDate: params.bookingDate.toLocaleDateString(),
+        reason: params.reason,
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });
@@ -211,6 +247,13 @@ export class NotificationService {
       type: 'booking_requested',
       title: 'New Booking Request',
       message: `${params.customerName} requested a ${params.bookingType} session on ${params.bookingDate.toLocaleDateString()}`,
+      titleKey: 'notificationTypes.booking_requested.title',
+      messageKey: 'notificationTypes.booking_requested.message',
+      data: {
+        customerName: params.customerName,
+        bookingType: params.bookingType,
+        bookingDate: params.bookingDate.toLocaleDateString(),
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });
@@ -230,6 +273,12 @@ export class NotificationService {
       type: 'booking_approved',
       title: 'Booking Request Approved',
       message: `Your booking request for ${params.bookingDate.toLocaleDateString()} has been approved by ${params.teacherName}`,
+      titleKey: 'notificationTypes.booking_approved.title',
+      messageKey: 'notificationTypes.booking_approved.message',
+      data: {
+        bookingDate: params.bookingDate.toLocaleDateString(),
+        teacherName: params.teacherName,
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });
@@ -253,6 +302,12 @@ export class NotificationService {
       type: 'booking_rejected',
       title: 'Booking Request Rejected',
       message,
+      titleKey: 'notificationTypes.booking_rejected.title',
+      messageKey: params.reason ? 'notificationTypes.booking_rejected.messageWithReason' : 'notificationTypes.booking_rejected.message',
+      data: {
+        bookingDate: params.bookingDate.toLocaleDateString(),
+        reason: params.reason,
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });
@@ -272,6 +327,12 @@ export class NotificationService {
       type: 'registration_requested',
       title: 'New Registration Request',
       message: `${params.customerName} (${params.customerEmail}) submitted a registration request`,
+      titleKey: 'notificationTypes.registration_requested.title',
+      messageKey: 'notificationTypes.registration_requested.message',
+      data: {
+        customerName: params.customerName,
+        customerEmail: params.customerEmail,
+      },
       relatedId: params.registrationId,
       relatedModel: 'RegistrationRequest',
     });
@@ -290,6 +351,12 @@ export class NotificationService {
       type: 'registration_approved',
       title: 'Registration Approved - Welcome!',
       message: `Welcome! Your registration has been approved and you've been assigned a ${params.packageName} package with ${params.totalSessions} sessions. Start booking your classes now!`,
+      titleKey: 'notificationTypes.registration_approved.title',
+      messageKey: 'notificationTypes.registration_approved.message',
+      data: {
+        packageName: params.packageName,
+        totalSessions: params.totalSessions,
+      },
     });
   }
 

@@ -56,12 +56,17 @@
     "booking_cancelled": {
       "title": "ยกเลิกการจองแล้ว",
       "message": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}}",
-      "messageWithReason": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}"
+      "messageWithReason": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}",
+      "approvalTitle": "อนุมัติคำขอยกเลิกแล้ว",
+      "approvalMessage": "คำขอยกเลิกของคุณสำหรับการจองเมื่อ {{bookingDate}} ได้รับการอนุมัติแล้ว"
     },
     "cancellation_requested": {
       "title": "คำขอยกเลิก",
       "message": "{{customerName}} ขอยกเลิกการจองเมื่อ {{bookingDate}}",
-      "messageWithReason": "{{customerName}} ขอยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}"
+      "messageWithReason": "{{customerName}} ขอยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}",
+      "rejectionTitle": "ปฏิเสธคำขอยกเลิก",
+      "rejectionMessage": "คำขอยกเลิกของคุณสำหรับการจองเมื่อ {{bookingDate}} ถูกปฏิเสธ กรุณาติดต่อครูสำหรับรายละเอียดเพิ่มเติม",
+      "rejectionMessageWithReason": "คำขอยกเลิกของคุณสำหรับการจองเมื่อ {{bookingDate}} ถูกปฏิเสธ เหตุผล: {{reason}}"
     },
     "package_requested": {
       "title": "คำขอแพ็กเกจใหม่",

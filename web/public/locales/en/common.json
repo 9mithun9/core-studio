@@ -56,12 +56,17 @@
     "booking_cancelled": {
       "title": "Booking Cancelled",
       "message": "{{customerName}} cancelled their booking on {{bookingDate}}",
-      "messageWithReason": "{{customerName}} cancelled their booking on {{bookingDate}}. Reason: {{reason}}"
+      "messageWithReason": "{{customerName}} cancelled their booking on {{bookingDate}}. Reason: {{reason}}",
+      "approvalTitle": "Cancellation Request Approved",
+      "approvalMessage": "Your cancellation request for the booking on {{bookingDate}} has been approved"
     },
     "cancellation_requested": {
       "title": "Cancellation Request",
       "message": "{{customerName}} requested to cancel booking on {{bookingDate}}",
-      "messageWithReason": "{{customerName}} requested to cancel booking on {{bookingDate}}. Reason: {{reason}}"
+      "messageWithReason": "{{customerName}} requested to cancel booking on {{bookingDate}}. Reason: {{reason}}",
+      "rejectionTitle": "Cancellation Request Rejected",
+      "rejectionMessage": "Your cancellation request for the booking on {{bookingDate}} was rejected. Please contact the teacher for more details.",
+      "rejectionMessageWithReason": "Your cancellation request for the booking on {{bookingDate}} was rejected. Reason: {{reason}}"
     },
     "package_requested": {
       "title": "New Package Request",
