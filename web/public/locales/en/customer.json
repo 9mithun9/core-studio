@@ -236,9 +236,18 @@
         "title": "Premium Package",
         "description": "Best value for committed practitioners",
         "features": {
-          "feature1": "20 private sessions",
+          "feature1": "20 sessions per package",
           "feature2": "Valid for 6 months",
           "feature3": "Priority booking"
+        }
+      },
+      "ultimate": {
+        "title": "Ultimate Package",
+        "description": "Maximum value for dedicated practitioners",
+        "features": {
+          "feature1": "30 sessions per package",
+          "feature2": "Valid for 9 months",
+          "feature3": "VIP priority + perks"
         }
       }
     },

@@ -12,29 +12,61 @@ export default function PackagesPage() {
   const { t } = useTranslation('customer');
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [requestForm, setRequestForm] = useState({ packageType: 'private', sessions: 10, notes: '' });
+  const [selectedTabs, setSelectedTabs] = useState<Record<string, 'private' | 'duo' | 'group'>>({
+    single: 'private',
+    starter: 'private',
+    standard: 'private',
+    premium: 'private',
+    ultimate: 'private',
+  });
 
   const packages = [
     {
       key: 'single',
       sessions: 1,
-      price: 1500,
+      pricing: {
+        private: 1500,
+        duo: 1200,
+        group: 800,
+      },
     },
     {
       key: 'starter',
       sessions: 5,
-      price: 7000,
+      pricing: {
+        private: 7000,
+        duo: 5500,
+        group: 3500,
+      },
       popular: true,
     },
     {
       key: 'standard',
       sessions: 10,
-      price: 13000,
+      pricing: {
+        private: 13000,
+        duo: 10000,
+        group: 6500,
+      },
       popular: true,
     },
     {
       key: 'premium',
       sessions: 20,
-      price: 24000,
+      pricing: {
+        private: 24000,
+        duo: 18000,
+        group: 12000,
+      },
+    },
+    {
+      key: 'ultimate',
+      sessions: 30,
+      pricing: {
+        private: 34000,
+        duo: 25000,
+        group: 16500,
+      },
     },
   ];
 
@@ -56,6 +88,10 @@ export default function PackagesPage() {
     }
   };
 
+  const handleTabChange = (packageKey: string, tab: 'private' | 'duo' | 'group') => {
+    setSelectedTabs(prev => ({ ...prev, [packageKey]: tab }));
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-6 md:mb-8">
@@ -67,7 +103,7 @@ export default function PackagesPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
         {packages.map((pkg) => (
           <Card
             key={pkg.key}
@@ -80,7 +116,7 @@ export default function PackagesPage() {
                 </span>
               </div>
             )}
-            <CardHeader className="text-center">
+            <CardHeader className="text-center pb-3">
               <CardTitle className="text-lg md:text-xl mb-2">
                 {t(`packages.catalog.${pkg.key}.title`)}
               </CardTitle>
@@ -92,8 +128,44 @@ export default function PackagesPage() {
                   {t('packages.sessions')}
                 </span>
               </div>
+
+              {/* Tabs for Private/Duo/Group */}
+              <div className="flex border-b border-gray-200 mb-3">
+                <button
+                  onClick={() => handleTabChange(pkg.key, 'private')}
+                  className={`flex-1 py-2 text-xs font-medium transition-colors ${
+                    selectedTabs[pkg.key] === 'private'
+                      ? 'border-b-2 border-primary-600 text-primary-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {t('packages.private')}
+                </button>
+                <button
+                  onClick={() => handleTabChange(pkg.key, 'duo')}
+                  className={`flex-1 py-2 text-xs font-medium transition-colors ${
+                    selectedTabs[pkg.key] === 'duo'
+                      ? 'border-b-2 border-primary-600 text-primary-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {t('packages.duo')}
+                </button>
+                <button
+                  onClick={() => handleTabChange(pkg.key, 'group')}
+                  className={`flex-1 py-2 text-xs font-medium transition-colors ${
+                    selectedTabs[pkg.key] === 'group'
+                      ? 'border-b-2 border-primary-600 text-primary-600'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  {t('packages.group')}
+                </button>
+              </div>
+
+              {/* Price for selected tab */}
               <div className="text-2xl md:text-3xl font-bold text-gray-900">
-                ฿{pkg.price.toLocaleString()}
+                ฿{pkg.pricing[selectedTabs[pkg.key]].toLocaleString()}
               </div>
               <CardDescription className="mt-2 text-xs md:text-sm">
                 {t(`packages.catalog.${pkg.key}.description`)}
