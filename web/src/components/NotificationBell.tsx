@@ -13,6 +13,9 @@ interface Notification {
   type: string;
   title: string;
   message: string;
+  titleKey?: string;
+  messageKey?: string;
+  data?: Record<string, any>;
   isRead: boolean;
   createdAt: string;
   relatedId?: string;
@@ -236,13 +239,15 @@ export default function NotificationBell() {
                     <div className="flex-1 pr-2">
                       <div className="flex items-start justify-between mb-1">
                         <h4 className="font-semibold text-gray-900 text-sm">
-                          {notification.title}
+                          {notification.titleKey ? t(notification.titleKey) : notification.title}
                         </h4>
                         {!notification.isRead && (
                           <span className="w-2 h-2 bg-blue-600 rounded-full flex-shrink-0 mt-1.5 ml-2"></span>
                         )}
                       </div>
-                      <p className="text-sm text-gray-600 mb-2">{notification.message}</p>
+                      <p className="text-sm text-gray-600 mb-2">
+                        {notification.messageKey ? t(notification.messageKey, notification.data || {}) : notification.message}
+                      </p>
                       <p className="text-xs text-gray-400">
                         {formatStudioTime(new Date(notification.createdAt))}
                       </p>

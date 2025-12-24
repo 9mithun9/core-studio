@@ -51,5 +51,51 @@
     "delete": "Delete",
     "loading": "Loading...",
     "noNotifications": "No notifications"
+  },
+  "notificationTypes": {
+    "booking_cancelled": {
+      "title": "Booking Cancelled",
+      "message": "{{customerName}} cancelled their booking on {{bookingDate}}",
+      "messageWithReason": "{{customerName}} cancelled their booking on {{bookingDate}}. Reason: {{reason}}"
+    },
+    "cancellation_requested": {
+      "title": "Cancellation Request",
+      "message": "{{customerName}} requested to cancel booking on {{bookingDate}}",
+      "messageWithReason": "{{customerName}} requested to cancel booking on {{bookingDate}}. Reason: {{reason}}"
+    },
+    "package_requested": {
+      "title": "New Package Request",
+      "message": "{{customerName}} requested a {{packageType}} package with {{sessions}} sessions"
+    },
+    "package_approved": {
+      "title": "Package Request Approved",
+      "message": "Your {{packageType}} package with {{sessions}} sessions has been approved and activated!"
+    },
+    "package_rejected": {
+      "title": "Package Request Rejected",
+      "message": "Your package request was rejected. Please contact admin for more details.",
+      "messageWithReason": "Your package request was rejected. Reason: {{reason}}"
+    },
+    "booking_requested": {
+      "title": "New Booking Request",
+      "message": "{{customerName}} requested a {{bookingType}} session on {{bookingDate}}"
+    },
+    "booking_approved": {
+      "title": "Booking Request Approved",
+      "message": "Your booking request for {{bookingDate}} has been approved by {{teacherName}}"
+    },
+    "booking_rejected": {
+      "title": "Booking Request Rejected",
+      "message": "Your booking request for {{bookingDate}} was rejected. Please contact the teacher for more details.",
+      "messageWithReason": "Your booking request for {{bookingDate}} was rejected. Reason: {{reason}}"
+    },
+    "registration_requested": {
+      "title": "New Registration Request",
+      "message": "{{customerName}} ({{customerEmail}}) submitted a registration request"
+    },
+    "registration_approved": {
+      "title": "Registration Approved - Welcome!",
+      "message": "Welcome! Your registration has been approved and you've been assigned a {{packageName}} package with {{totalSessions}} sessions. Start booking your classes now!"
+    }
   }
 }

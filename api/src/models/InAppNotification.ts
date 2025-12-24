@@ -6,6 +6,9 @@ export interface IInAppNotification extends Document {
   type: 'booking_cancelled' | 'cancellation_requested' | 'package_requested' | 'package_approved' | 'package_rejected' | 'booking_requested' | 'booking_approved' | 'booking_rejected' | 'registration_requested' | 'registration_approved' | 'registration_rejected';
   title: string;
   message: string;
+  titleKey?: string; // i18n translation key for title
+  messageKey?: string; // i18n translation key for message
+  data?: Record<string, any>; // Dynamic data for translation interpolation
   relatedId?: Types.ObjectId; // ID of related booking/package/request
   relatedModel?: 'Booking' | 'Package' | 'PackageRequest' | 'RegistrationRequest';
   isRead: boolean;
@@ -33,6 +36,18 @@ const inAppNotificationSchema = new Schema<IInAppNotification>(
     message: {
       type: String,
       required: true,
+    },
+    titleKey: {
+      type: String,
+      required: false,
+    },
+    messageKey: {
+      type: String,
+      required: false,
+    },
+    data: {
+      type: Schema.Types.Mixed,
+      required: false,
     },
     relatedId: {
       type: Schema.Types.ObjectId,

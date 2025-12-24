@@ -11,6 +11,9 @@ export class NotificationService {
     type: 'booking_cancelled' | 'cancellation_requested' | 'package_requested' | 'package_approved' | 'package_rejected' | 'booking_requested' | 'booking_approved' | 'booking_rejected' | 'registration_requested' | 'registration_approved' | 'registration_rejected';
     title: string;
     message: string;
+    titleKey?: string;
+    messageKey?: string;
+    data?: Record<string, any>;
     relatedId?: Types.ObjectId;
     relatedModel?: 'Booking' | 'Package' | 'PackageRequest' | 'RegistrationRequest';
   }) {
@@ -20,6 +23,9 @@ export class NotificationService {
         type: params.type,
         title: params.title,
         message: params.message,
+        titleKey: params.titleKey,
+        messageKey: params.messageKey,
+        data: params.data,
         relatedId: params.relatedId,
         relatedModel: params.relatedModel,
         isRead: false,
@@ -52,6 +58,13 @@ export class NotificationService {
       type: 'booking_cancelled',
       title: 'Booking Cancelled',
       message,
+      titleKey: 'notificationTypes.booking_cancelled.title',
+      messageKey: params.reason ? 'notificationTypes.booking_cancelled.messageWithReason' : 'notificationTypes.booking_cancelled.message',
+      data: {
+        customerName: params.customerName,
+        bookingDate: params.bookingDate.toLocaleDateString(),
+        reason: params.reason,
+      },
       relatedId: params.bookingId,
       relatedModel: 'Booking',
     });

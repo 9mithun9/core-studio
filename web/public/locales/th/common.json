@@ -51,5 +51,51 @@
     "delete": "ลบ",
     "loading": "กำลังโหลด...",
     "noNotifications": "ไม่มีการแจ้งเตือน"
+  },
+  "notificationTypes": {
+    "booking_cancelled": {
+      "title": "ยกเลิกการจองแล้ว",
+      "message": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}}",
+      "messageWithReason": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}"
+    },
+    "cancellation_requested": {
+      "title": "คำขอยกเลิก",
+      "message": "{{customerName}} ขอยกเลิกการจองเมื่อ {{bookingDate}}",
+      "messageWithReason": "{{customerName}} ขอยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}"
+    },
+    "package_requested": {
+      "title": "คำขอแพ็กเกจใหม่",
+      "message": "{{customerName}} ขอแพ็กเกจ {{packageType}} จำนวน {{sessions}} คลาส"
+    },
+    "package_approved": {
+      "title": "คำขอแพ็กเกจได้รับการอนุมัติ",
+      "message": "แพ็กเกจ {{packageType}} จำนวน {{sessions}} คลาสของคุณได้รับการอนุมัติและเปิดใช้งานแล้ว!"
+    },
+    "package_rejected": {
+      "title": "คำขอแพ็กเกจถูกปฏิเสธ",
+      "message": "คำขอแพ็กเกจของคุณถูกปฏิเสธ กรุณาติดต่อผู้ดูแลระบบสำหรับรายละเอียดเพิ่มเติม",
+      "messageWithReason": "คำขอแพ็กเกจของคุณถูกปฏิเสธ เหตุผล: {{reason}}"
+    },
+    "booking_requested": {
+      "title": "คำขอจองใหม่",
+      "message": "{{customerName}} ขอจองคลาส {{bookingType}} เมื่อ {{bookingDate}}"
+    },
+    "booking_approved": {
+      "title": "คำขอจองได้รับการอนุมัติ",
+      "message": "คำขอจองของคุณสำหรับ {{bookingDate}} ได้รับการอนุมัติโดย {{teacherName}}"
+    },
+    "booking_rejected": {
+      "title": "คำขอจองถูกปฏิเสธ",
+      "message": "คำขอจองของคุณสำหรับ {{bookingDate}} ถูกปฏิเสธ กรุณาติดต่อครูสำหรับรายละเอียดเพิ่มเติม",
+      "messageWithReason": "คำขอจองของคุณสำหรับ {{bookingDate}} ถูกปฏิเสธ เหตุผล: {{reason}}"
+    },
+    "registration_requested": {
+      "title": "คำขอลงทะเบียนใหม่",
+      "message": "{{customerName}} ({{customerEmail}}) ส่งคำขอลงทะเบียน"
+    },
+    "registration_approved": {
+      "title": "การลงทะเบียนได้รับการอนุมัติ - ยินดีต้อนรับ!",
+      "message": "ยินดีต้อนรับ! การลงทะเบียนของคุณได้รับการอนุมัติและคุณได้รับแพ็กเกจ {{packageName}} จำนวน {{totalSessions}} คลาส เริ่มจองคลาสของคุณได้เลย!"
+    }
   }
 }
