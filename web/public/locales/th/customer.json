@@ -1,4 +1,10 @@
 {
+  "nav": {
+    "dashboard": "แดชบอร์ด",
+    "packages": "แพ็กเกจ",
+    "teachers": "ครู",
+    "profile": "โปรไฟล์"
+  },
   "dashboard": {
     "title": "แดชบอร์ดลูกค้า",
     "welcome": "ยินดีต้อนรับกลับ",

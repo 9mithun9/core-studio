@@ -1,4 +1,10 @@
 {
+  "nav": {
+    "dashboard": "Dashboard",
+    "packages": "Packages",
+    "teachers": "Teachers",
+    "profile": "Profile"
+  },
   "dashboard": {
     "title": "Customer Dashboard",
     "welcome": "Welcome back",
