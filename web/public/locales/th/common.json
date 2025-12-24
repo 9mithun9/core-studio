@@ -40,9 +40,16 @@
   "dashboard": "แดชบอร์ด",
   "profile": "โปรไฟล์",
   "settings": "ตั้งค่า",
-  "notifications": "การแจ้งเตือน",
   "help": "ช่วยเหลือ",
   "language": "ภาษา",
   "english": "อังกฤษ",
-  "thai": "ไทย"
+  "thai": "ไทย",
+  "notifications": {
+    "title": "การแจ้งเตือน",
+    "markAllRead": "ทำเครื่องหมายทั้งหมดว่าอ่านแล้ว",
+    "markAsRead": "ทำเครื่องหมายว่าอ่านแล้ว",
+    "delete": "ลบ",
+    "loading": "กำลังโหลด...",
+    "noNotifications": "ไม่มีการแจ้งเตือน"
+  }
 }

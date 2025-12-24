@@ -2,9 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { apiClient } from '@/lib/apiClient';
 import { formatStudioTime } from '@/lib/date';
 import { authService } from '@/lib/auth';
+import '@/lib/i18n';
 
 interface Notification {
   _id: string;
@@ -18,6 +20,7 @@ interface Notification {
 }
 
 export default function NotificationBell() {
+  const { t } = useTranslation('common');
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showDropdown, setShowDropdown] = useState(false);
@@ -188,13 +191,13 @@ export default function NotificationBell() {
         <div className="absolute right-0 mt-2 w-96 bg-white rounded-lg shadow-lg border border-gray-200 z-50 max-h-[600px] overflow-hidden flex flex-col">
           {/* Header */}
           <div className="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-gray-50">
-            <h3 className="text-lg font-semibold text-gray-900">Notifications</h3>
+            <h3 className="text-lg font-semibold text-gray-900">{t('notifications.title')}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
                 className="text-sm text-blue-600 hover:text-blue-800 font-medium"
               >
-                Mark all as read
+                {t('notifications.markAllRead')}
               </button>
             )}
           </div>
@@ -202,7 +205,7 @@ export default function NotificationBell() {
           {/* Notifications List */}
           <div className="overflow-y-auto flex-1">
             {loading ? (
-              <div className="p-8 text-center text-gray-500">Loading...</div>
+              <div className="p-8 text-center text-gray-500">{t('notifications.loading')}</div>
             ) : notifications.length === 0 ? (
               <div className="p-8 text-center text-gray-500">
                 <svg
@@ -218,7 +221,7 @@ export default function NotificationBell() {
                     d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
                   />
                 </svg>
-                <p>No notifications</p>
+                <p>{t('notifications.noNotifications')}</p>
               </div>
             ) : (
               notifications.map((notification) => (
@@ -249,7 +252,7 @@ export default function NotificationBell() {
                         <button
                           onClick={(e) => markAsReadOnly(notification._id, e)}
                           className="text-xs text-blue-600 hover:text-blue-800"
-                          title="Mark as read"
+                          title={t('notifications.markAsRead')}
                         >
                           ✓
                         </button>
@@ -257,7 +260,7 @@ export default function NotificationBell() {
                       <button
                         onClick={(e) => deleteNotification(notification._id, e)}
                         className="text-xs text-red-600 hover:text-red-800"
-                        title="Delete"
+                        title={t('notifications.delete')}
                       >
                         ✕
                       </button>

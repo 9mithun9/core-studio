@@ -40,9 +40,16 @@
   "dashboard": "Dashboard",
   "profile": "Profile",
   "settings": "Settings",
-  "notifications": "Notifications",
   "help": "Help",
   "language": "Language",
   "english": "English",
-  "thai": "Thai"
+  "thai": "Thai",
+  "notifications": {
+    "title": "Notifications",
+    "markAllRead": "Mark all as read",
+    "markAsRead": "Mark as read",
+    "delete": "Delete",
+    "loading": "Loading...",
+    "noNotifications": "No notifications"
+  }
 }
