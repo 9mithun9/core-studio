@@ -4,13 +4,17 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useTranslation } from 'react-i18next';
 import { authService } from '@/lib/auth';
 import { apiClient } from '@/lib/apiClient';
 import { Button } from '@/components/ui/button';
 import NotificationBell from '@/components/NotificationBell';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
+import '@/lib/i18n';
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const { t } = useTranslation(['teacher', 'common']);
   const [user, setUser] = useState<any>(null);
   const [teacherProfile, setTeacherProfile] = useState<any>(null);
 
@@ -68,21 +72,22 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
                 href="/teacher/dashboard"
                 className="text-gray-600 hover:text-primary-600 font-medium"
               >
-                Dashboard
+                {t('nav.dashboard')}
               </Link>
               <Link
                 href="/teacher/my-calendar"
                 className="text-gray-600 hover:text-primary-600 font-medium"
               >
-                My Calendar
+                {t('nav.myCalendar')}
               </Link>
               <Link
                 href="/teacher/students"
                 className="text-gray-600 hover:text-primary-600 font-medium"
               >
-                Students
+                {t('nav.students')}
               </Link>
               <div className="flex items-center gap-3 border-l pl-6">
+                <LanguageSwitcher />
                 <NotificationBell />
                 <Link
                   href="/teacher/profile"
@@ -102,7 +107,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
                   <span>{user.name}</span>
                 </Link>
                 <Button variant="outline" size="sm" onClick={handleLogout}>
-                  Logout
+                  {t('common:logout', { ns: 'common' })}
                 </Button>
               </div>
             </nav>

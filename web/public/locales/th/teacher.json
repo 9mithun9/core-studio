@@ -1,8 +1,9 @@
 {
   "nav": {
     "dashboard": "แดชบอร์ด",
+    "myCalendar": "ปฏิทินของฉัน",
     "schedule": "ตารางสอนของฉัน",
-    "students": "นักเรียนของฉัน",
+    "students": "นักเรียน",
     "availability": "ความพร้อม",
     "profile": "โปรไฟล์"
   },

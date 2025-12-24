@@ -1,8 +1,9 @@
 {
   "nav": {
     "dashboard": "Dashboard",
+    "myCalendar": "My Calendar",
     "schedule": "My Schedule",
-    "students": "My Students",
+    "students": "Students",
     "availability": "Availability",
     "profile": "Profile"
   },
