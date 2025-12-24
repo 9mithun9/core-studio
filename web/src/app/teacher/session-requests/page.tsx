@@ -32,7 +32,7 @@ export default function TeacherSessionRequests() {
       setTeacherId(response.teacher._id);
     } catch (err) {
       console.error('Failed to fetch teacher info', err);
-      toast.error('Failed to load teacher information');
+      toast.error(t('sessionRequests.errors.loadTeacherInfo'));
     }
   };
 
@@ -55,59 +55,59 @@ export default function TeacherSessionRequests() {
       setRequests(data.bookings || []);
     } catch (err: any) {
       console.error('Failed to load requests', err);
-      toast.error('Failed to load session requests');
+      toast.error(t('sessionRequests.errors.loadRequests'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleApprove = async (requestId: string) => {
-    const loadingToast = toast.loading('Approving session...');
+    const loadingToast = toast.loading(t('sessionRequests.approvingSession'));
 
     try {
       await apiClient.patch(`/bookings/${requestId}/confirm`);
-      toast.success('Session approved successfully!', {
+      toast.success(t('sessionRequests.approveSuccess'), {
         id: loadingToast,
         duration: 3000,
       });
       loadRequests();
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to approve session', {
+      toast.error(err.response?.data?.error || t('sessionRequests.errors.approveSession'), {
         id: loadingToast,
       });
     }
   };
 
   const handleReject = async (requestId: string) => {
-    const reason = prompt('Reason for rejection (optional):');
+    const reason = prompt(t('sessionRequests.rejectReasonPrompt'));
     if (reason === null) return; // User cancelled
 
-    const loadingToast = toast.loading('Rejecting session...');
+    const loadingToast = toast.loading(t('sessionRequests.rejectingSession'));
 
     try {
-      await apiClient.patch(`/bookings/${requestId}/reject`, { reason: reason || 'Not available' });
-      toast.success('Session rejected', {
+      await apiClient.patch(`/bookings/${requestId}/reject`, { reason: reason || t('sessionRequests.notAvailable') });
+      toast.success(t('sessionRequests.rejectSuccess'), {
         id: loadingToast,
         duration: 3000,
       });
       loadRequests();
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to reject session', {
+      toast.error(err.response?.data?.error || t('sessionRequests.errors.rejectSession'), {
         id: loadingToast,
       });
     }
   };
 
   if (loading) {
-    return <div className="text-center py-12 text-sm md:text-base">{t('session_requests.loading')}</div>;
+    return <div className="text-center py-12 text-sm md:text-base">{t('sessionRequests.loading')}</div>;
   }
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8 space-y-4 md:space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{t('session_requests.title')}</h1>
-          <p className="text-gray-600 mt-2 text-xs md:text-sm">{t('session_requests.subtitle')}</p>
+          <h1 className="text-2xl md:text-3xl font-bold">{t('sessionRequests.title')}</h1>
+          <p className="text-gray-600 mt-2 text-xs md:text-sm">{t('sessionRequests.subtitle')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Button
@@ -115,35 +115,35 @@ export default function TeacherSessionRequests() {
             onClick={() => setFilter('pending')}
             size="sm"
           >
-            <span className="text-xs md:text-sm">{t('session_requests.pending')}</span>
+            <span className="text-xs md:text-sm">{t('sessionRequests.pending')}</span>
           </Button>
           <Button
             variant={filter === 'all' ? 'default' : 'outline'}
             onClick={() => setFilter('all')}
             size="sm"
           >
-            <span className="text-xs md:text-sm">{t('session_requests.all')}</span>
+            <span className="text-xs md:text-sm">{t('sessionRequests.all')}</span>
           </Button>
           <Button
             variant={filter === 'approved' ? 'default' : 'outline'}
             onClick={() => setFilter('approved')}
             size="sm"
           >
-            <span className="text-xs md:text-sm">{t('session_requests.approved')}</span>
+            <span className="text-xs md:text-sm">{t('sessionRequests.approved')}</span>
           </Button>
           <Button
             variant={filter === 'auto-confirmed' ? 'default' : 'outline'}
             onClick={() => setFilter('auto-confirmed')}
             size="sm"
           >
-            <span className="text-xs md:text-sm">{t('session_requests.auto_confirmed')}</span>
+            <span className="text-xs md:text-sm">{t('sessionRequests.autoConfirmed')}</span>
           </Button>
           <Button
             variant={filter === 'rejected' ? 'default' : 'outline'}
             onClick={() => setFilter('rejected')}
             size="sm"
           >
-            <span className="text-xs md:text-sm">{t('session_requests.rejected')}</span>
+            <span className="text-xs md:text-sm">{t('sessionRequests.rejected')}</span>
           </Button>
         </div>
       </div>
@@ -151,7 +151,7 @@ export default function TeacherSessionRequests() {
       {requests.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center text-gray-500 text-sm md:text-base">
-            <p>{t('session_requests.no_requests', { filter: filter === 'pending' ? t('session_requests.pending').toLowerCase() : '' })}</p>
+            <p>{t('sessionRequests.noRequests')}</p>
           </CardContent>
         </Card>
       ) : (
@@ -162,7 +162,7 @@ export default function TeacherSessionRequests() {
                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                   <div>
                     <h3 className="text-base md:text-lg font-bold">
-                      {request.customerId?.userId?.name || t('session_requests.unknown_customer')}
+                      {request.customerId?.userId?.name || t('sessionRequests.unknownCustomer')}
                     </h3>
                     <p className="text-xs md:text-sm text-gray-600 mt-1">
                       {request.customerId?.userId?.email}
@@ -177,14 +177,14 @@ export default function TeacherSessionRequests() {
                         : 'bg-red-100 text-red-800'
                     }`}
                   >
-                    {request.status}
+                    {t(`sessionRequests.status.${request.status}`)}
                   </span>
                 </div>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4">
                   <div>
-                    <div className="text-xs text-gray-600 mb-1">{t('session_requests.date_time')}</div>
+                    <div className="text-xs text-gray-600 mb-1">{t('sessionRequests.dateTime')}</div>
                     <div className="font-semibold text-sm md:text-base">
                       {formatStudioTime(request.startTime, 'PPP')}
                     </div>
@@ -193,11 +193,11 @@ export default function TeacherSessionRequests() {
                     </div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-600 mb-1">{t('session_requests.session_type')}</div>
-                    <div className="font-semibold text-sm md:text-base capitalize">{request.type}</div>
+                    <div className="text-xs text-gray-600 mb-1">{t('sessionRequests.sessionType')}</div>
+                    <div className="font-semibold text-sm md:text-base capitalize">{t(`sessionRequests.types.${request.type}`)}</div>
                   </div>
                   <div>
-                    <div className="text-xs text-gray-600 mb-1">{t('session_requests.requested')}</div>
+                    <div className="text-xs text-gray-600 mb-1">{t('sessionRequests.requested')}</div>
                     <div className="text-xs md:text-sm">
                       {formatStudioTime(request.createdAt, 'MMM d, yyyy')}
                     </div>
@@ -205,7 +205,7 @@ export default function TeacherSessionRequests() {
                   {request.approvedAt && (
                     <div>
                       <div className="text-xs text-gray-600 mb-1">
-                        {request.status === 'approved' ? t('session_requests.approved') : t('session_requests.rejected')}
+                        {request.status === 'approved' ? t('sessionRequests.approved') : t('sessionRequests.rejected')}
                       </div>
                       <div className="text-xs md:text-sm">
                         {formatStudioTime(request.approvedAt, 'MMM d, yyyy')}
@@ -216,14 +216,14 @@ export default function TeacherSessionRequests() {
 
                 {request.customerNotes && (
                   <div className="mb-4 p-3 bg-gray-50 rounded">
-                    <div className="text-xs text-gray-600 mb-1">{t('session_requests.customer_notes')}</div>
+                    <div className="text-xs text-gray-600 mb-1">{t('sessionRequests.customerNotes')}</div>
                     <div className="text-xs md:text-sm">{request.customerNotes}</div>
                   </div>
                 )}
 
                 {request.rejectionReason && (
                   <div className="mb-4 p-3 bg-red-50 rounded">
-                    <div className="text-xs text-red-600 mb-1">{t('session_requests.rejection_reason')}</div>
+                    <div className="text-xs text-red-600 mb-1">{t('sessionRequests.rejectionReason')}</div>
                     <div className="text-xs md:text-sm text-red-800">{request.rejectionReason}</div>
                   </div>
                 )}
@@ -235,7 +235,7 @@ export default function TeacherSessionRequests() {
                       className="flex-1"
                       size="sm"
                     >
-                      <span className="text-xs md:text-sm">{t('session_requests.approve_session')}</span>
+                      <span className="text-xs md:text-sm">{t('sessionRequests.approve')}</span>
                     </Button>
                     <Button
                       variant="outline"
@@ -243,7 +243,7 @@ export default function TeacherSessionRequests() {
                       className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
                       size="sm"
                     >
-                      <span className="text-xs md:text-sm">{t('session_requests.reject')}</span>
+                      <span className="text-xs md:text-sm">{t('sessionRequests.reject')}</span>
                     </Button>
                   </div>
                 )}

@@ -52,7 +52,7 @@ export default function TeacherSchedule() {
   };
 
   if (loading) {
-    return <div className="container mx-auto px-4 py-6 md:py-8">{t('common.loading')}</div>;
+    return <div className="container mx-auto px-4 py-6 md:py-8">{t('schedule.loading')}</div>;
   }
 
   return (
@@ -61,11 +61,11 @@ export default function TeacherSchedule() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg md:text-xl">{t('schedule.upcoming_sessions')}</CardTitle>
+          <CardTitle className="text-lg md:text-xl">{t('schedule.upcomingSessions')}</CardTitle>
         </CardHeader>
         <CardContent>
           {bookings.length === 0 ? (
-            <p className="text-gray-500 text-sm md:text-base">{t('schedule.no_sessions')}</p>
+            <p className="text-gray-500 text-sm md:text-base">{t('schedule.noUpcoming')}</p>
           ) : (
             <div className="space-y-3 md:space-y-4">
               {bookings.map((booking) => (

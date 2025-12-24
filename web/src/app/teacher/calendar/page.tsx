@@ -36,12 +36,12 @@ export default function TeacherCalendarIntegration() {
       window.location.href = response.authUrl;
     } catch (error) {
       console.error('Error getting auth URL:', error);
-      alert('Failed to connect to Google Calendar');
+      alert(t('calendar.connect_error'));
     }
   };
 
   const handleDisconnect = async () => {
-    if (!confirm('Are you sure you want to disconnect your Google Calendar?')) {
+    if (!confirm(t('calendar.disconnect_confirm'))) {
       return;
     }
 
@@ -49,10 +49,10 @@ export default function TeacherCalendarIntegration() {
       await apiClient.delete('/calendars/disconnect');
       setConnected(false);
       setConnectionData(null);
-      alert('Google Calendar disconnected successfully');
+      alert(t('calendar.disconnect_success'));
     } catch (error) {
       console.error('Error disconnecting calendar:', error);
-      alert('Failed to disconnect Google Calendar');
+      alert(t('calendar.disconnect_error'));
     }
   };
 

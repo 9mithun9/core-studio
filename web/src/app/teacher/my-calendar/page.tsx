@@ -63,7 +63,7 @@ export default function TeacherMyCalendar() {
       await loadEvents(teachersList, myTeacherId);
     } catch (err) {
       console.error('Failed to load teacher info', err);
-      toast.error('Failed to load calendar');
+      toast.error(t('my_calendar.errors.load_calendar'));
     } finally {
       setLoading(false);
     }
@@ -132,7 +132,7 @@ export default function TeacherMyCalendar() {
   };
 
   const handleBlockTime = async () => {
-    const loadingToast = toast.loading('Blocking time...');
+    const loadingToast = toast.loading(t('my_calendar.messages.blocking_time'));
 
     try {
       if (blockForm.blockType === 'multi-day') {
@@ -142,7 +142,7 @@ export default function TeacherMyCalendar() {
         const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24));
 
         if (daysDiff < 0) {
-          toast.error('End date must be after start date', { id: loadingToast });
+          toast.error(t('my_calendar.errors.invalid_date_range'), { id: loadingToast });
           return;
         }
 
@@ -156,13 +156,13 @@ export default function TeacherMyCalendar() {
           const payload = {
             startTime: startTime.toISOString(),
             endTime: endTime.toISOString(),
-            blockReason: blockForm.blockReason || 'Holiday/Time off',
+            blockReason: blockForm.blockReason || t('my_calendar.defaults.holiday_time_off'),
           };
           promises.push(apiClient.post('/bookings/block', payload));
         }
 
         await Promise.all(promises);
-        toast.success(`Blocked time for ${daysDiff + 1} day(s) successfully!`, {
+        toast.success(t('my_calendar.messages.blocked_multi_days', { count: daysDiff + 1 }), {
           id: loadingToast,
           duration: 3000,
         });
@@ -175,7 +175,7 @@ export default function TeacherMyCalendar() {
         const payload: any = {
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
-          blockReason: blockForm.blockReason || 'Time blocked',
+          blockReason: blockForm.blockReason || t('my_calendar.defaults.time_blocked'),
           recurring: {
             enabled: true,
             frequency: blockForm.frequency,
@@ -184,7 +184,7 @@ export default function TeacherMyCalendar() {
         };
 
         await apiClient.post('/bookings/block', payload);
-        toast.success('Recurring time blocks created successfully!', {
+        toast.success(t('my_calendar.messages.recurring_blocks_created'), {
           id: loadingToast,
           duration: 3000,
         });
@@ -197,11 +197,11 @@ export default function TeacherMyCalendar() {
         const payload = {
           startTime: startTime.toISOString(),
           endTime: endTime.toISOString(),
-          blockReason: blockForm.blockReason || 'Time blocked',
+          blockReason: blockForm.blockReason || t('my_calendar.defaults.time_blocked'),
         };
 
         await apiClient.post('/bookings/block', payload);
-        toast.success('Time blocked successfully!', {
+        toast.success(t('my_calendar.messages.time_blocked_success'), {
           id: loadingToast,
           duration: 3000,
         });
@@ -211,21 +211,21 @@ export default function TeacherMyCalendar() {
       setSelectedSlot(null);
       await loadEvents(teachers, currentTeacherId);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to block time', {
+      toast.error(err.response?.data?.error || t('my_calendar.errors.block_time_failed'), {
         id: loadingToast,
       });
     }
   };
 
   const handleUnblock = async (eventId: string) => {
-    if (!confirm('Are you sure you want to unblock this time?')) return;
+    if (!confirm(t('my_calendar.confirm.unblock_time'))) return;
 
-    const loadingToast = toast.loading('Unblocking time...');
+    const loadingToast = toast.loading(t('my_calendar.messages.unblocking_time'));
 
     try {
       await apiClient.delete(`/bookings/block/${eventId}`);
 
-      toast.success('Time unblocked successfully!', {
+      toast.success(t('my_calendar.messages.time_unblocked_success'), {
         id: loadingToast,
         duration: 3000,
       });
@@ -234,7 +234,7 @@ export default function TeacherMyCalendar() {
       setSelectedEvent(null);
       await loadEvents(teachers, currentTeacherId);
     } catch (err: any) {
-      toast.error(err.response?.data?.error || 'Failed to unblock time', {
+      toast.error(err.response?.data?.error || t('my_calendar.errors.unblock_time_failed'), {
         id: loadingToast,
       });
     }
@@ -344,7 +344,7 @@ export default function TeacherMyCalendar() {
               {blockForm.blockType === 'single' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Date</label>
+                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.date')}</label>
                     <input
                       type="date"
                       value={blockForm.startDate}
@@ -354,7 +354,7 @@ export default function TeacherMyCalendar() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Start Hour</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_hour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
@@ -368,7 +368,7 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">End Hour</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.end_hour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
@@ -389,7 +389,7 @@ export default function TeacherMyCalendar() {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Start Date</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_date')}</label>
                       <input
                         type="date"
                         value={blockForm.startDate}
@@ -398,7 +398,7 @@ export default function TeacherMyCalendar() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">End Date</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.end_date')}</label>
                       <input
                         type="date"
                         value={blockForm.endDate}
@@ -409,7 +409,7 @@ export default function TeacherMyCalendar() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Daily Start Hour</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.daily_start_hour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
@@ -423,7 +423,7 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">Daily End Hour</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.daily_end_hour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
@@ -438,7 +438,7 @@ export default function TeacherMyCalendar() {
                     </div>
                   </div>
                   <p className="text-xs text-gray-500">
-                    This will block the selected hours for each day in the date range
+                    {t('my_calendar.hints.multi_day_block')}
                   </p>
                 </>
               )}
@@ -446,7 +446,7 @@ export default function TeacherMyCalendar() {
               {blockForm.blockType === 'recurring' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Start Date</label>
+                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_date')}</label>
                     <input
                       type="date"
                       value={blockForm.startDate}
@@ -456,7 +456,7 @@ export default function TeacherMyCalendar() {
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">Start Hour</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_hour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
@@ -470,7 +470,7 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">End Hour</label>
+                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.end_hour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
@@ -485,18 +485,18 @@ export default function TeacherMyCalendar() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Frequency</label>
+                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.frequency')}</label>
                     <select
                       value={blockForm.frequency}
                       onChange={(e) => setBlockForm({ ...blockForm, frequency: e.target.value as 'daily' | 'weekly' })}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                     >
-                      <option value="daily">Daily</option>
-                      <option value="weekly">Weekly</option>
+                      <option value="daily">{t('my_calendar.frequency.daily')}</option>
+                      <option value="weekly">{t('my_calendar.frequency.weekly')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">Until (Optional)</label>
+                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.until_optional')}</label>
                     <input
                       type="date"
                       value={blockForm.until}
@@ -505,20 +505,20 @@ export default function TeacherMyCalendar() {
                       min={new Date().toISOString().split('T')[0]}
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Leave empty to block for 90 days
+                      {t('my_calendar.hints.until_default')}
                     </p>
                   </div>
                 </>
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2">Reason (Optional)</label>
+                <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.reason_optional')}</label>
                 <input
                   type="text"
                   value={blockForm.blockReason}
                   onChange={(e) => setBlockForm({ ...blockForm, blockReason: e.target.value })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-                  placeholder="e.g., Holiday, Meeting, Personal"
+                  placeholder={t('my_calendar.placeholders.reason')}
                 />
               </div>
 
@@ -528,14 +528,14 @@ export default function TeacherMyCalendar() {
                   onClick={() => setShowBlockModal(false)}
                   className="flex-1"
                 >
-                  Cancel
+                  {t('my_calendar.actions.cancel')}
                 </Button>
                 <Button onClick={handleBlockTime} className="flex-1">
                   {blockForm.blockType === 'multi-day'
-                    ? 'Block Multiple Days'
+                    ? t('my_calendar.actions.block_multiple_days')
                     : blockForm.blockType === 'recurring'
-                    ? 'Create Recurring Blocks'
-                    : 'Block Time'}
+                    ? t('my_calendar.actions.create_recurring_blocks')
+                    : t('my_calendar.actions.block_time')}
                 </Button>
               </div>
             </div>
@@ -549,7 +549,7 @@ export default function TeacherMyCalendar() {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold">
-                {selectedEvent.type === 'blocked' ? 'Blocked Time' : 'Session Details'}
+                {selectedEvent.type === 'blocked' ? t('my_calendar.event_details.blocked_time') : t('my_calendar.event_details.session_details')}
               </h2>
               <button
                 onClick={() => setShowEventDetails(false)}
@@ -563,7 +563,7 @@ export default function TeacherMyCalendar() {
 
             <div className="space-y-3">
               <div>
-                <p className="text-sm text-gray-600">Time:</p>
+                <p className="text-sm text-gray-600">{t('my_calendar.event_details.time')}:</p>
                 <p className="font-medium">
                   {formatStudioTime(selectedEvent.startTime, 'PPP')}
                 </p>
@@ -575,17 +575,17 @@ export default function TeacherMyCalendar() {
               {selectedEvent.type !== 'blocked' && (
                 <>
                   <div>
-                    <p className="text-sm text-gray-600">Customer:</p>
-                    <p className="font-medium">{selectedEvent.customerId?.userId?.name || 'Unknown'}</p>
+                    <p className="text-sm text-gray-600">{t('my_calendar.event_details.customer')}:</p>
+                    <p className="font-medium">{selectedEvent.customerId?.userId?.name || t('my_calendar.unknown')}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-600">Type:</p>
+                    <p className="text-sm text-gray-600">{t('my_calendar.event_details.type')}:</p>
                     <p className="font-medium capitalize">{selectedEvent.type}</p>
                   </div>
 
                   <div>
-                    <p className="text-sm text-gray-600">Status:</p>
+                    <p className="text-sm text-gray-600">{t('my_calendar.event_details.status')}:</p>
                     <span
                       className={`inline-block px-2 py-1 rounded text-xs font-medium ${
                         selectedEvent.status === 'confirmed'
@@ -603,7 +603,7 @@ export default function TeacherMyCalendar() {
 
               {selectedEvent.notes && (
                 <div>
-                  <p className="text-sm text-gray-600">Notes:</p>
+                  <p className="text-sm text-gray-600">{t('my_calendar.event_details.notes')}:</p>
                   <p className="text-sm">{selectedEvent.notes}</p>
                 </div>
               )}
@@ -617,7 +617,7 @@ export default function TeacherMyCalendar() {
                     onClick={() => handleUnblock(selectedEvent._id)}
                     className="w-full border-red-300 text-red-600 hover:bg-red-50"
                   >
-                    Unblock This Time
+                    {t('my_calendar.actions.unblock_this_time')}
                   </Button>
                 </div>
               )}
@@ -625,7 +625,7 @@ export default function TeacherMyCalendar() {
 
             <div className="mt-6">
               <Button variant="outline" onClick={() => setShowEventDetails(false)} className="w-full">
-                Close
+                {t('my_calendar.actions.close')}
               </Button>
             </div>
           </div>

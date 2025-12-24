@@ -84,24 +84,24 @@ export default function TeacherSessionsPage() {
       setSessions(sorted);
     } catch (error) {
       console.error('Error fetching sessions:', error);
-      toast.error('Failed to load sessions');
+      toast.error(t('sessions.error_load'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleMarkComplete = async (bookingId: string) => {
-    if (!confirm('Mark this session as completed?')) return;
+    if (!confirm(t('sessions.confirm_mark_complete'))) return;
 
     setProcessingId(bookingId);
-    const loadingToast = toast.loading('Marking session as complete...');
+    const loadingToast = toast.loading(t('sessions.marking_complete'));
 
     try {
       await apiClient.patch(`/bookings/${bookingId}/complete`);
-      toast.success('Session marked as completed!', { id: loadingToast });
+      toast.success(t('sessions.marked_complete'), { id: loadingToast });
       fetchSessions();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to mark session as complete', {
+      toast.error(error.response?.data?.error || t('sessions.error_mark_complete'), {
         id: loadingToast,
       });
     } finally {
@@ -110,17 +110,17 @@ export default function TeacherSessionsPage() {
   };
 
   const handleMarkNoShow = async (bookingId: string) => {
-    if (!confirm('Mark this session as no-show? This will cancel the session.')) return;
+    if (!confirm(t('sessions.confirm_mark_no_show'))) return;
 
     setProcessingId(bookingId);
-    const loadingToast = toast.loading('Marking session as no-show...');
+    const loadingToast = toast.loading(t('sessions.marking_no_show'));
 
     try {
       await apiClient.patch(`/bookings/${bookingId}/no-show`);
-      toast.success('Session marked as no-show!', { id: loadingToast });
+      toast.success(t('sessions.marked_no_show'), { id: loadingToast });
       fetchSessions();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to mark session as no-show', {
+      toast.error(error.response?.data?.error || t('sessions.error_mark_no_show'), {
         id: loadingToast,
       });
     } finally {

@@ -121,22 +121,22 @@ export default function TeacherDashboard() {
     // Check if all ratings are provided
     const ratingValues = Object.values(reviewRatings);
     if (ratingValues.some(rating => rating === 0)) {
-      toast.error('Please provide all ratings');
+      toast.error(t('review.pleaseProvideAllRatings'));
       return;
     }
 
-    const loadingToast = toast.loading('Submitting review...');
+    const loadingToast = toast.loading(t('review.submitting'));
     try {
       await apiClient.post('/reviews', {
         bookingId: selectedSessionForReview._id,
         ratings: reviewRatings,
         notes: reviewNotes || undefined,
       });
-      toast.success('Review submitted successfully', { id: loadingToast });
+      toast.success(t('review.submitSuccess'), { id: loadingToast });
       setIsReviewModalOpen(false);
       fetchDashboardData(); // Refresh data
     } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Failed to submit review', { id: loadingToast });
+      toast.error(error.response?.data?.message || t('review.submitError'), { id: loadingToast });
     }
   };
 
@@ -153,7 +153,7 @@ export default function TeacherDashboard() {
       const diff = sessionTime.getTime() - now.getTime();
 
       if (diff <= 0) {
-        setTimeUntilNext('Session started');
+        setTimeUntilNext(t('nextSession.started'));
         return;
       }
 
@@ -162,11 +162,11 @@ export default function TeacherDashboard() {
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
 
       if (days > 0) {
-        setTimeUntilNext(`${days}d ${hours}h ${minutes}m`);
+        setTimeUntilNext(`${days}${t('time.days')} ${hours}${t('time.hours')} ${minutes}${t('time.minutes')}`);
       } else if (hours > 0) {
-        setTimeUntilNext(`${hours}h ${minutes}m`);
+        setTimeUntilNext(`${hours}${t('time.hours')} ${minutes}${t('time.minutes')}`);
       } else {
-        setTimeUntilNext(`${minutes} minutes`);
+        setTimeUntilNext(`${minutes} ${t('time.minutesFull')}`);
       }
     };
 
@@ -241,7 +241,7 @@ export default function TeacherDashboard() {
       });
     } catch (error) {
       console.error('Failed to fetch dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      toast.error(t('errors.loadDashboard'));
     } finally {
       setLoading(false);
     }
@@ -268,7 +268,7 @@ export default function TeacherDashboard() {
         setTodaysSessions(response.sessions || []);
       } catch (error) {
         console.error('Failed to fetch tomorrow sessions:', error);
-        toast.error('Failed to load tomorrow sessions');
+        toast.error(t('errors.loadSessions'));
       }
     } else if (filter === 'date' && date) {
       setSelectedDate(date);
@@ -283,7 +283,7 @@ export default function TeacherDashboard() {
         setTodaysSessions(response.sessions || []);
       } catch (error) {
         console.error('Failed to fetch sessions for selected date:', error);
-        toast.error('Failed to load sessions');
+        toast.error(t('errors.loadSessions'));
       }
     }
   };
@@ -297,52 +297,52 @@ export default function TeacherDashboard() {
 
   const handleCancelSession = async (bookingId: string, startTime: string) => {
     if (!canCancelSession(startTime)) {
-      toast.error('Cannot cancel sessions less than 3 hours before start time');
+      toast.error(t('errors.cannotCancel'));
       return;
     }
 
-    const reason = prompt('Please provide a reason for cancellation (this will be sent to the customer):');
+    const reason = prompt(t('cancellation.reasonPrompt'));
     if (reason === null) {
       // User clicked cancel
       return;
     }
 
-    const loadingToast = toast.loading('Cancelling session...');
+    const loadingToast = toast.loading(t('cancellation.cancelling'));
     try {
       await apiClient.patch(`/bookings/${bookingId}`, {
         status: 'cancelled',
-        cancellationReason: reason || 'No reason provided'
+        cancellationReason: reason || t('cancellation.noReason')
       });
-      toast.success('Session cancelled successfully. Customer has been notified.', { id: loadingToast });
+      toast.success(t('cancellation.success'), { id: loadingToast });
       fetchDashboardData();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to cancel session', { id: loadingToast });
+      toast.error(error.response?.data?.error || t('cancellation.error'), { id: loadingToast });
     }
   };
 
   const handleApproveRequest = async (bookingId: string) => {
-    const loadingToast = toast.loading('Approving request...');
+    const loadingToast = toast.loading(t('requests.approving'));
     try {
       await apiClient.patch(`/bookings/${bookingId}/confirm`);
-      toast.success('Booking request approved', { id: loadingToast });
+      toast.success(t('requests.approved'), { id: loadingToast });
       fetchDashboardData();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to approve request', { id: loadingToast });
+      toast.error(error.response?.data?.error || t('requests.approveError'), { id: loadingToast });
     }
   };
 
   const handleRejectRequest = async (bookingId: string) => {
-    if (!confirm('Are you sure you want to reject this booking request?')) {
+    if (!confirm(t('requests.rejectConfirm'))) {
       return;
     }
 
-    const loadingToast = toast.loading('Rejecting request...');
+    const loadingToast = toast.loading(t('requests.rejecting'));
     try {
       await apiClient.patch(`/bookings/${bookingId}/reject`);
-      toast.success('Booking request rejected', { id: loadingToast });
+      toast.success(t('requests.rejected'), { id: loadingToast });
       fetchDashboardData();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to reject request', { id: loadingToast });
+      toast.error(error.response?.data?.error || t('requests.rejectError'), { id: loadingToast });
     }
   };
 
@@ -360,18 +360,18 @@ export default function TeacherDashboard() {
   };
 
   if (loading) {
-    return <div className="p-4 md:p-8 text-center text-sm md:text-base">Loading dashboard...</div>;
+    return <div className="p-4 md:p-8 text-center text-sm md:text-base">{t('loading')}</div>;
   }
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">Dashboard</h1>
+      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">{t('dashboard.title')}</h1>
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">Total Completed</CardTitle>
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">{t('stats.totalCompleted')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.totalCompleted}</div>
@@ -379,7 +379,7 @@ export default function TeacherDashboard() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">This Week</CardTitle>
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">{t('stats.thisWeek')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.thisWeek}</div>
@@ -387,7 +387,7 @@ export default function TeacherDashboard() {
         </Card>
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">This Month</CardTitle>
+            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">{t('stats.thisMonth')}</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.thisMonth}</div>
@@ -401,7 +401,7 @@ export default function TeacherDashboard() {
           {/* Next Session */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base md:text-lg">Next Session</CardTitle>
+              <CardTitle className="text-base md:text-lg">{t('nextSession.title')}</CardTitle>
             </CardHeader>
             <CardContent>
               {nextSession ? (
@@ -410,12 +410,12 @@ export default function TeacherDashboard() {
                     {formatStudioTime(nextSession.startTime, 'EEEE, MMM d')}
                   </div>
                   <div className="text-base md:text-xl font-semibold mb-2">
-                    {formatStudioTime(nextSession.startTime, 'h:mm a')} with {nextSession.customerId.userId.name}
+                    {formatStudioTime(nextSession.startTime, 'h:mm a')} {t('nextSession.with')} {nextSession.customerId.userId.name}
                   </div>
 
                   {timeUntilNext && (
                     <div className="mt-3 p-2 md:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="text-xs md:text-sm text-blue-600 font-medium">Starts in</div>
+                      <div className="text-xs md:text-sm text-blue-600 font-medium">{t('nextSession.startsIn')}</div>
                       <div className="text-lg md:text-2xl font-bold text-blue-700">{timeUntilNext}</div>
                     </div>
                   )}
@@ -436,7 +436,7 @@ export default function TeacherDashboard() {
                   )}
                 </div>
               ) : (
-                <p className="text-sm md:text-base text-gray-500">No upcoming sessions</p>
+                <p className="text-sm md:text-base text-gray-500">{t('nextSession.noUpcoming')}</p>
               )}
             </CardContent>
           </Card>
@@ -444,7 +444,7 @@ export default function TeacherDashboard() {
           {/* Pending Booking Requests */}
           <Card>
             <CardHeader>
-              <CardTitle className="text-base md:text-lg">Pending Requests ({pendingRequests.length})</CardTitle>
+              <CardTitle className="text-base md:text-lg">{t('requests.title')} ({pendingRequests.length})</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="mb-3">
@@ -452,11 +452,11 @@ export default function TeacherDashboard() {
                   onClick={() => router.push('/teacher/session-requests')}
                   className="text-primary-600 hover:text-primary-700 text-xs md:text-sm font-medium hover:underline cursor-pointer"
                 >
-                  View All Requests →
+                  {t('requests.viewAll')} →
                 </button>
               </div>
               {pendingRequests.length === 0 ? (
-                <p className="text-sm md:text-base text-gray-500">No pending requests</p>
+                <p className="text-sm md:text-base text-gray-500">{t('requests.noPending')}</p>
               ) : (
                 <div className="space-y-3">
                   {pendingRequests.slice(0, 3).map((request) => (
@@ -474,7 +474,7 @@ export default function TeacherDashboard() {
                       </div>
                       {request.notes && (
                         <p className="text-xs text-gray-600 mb-2 md:mb-3">
-                          <span className="font-medium">Notes:</span> {request.notes}
+                          <span className="font-medium">{t('requests.notes')}:</span> {request.notes}
                         </p>
                       )}
                       <div className="flex flex-col sm:flex-row gap-2">
@@ -483,7 +483,7 @@ export default function TeacherDashboard() {
                           onClick={() => handleApproveRequest(request._id)}
                           className="flex-1 text-xs py-1 h-8"
                         >
-                          Approve
+                          {t('requests.approve')}
                         </Button>
                         <Button
                           size="sm"
@@ -491,7 +491,7 @@ export default function TeacherDashboard() {
                           onClick={() => handleRejectRequest(request._id)}
                           className="flex-1 text-xs py-1 h-8"
                         >
-                          Reject
+                          {t('requests.reject')}
                         </Button>
                       </div>
                     </div>
@@ -507,7 +507,7 @@ export default function TeacherDashboard() {
           <Card>
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                <CardTitle className="text-lg md:text-xl">Sessions</CardTitle>
+                <CardTitle className="text-lg md:text-xl">{t('sessions.title')}</CardTitle>
                 <div className="flex flex-wrap gap-2 items-center">
                   <button
                     onClick={() => handleFilterChange('today')}
@@ -517,7 +517,7 @@ export default function TeacherDashboard() {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    Today
+                    {t('sessions.today')}
                   </button>
                   <button
                     onClick={() => handleFilterChange('tomorrow')}
@@ -527,7 +527,7 @@ export default function TeacherDashboard() {
                         : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                     }`}
                   >
-                    Tomorrow
+                    {t('sessions.tomorrow')}
                   </button>
                   <input
                     type="date"
@@ -538,14 +538,14 @@ export default function TeacherDashboard() {
                 </div>
               </div>
               <div className="text-2xl md:text-3xl font-bold text-primary-600">
-                {todaysSessions.length} {todaysSessions.length === 1 ? 'Session' : 'Sessions'}
+                {todaysSessions.length} {todaysSessions.length === 1 ? t('sessions.session') : t('sessions.sessions')}
               </div>
             </CardHeader>
             <CardContent>
               {todaysSessions.length === 0 ? (
                 <div className="text-center py-8 md:py-12">
-                  <p className="text-gray-500 text-base md:text-lg">No sessions scheduled for today</p>
-                  <p className="text-gray-400 text-xs md:text-sm mt-2">Enjoy your free day!</p>
+                  <p className="text-gray-500 text-base md:text-lg">{t('sessions.noScheduled')}</p>
+                  <p className="text-gray-400 text-xs md:text-sm mt-2">{t('sessions.enjoyDay')}</p>
                 </div>
               ) : (
                 <div className="space-y-3 md:space-y-4">
@@ -607,7 +607,7 @@ export default function TeacherDashboard() {
                             </span>
                             {session.packageId.remainingSessions !== undefined && (
                               <span className="inline-block px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-semibold bg-green-100 text-green-700">
-                                {session.packageId.remainingSessions} sessions remaining
+                                {session.packageId.remainingSessions} {t('sessions.sessionsRemaining')}
                               </span>
                             )}
                           </>
@@ -622,7 +622,7 @@ export default function TeacherDashboard() {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
                             <div className="flex-1">
-                              <span className="font-semibold text-blue-800">Booking Notes:</span>
+                              <span className="font-semibold text-blue-800">{t('sessions.bookingNotes')}:</span>
                               <p className="text-blue-700 mt-1">{session.notes}</p>
                             </div>
                           </div>
@@ -635,7 +635,7 @@ export default function TeacherDashboard() {
                           <div className="flex items-start gap-2">
                             <span className="text-base md:text-lg">⚠️</span>
                             <div className="flex-1">
-                              <span className="font-semibold text-orange-800">Health Notes:</span>
+                              <span className="font-semibold text-orange-800">{t('sessions.healthNotes')}:</span>
                               <p className="text-orange-700 mt-1">{session.customerId.healthNotes}</p>
                             </div>
                           </div>
@@ -650,12 +650,12 @@ export default function TeacherDashboard() {
                             onClick={() => handleOpenReviewModal(session)}
                             className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-primary-600 hover:text-primary-700 border-2 border-primary-300 hover:border-primary-400 rounded-lg hover:bg-primary-50 transition-all"
                           >
-                            Write Review
+                            {t('sessions.writeReview')}
                           </button>
                         )}
                         {session.status === 'completed' && session.hasReview && (
                           <span className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-green-600 bg-green-50 border-2 border-green-300 rounded-lg text-center">
-                            ✓ Reviewed
+                            ✓ {t('sessions.reviewed')}
                           </span>
                         )}
 
@@ -665,7 +665,7 @@ export default function TeacherDashboard() {
                             onClick={() => handleCancelSession(session._id, session.startTime)}
                             className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-red-600 hover:text-red-700 border-2 border-red-300 hover:border-red-400 rounded-lg hover:bg-red-50 transition-all"
                           >
-                            Cancel Session
+                            {t('sessions.cancelSession')}
                           </button>
                         )}
                       </div>
@@ -684,7 +684,7 @@ export default function TeacherDashboard() {
           {selectedStudent && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-xl md:text-2xl">Student Information</DialogTitle>
+                <DialogTitle className="text-xl md:text-2xl">{t('studentInfo.title')}</DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 md:space-y-6">
@@ -719,15 +719,15 @@ export default function TeacherDashboard() {
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   {calculateAge(selectedStudent.customerId.dateOfBirth) !== null && (
                     <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">Age</div>
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.age')}</div>
                       <div className="text-base md:text-lg font-semibold text-gray-900">
-                        {calculateAge(selectedStudent.customerId.dateOfBirth)} years
+                        {calculateAge(selectedStudent.customerId.dateOfBirth)} {t('studentInfo.years')}
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.gender && (
                     <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">Gender</div>
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.gender')}</div>
                       <div className="text-base md:text-lg font-semibold text-gray-900 capitalize">
                         {selectedStudent.customerId.gender}
                       </div>
@@ -735,17 +735,17 @@ export default function TeacherDashboard() {
                   )}
                   {selectedStudent.customerId.height && (
                     <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">Height</div>
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.height')}</div>
                       <div className="text-base md:text-lg font-semibold text-gray-900">
-                        {selectedStudent.customerId.height} cm
+                        {selectedStudent.customerId.height} {t('studentInfo.cm')}
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.weight && (
                     <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">Weight</div>
+                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.weight')}</div>
                       <div className="text-base md:text-lg font-semibold text-gray-900">
-                        {selectedStudent.customerId.weight} kg
+                        {selectedStudent.customerId.weight} {t('studentInfo.kg')}
                       </div>
                     </div>
                   )}
@@ -754,7 +754,7 @@ export default function TeacherDashboard() {
                 {/* Package Info */}
                 {studentPackages.length > 0 && (
                   <div className="space-y-3">
-                    <div className="text-xs md:text-sm font-medium text-gray-700">Active Packages</div>
+                    <div className="text-xs md:text-sm font-medium text-gray-700">{t('studentInfo.activePackages')}</div>
                     {studentPackages.map((pkg: any) => (
                       <div key={pkg._id} className="bg-blue-50 rounded-lg p-3 md:p-4 border border-blue-200">
                         <div className="space-y-2">
@@ -765,13 +765,13 @@ export default function TeacherDashboard() {
                             </span>
                           </div>
                           <div className="flex justify-between items-center text-xs md:text-sm">
-                            <span className="text-gray-600">Sessions Remaining</span>
+                            <span className="text-gray-600">{t('studentInfo.sessionsRemaining')}</span>
                             <span className="font-semibold text-gray-900">
                               {pkg.remainingSessions} / {pkg.totalSessions}
                             </span>
                           </div>
                           <div className="flex justify-between items-center text-xs text-gray-500">
-                            <span>Valid until</span>
+                            <span>{t('studentInfo.validUntil')}</span>
                             <span>{new Date(pkg.validTo).toLocaleDateString()}</span>
                           </div>
                         </div>
@@ -786,7 +786,7 @@ export default function TeacherDashboard() {
                     <div className="flex items-start gap-2">
                       <span className="text-xl md:text-2xl">⚠️</span>
                       <div className="flex-1">
-                        <div className="text-xs md:text-sm font-medium text-orange-600 mb-2">Medical Conditions</div>
+                        <div className="text-xs md:text-sm font-medium text-orange-600 mb-2">{t('studentInfo.medicalConditions')}</div>
                         {selectedStudent.customerId.healthNotes && (
                           <p className="text-xs md:text-sm text-gray-700 mb-2">{selectedStudent.customerId.healthNotes}</p>
                         )}
@@ -809,7 +809,7 @@ export default function TeacherDashboard() {
           {selectedSessionForReview && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-xl md:text-2xl">Session Review</DialogTitle>
+                <DialogTitle className="text-xl md:text-2xl">{t('review.title')}</DialogTitle>
               </DialogHeader>
 
               <div className="space-y-4 md:space-y-6">
@@ -825,12 +825,12 @@ export default function TeacherDashboard() {
 
                 {/* Rating Categories */}
                 <div className="space-y-3 md:space-y-4">
-                  <div className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">Rate the student's performance (1-5 stars):</div>
+                  <div className="text-xs md:text-sm font-medium text-gray-700 mb-2 md:mb-3">{t('review.ratePerformance')}</div>
 
                   {/* Control */}
                   <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                      <span className="text-xs md:text-sm font-medium text-gray-700">Control</span>
+                      <span className="text-xs md:text-sm font-medium text-gray-700">{t('review.control')}</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -855,7 +855,7 @@ export default function TeacherDashboard() {
                   {/* Posture & Alignment */}
                   <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                      <span className="text-xs md:text-sm font-medium text-gray-700">Posture & Alignment</span>
+                      <span className="text-xs md:text-sm font-medium text-gray-700">{t('review.postureAlignment')}</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -880,7 +880,7 @@ export default function TeacherDashboard() {
                   {/* Strength */}
                   <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                      <span className="text-xs md:text-sm font-medium text-gray-700">Strength</span>
+                      <span className="text-xs md:text-sm font-medium text-gray-700">{t('review.strength')}</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -905,7 +905,7 @@ export default function TeacherDashboard() {
                   {/* Flexibility / Mobility */}
                   <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                      <span className="text-xs md:text-sm font-medium text-gray-700">Flexibility / Mobility</span>
+                      <span className="text-xs md:text-sm font-medium text-gray-700">{t('review.flexibilityMobility')}</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -930,7 +930,7 @@ export default function TeacherDashboard() {
                   {/* Body Awareness / Focus */}
                   <div>
                     <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-2">
-                      <span className="text-xs md:text-sm font-medium text-gray-700">Body Awareness / Focus</span>
+                      <span className="text-xs md:text-sm font-medium text-gray-700">{t('review.bodyAwarenessFocus')}</span>
                       <div className="flex gap-1">
                         {[1, 2, 3, 4, 5].map((rating) => (
                           <button
@@ -956,12 +956,12 @@ export default function TeacherDashboard() {
                 {/* Notes (Optional) */}
                 <div>
                   <label className="block text-xs md:text-sm font-medium text-gray-700 mb-2">
-                    Additional Notes (Optional)
+                    {t('review.additionalNotes')}
                   </label>
                   <textarea
                     value={reviewNotes}
                     onChange={(e) => setReviewNotes(e.target.value)}
-                    placeholder="Add any additional comments about the session..."
+                    placeholder={t('review.notesPlaceholder')}
                     rows={4}
                     className="w-full px-2 md:px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 text-xs md:text-sm"
                   />
@@ -975,14 +975,14 @@ export default function TeacherDashboard() {
                     size="sm"
                     className="text-xs md:text-sm"
                   >
-                    Cancel
+                    {t('review.cancel')}
                   </Button>
                   <Button
                     onClick={handleSubmitReview}
                     size="sm"
                     className="text-xs md:text-sm"
                   >
-                    Submit Review
+                    {t('review.submit')}
                   </Button>
                 </div>
               </div>

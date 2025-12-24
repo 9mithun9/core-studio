@@ -516,26 +516,26 @@ export default function TeacherStudentsPage() {
                       <div className="grid grid-cols-2 gap-4 pb-4 border-b">
                         {selectedStudent.dateOfBirth && (
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Age</p>
-                            <p className="font-medium">{new Date().getFullYear() - new Date(selectedStudent.dateOfBirth).getFullYear()} years</p>
+                            <p className="text-xs text-gray-500 mb-1">{t('students.age')}</p>
+                            <p className="font-medium">{new Date().getFullYear() - new Date(selectedStudent.dateOfBirth).getFullYear()} {t('students.years')}</p>
                           </div>
                         )}
                         {selectedStudent.gender && (
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Gender</p>
+                            <p className="text-xs text-gray-500 mb-1">{t('students.gender')}</p>
                             <p className="font-medium capitalize">{selectedStudent.gender}</p>
                           </div>
                         )}
                         {selectedStudent.height && (
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Height</p>
-                            <p className="font-medium">{selectedStudent.height} cm</p>
+                            <p className="text-xs text-gray-500 mb-1">{t('students.height')}</p>
+                            <p className="font-medium">{selectedStudent.height} {t('students.cm')}</p>
                           </div>
                         )}
                         {selectedStudent.weight && (
                           <div>
-                            <p className="text-xs text-gray-500 mb-1">Weight</p>
-                            <p className="font-medium">{selectedStudent.weight} kg</p>
+                            <p className="text-xs text-gray-500 mb-1">{t('students.weight')}</p>
+                            <p className="font-medium">{selectedStudent.weight} {t('students.kg')}</p>
                           </div>
                         )}
                       </div>
@@ -544,7 +544,7 @@ export default function TeacherStudentsPage() {
                     {/* Contact Info */}
                     <div className="space-y-2">
                       <p className="text-sm">
-                        <span className="font-medium text-gray-500">Email:</span>{' '}
+                        <span className="font-medium text-gray-500">{t('students.email')}:</span>{' '}
                         <span className="text-gray-900">{selectedStudent.userId.email}</span>
                       </p>
                       {selectedStudent.userId.phone && (
@@ -562,7 +562,7 @@ export default function TeacherStudentsPage() {
                       )}
                       {(selectedStudent.emergencyContactName && selectedStudent.emergencyContactPhone) && (
                         <div className="flex items-center gap-2 text-sm">
-                          <span className="font-medium text-gray-500 whitespace-nowrap">Emergency Contact:</span>
+                          <span className="font-medium text-gray-500 whitespace-nowrap">{t('students.emergencyContact')}:</span>
                           <span className="text-gray-900">{selectedStudent.emergencyContactName}</span>
                           <span className="text-gray-400">-</span>
                           <a
@@ -583,7 +583,7 @@ export default function TeacherStudentsPage() {
                     {/* Medical Notes */}
                     {(selectedStudent.healthNotes || selectedStudent.medicalNotes) && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded">
-                        <p className="text-xs font-medium text-red-600 mb-1">Medical Conditions</p>
+                        <p className="text-xs font-medium text-red-600 mb-1">{t('students.medicalConditions')}</p>
                         <p className="text-sm text-red-700">{selectedStudent.healthNotes || selectedStudent.medicalNotes}</p>
                       </div>
                     )}
@@ -593,13 +593,13 @@ export default function TeacherStudentsPage() {
                         <p className="text-2xl font-bold text-gray-800">
                           {selectedStudent.totalSessions}
                         </p>
-                        <p className="text-xs text-gray-500">Total Sessions</p>
+                        <p className="text-xs text-gray-500">{t('students.totalSessions')}</p>
                       </div>
                       <div className="text-center">
                         <p className="text-2xl font-bold text-green-600">
                           {selectedStudent.completedSessions}
                         </p>
-                        <p className="text-xs text-gray-500">Completed</p>
+                        <p className="text-xs text-gray-500">{t('students.completed')}</p>
                       </div>
                     </div>
                   </div>
@@ -609,11 +609,11 @@ export default function TeacherStudentsPage() {
               {/* Packages */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Packages ({selectedStudent.packages.length})</CardTitle>
+                  <CardTitle>{t('students.packages')} ({selectedStudent.packages.length})</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {selectedStudent.packages.length === 0 ? (
-                    <p className="text-gray-500">No packages</p>
+                    <p className="text-gray-500">{t('students.noPackages')}</p>
                   ) : (
                     <div className="space-y-3">
                       {selectedStudent.packages.map((pkg) => (
@@ -639,7 +639,7 @@ export default function TeacherStudentsPage() {
                               <p className="text-lg font-bold">
                                 {pkg.remainingSessions}/{pkg.totalSessions}
                               </p>
-                              <p className="text-xs text-gray-500">remaining</p>
+                              <p className="text-xs text-gray-500">{t('students.remaining')}</p>
                               <span
                                 className={`inline-block mt-1 px-2 py-1 rounded text-xs ${
                                   pkg.status === 'active'
@@ -665,14 +665,14 @@ export default function TeacherStudentsPage() {
               {/* Session History */}
               <Card>
                 <CardHeader>
-                  <CardTitle>Session History ({studentSessions.length})</CardTitle>
-                  <CardDescription>All sessions with this student</CardDescription>
+                  <CardTitle>{t('students.sessionHistory')} ({studentSessions.length})</CardTitle>
+                  <CardDescription>{t('students.sessionHistoryDesc')}</CardDescription>
                 </CardHeader>
                 <CardContent>
                   {sessionsLoading ? (
-                    <p className="text-gray-500 text-center py-8">Loading sessions...</p>
+                    <p className="text-gray-500 text-center py-8">{t('students.loadingSessions')}</p>
                   ) : studentSessions.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">No sessions yet</p>
+                    <p className="text-gray-500 text-center py-8">{t('students.noSessions')}</p>
                   ) : (
                     <div className="space-y-3 max-h-[500px] overflow-y-auto">
                       {studentSessions.map((session) => {
@@ -736,7 +736,7 @@ export default function TeacherStudentsPage() {
           ) : (
             <Card>
               <CardContent className="py-12 text-center">
-                <p className="text-gray-500">Select a student to view details</p>
+                <p className="text-gray-500">{t('students.selectStudent')}</p>
               </CardContent>
             </Card>
           )}
@@ -747,16 +747,16 @@ export default function TeacherStudentsPage() {
       <Dialog open={addSessionDialog} onOpenChange={setAddSessionDialog}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Record Past Session for {selectedStudent?.userId.name}</DialogTitle>
+            <DialogTitle>{t('students.recordPastSession')} {selectedStudent?.userId.name}</DialogTitle>
             <DialogDescription>
-              Manually record a session that has already been completed
+              {t('students.recordPastSessionDesc')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleAddSession}>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Package *
+                  {t('students.package')} *
                 </label>
                 <select
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -766,12 +766,12 @@ export default function TeacherStudentsPage() {
                   }
                   required
                 >
-                  <option value="">Select a package</option>
+                  <option value="">{t('students.selectPackage')}</option>
                   {selectedStudent?.packages
                     .filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0)
                     .map((pkg) => (
                       <option key={pkg._id} value={pkg._id}>
-                        {pkg.name} ({pkg.remainingSessions} sessions remaining)
+                        {pkg.name} ({pkg.remainingSessions} {t('students.sessionsRemaining')})
                       </option>
                     ))}
                 </select>
@@ -779,7 +779,7 @@ export default function TeacherStudentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Session Date *
+                  {t('students.sessionDate')} *
                 </label>
                 <input
                   type="date"
@@ -805,7 +805,7 @@ export default function TeacherStudentsPage() {
                     const validTo = new Date(selectedPkg.validTo).toLocaleDateString();
                     return (
                       <p className="text-xs text-gray-500 mt-1">
-                        Package valid from {validFrom} to {validTo}
+                        {t('students.packageValid')} {validFrom} {t('students.to')} {validTo}
                       </p>
                     );
                   }
@@ -815,8 +815,8 @@ export default function TeacherStudentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Session Time * (7:00 AM - 10:00 PM)
-                  {loadingAvailability && <span className="text-xs text-gray-500 ml-2">Loading availability...</span>}
+                  {t('students.sessionTime')} * (7:00 AM - 10:00 PM)
+                  {loadingAvailability && <span className="text-xs text-gray-500 ml-2">{t('students.loadingAvailability')}</span>}
                 </label>
                 <select
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -845,14 +845,14 @@ export default function TeacherStudentsPage() {
                       const slot = timeSlotAvailability.get(time);
                       if (slot) {
                         if (slot.status === 'blocked') {
-                          availabilityLabel = ' - FULLY BOOKED';
+                          availabilityLabel = ` - ${t('students.fullyBooked')}`;
                         } else if (slot.status === 'partial') {
-                          availabilityLabel = ' - Limited availability';
+                          availabilityLabel = ` - ${t('students.limitedAvailability')}`;
                         } else {
-                          availabilityLabel = ' - Available';
+                          availabilityLabel = ` - ${t('students.available')}`;
                         }
                       } else {
-                        availabilityLabel = ' - Available';
+                        availabilityLabel = ` - ${t('students.available')}`;
                       }
                     }
 
@@ -865,18 +865,18 @@ export default function TeacherStudentsPage() {
                 </select>
                 {sessionForm.sessionDate && new Date(sessionForm.sessionDate) > new Date() && (
                   <p className="text-xs text-gray-600 mt-1">
-                    <span className="text-green-600">● Available</span>
+                    <span className="text-green-600">● {t('students.available')}</span>
                     {' | '}
-                    <span className="text-yellow-600">● Limited</span>
+                    <span className="text-yellow-600">● {t('students.limited')}</span>
                     {' | '}
-                    <span className="text-red-600">● Fully Booked</span>
+                    <span className="text-red-600">● {t('students.fullyBooked')}</span>
                   </p>
                 )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notes
+                  {t('students.notes')}
                 </label>
                 <textarea
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -885,7 +885,7 @@ export default function TeacherStudentsPage() {
                   onChange={(e) =>
                     setSessionForm({ ...sessionForm, notes: e.target.value })
                   }
-                  placeholder="Optional notes about the session..."
+                  placeholder={t('students.notesPlaceholder')}
                 />
               </div>
             </div>
@@ -904,9 +904,9 @@ export default function TeacherStudentsPage() {
                   });
                 }}
               >
-                Cancel
+                {t('students.cancel')}
               </Button>
-              <Button type="submit">Add Session</Button>
+              <Button type="submit">{t('students.addSession')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -916,16 +916,16 @@ export default function TeacherStudentsPage() {
       <Dialog open={bookFutureDialog} onOpenChange={setBookFutureDialog}>
         <DialogContent className="max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Book Future Session for {selectedStudent?.userId.name}</DialogTitle>
+            <DialogTitle>{t('students.bookFutureSession')} {selectedStudent?.userId.name}</DialogTitle>
             <DialogDescription>
-              Select a date and time to book an upcoming session
+              {t('students.bookFutureSessionDesc')}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleBookFutureSession}>
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Package *
+                  {t('students.package')} *
                 </label>
                 <select
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -938,12 +938,12 @@ export default function TeacherStudentsPage() {
                   }}
                   required
                 >
-                  <option value="">Select a package</option>
+                  <option value="">{t('students.selectPackage')}</option>
                   {selectedStudent?.packages
                     .filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0)
                     .map((pkg) => (
                       <option key={pkg._id} value={pkg._id}>
-                        {pkg.name} ({pkg.remainingSessions} sessions remaining)
+                        {pkg.name} ({pkg.remainingSessions} {t('students.sessionsRemaining')})
                       </option>
                     ))}
                 </select>
@@ -951,7 +951,7 @@ export default function TeacherStudentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Date *
+                  {t('students.selectDate')} *
                 </label>
                 <input
                   type="date"
@@ -981,7 +981,7 @@ export default function TeacherStudentsPage() {
                     const validTo = new Date(selectedPkg.validTo).toLocaleDateString();
                     return (
                       <p className="text-xs text-gray-500 mt-1">
-                        Package valid from {validFrom} to {validTo}
+                        {t('students.packageValid')} {validFrom} {t('students.to')} {validTo}
                       </p>
                     );
                   }
@@ -991,8 +991,8 @@ export default function TeacherStudentsPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Select Time * (7:00 AM - 10:00 PM)
-                  {loadingAvailability && <span className="text-xs text-gray-500 ml-2">Loading...</span>}
+                  {t('students.selectTime')} * (7:00 AM - 10:00 PM)
+                  {loadingAvailability && <span className="text-xs text-gray-500 ml-2">{t('students.loading')}</span>}
                 </label>
                 <div className="grid grid-cols-4 gap-2">
                   {Array.from({ length: 16 }, (_, i) => {
@@ -1103,22 +1103,22 @@ export default function TeacherStudentsPage() {
                 <div className="flex gap-4 mt-2 text-xs">
                   <span className="flex items-center gap-1">
                     <div className="w-3 h-3 bg-green-500 rounded"></div>
-                    Available
+                    {t('students.available')}
                   </span>
                   <span className="flex items-center gap-1">
                     <div className="w-3 h-3 bg-yellow-500 rounded"></div>
-                    Limited
+                    {t('students.limited')}
                   </span>
                   <span className="flex items-center gap-1">
                     <div className="w-3 h-3 bg-red-500 rounded"></div>
-                    Fully Booked
+                    {t('students.fullyBooked')}
                   </span>
                 </div>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Notes
+                  {t('students.notes')}
                 </label>
                 <textarea
                   className="w-full px-3 py-2 border border-gray-300 rounded-md"
@@ -1127,7 +1127,7 @@ export default function TeacherStudentsPage() {
                   onChange={(e) =>
                     setFutureBookingForm({ ...futureBookingForm, notes: e.target.value })
                   }
-                  placeholder="Optional notes for the session..."
+                  placeholder={t('students.notesPlaceholder')}
                 />
               </div>
             </div>
@@ -1146,9 +1146,9 @@ export default function TeacherStudentsPage() {
                   });
                 }}
               >
-                Cancel
+                {t('students.cancel')}
               </Button>
-              <Button type="submit">Book Session</Button>
+              <Button type="submit">{t('students.bookSession')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

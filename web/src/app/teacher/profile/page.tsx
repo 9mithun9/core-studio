@@ -84,7 +84,7 @@ export default function TeacherProfilePage() {
       }
     } catch (error) {
       console.error('Error fetching profile:', error);
-      toast.error('Failed to load profile');
+      toast.error(t('profile.error_load_profile'));
     } finally {
       setLoading(false);
     }
@@ -107,10 +107,10 @@ export default function TeacherProfilePage() {
       }
 
       await apiClient.patch('/teachers/me', updates);
-      toast.success('Profile updated successfully!');
+      toast.success(t('profile.updateSuccess'));
       fetchProfile();
     } catch (error: any) {
-      toast.error(error.response?.data?.error || 'Failed to update profile');
+      toast.error(error.response?.data?.error || t('profile.error_update_profile'));
     } finally {
       setSaving(false);
     }
@@ -136,12 +136,12 @@ export default function TeacherProfilePage() {
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        toast.error('Please select an image file');
+        toast.error(t('profile.error_select_image'));
         return;
       }
 
       if (file.size > 5 * 1024 * 1024) {
-        toast.error('File size must be less than 5MB');
+        toast.error(t('profile.error_file_size'));
         return;
       }
 
@@ -157,7 +157,7 @@ export default function TeacherProfilePage() {
 
   const handlePhotoUpload = async () => {
     if (!selectedFile) {
-      toast.error('Please select a file first');
+      toast.error(t('profile.error_select_file'));
       return;
     }
 
@@ -190,12 +190,12 @@ export default function TeacherProfilePage() {
       const fullPhotoUrl = `${baseUrl}${data.photoUrl}`;
       setPreviewUrl(fullPhotoUrl);
 
-      toast.success('Profile photo uploaded successfully!');
+      toast.success(t('profile.photo_upload_success'));
       setSelectedFile(null);
 
       await fetchProfile();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to upload photo');
+      toast.error(error.message || t('profile.error_upload_photo'));
     } finally {
       setUploading(false);
     }
@@ -225,7 +225,7 @@ export default function TeacherProfilePage() {
               {previewUrl ? (
                 <img
                   src={previewUrl}
-                  alt="Profile"
+                  alt={t('profile.profilePhoto')}
                   className="w-24 h-24 md:w-32 md:h-32 rounded-full object-cover border-4 border-primary-100"
                 />
               ) : (
@@ -292,51 +292,51 @@ export default function TeacherProfilePage() {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>Edit Profile</CardTitle>
-              <CardDescription>Update your teacher profile information</CardDescription>
+              <CardTitle>{t('profile.edit_profile_title')}</CardTitle>
+              <CardDescription>{t('profile.edit_profile_description')}</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSubmit} className="space-y-6">
                 {/* Basic Info */}
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Full Name</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.fullName')}</label>
                     <input
                       type="text"
                       value={profile.userId.name}
                       disabled
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Contact admin to change name</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('profile.contact_admin_name')}</p>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Email</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.email')}</label>
                     <input
                       type="email"
                       value={profile.userId.email}
                       disabled
                       className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-50 text-gray-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Contact admin to change email</p>
+                    <p className="text-xs text-gray-500 mt-1">{t('profile.contact_admin_email')}</p>
                   </div>
                 </div>
 
                 <div className="grid md:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium mb-2">Phone Number</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.phoneNumber')}</label>
                     <input
                       type="tel"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="+66-XXX-XXX-XXXX"
+                      placeholder={t('profile.phone_placeholder')}
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-2">Years of Experience</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.yearsOfExperience')}</label>
                     <input
                       type="number"
                       name="yearsOfExperience"
@@ -344,28 +344,28 @@ export default function TeacherProfilePage() {
                       onChange={handleChange}
                       min="0"
                       className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                      placeholder="5"
+                      placeholder={t('profile.experience_placeholder')}
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-2">Bio</label>
+                  <label className="block text-sm font-medium mb-2">{t('profile.bio')}</label>
                   <textarea
                     name="bio"
                     value={formData.bio}
                     onChange={handleChange}
                     rows={4}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                    placeholder="Tell students about yourself, your experience, teaching style..."
+                    placeholder={t('profile.bio_placeholder')}
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    This information will be visible to students and admin
+                    {t('profile.bio_note')}
                   </p>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium mb-3">Specialties</label>
+                  <label className="block text-sm font-medium mb-3">{t('profile.specialties')}</label>
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {SPECIALTY_OPTIONS.map((specialty) => (
                       <button
@@ -383,13 +383,13 @@ export default function TeacherProfilePage() {
                     ))}
                   </div>
                   <p className="text-xs text-gray-500 mt-2">
-                    Select all specialties that apply to you
+                    {t('profile.specialties_note')}
                   </p>
                 </div>
 
                 {formData.specialties.length > 0 && (
                   <div>
-                    <label className="block text-sm font-medium mb-2">Selected Specialties</label>
+                    <label className="block text-sm font-medium mb-2">{t('profile.selected_specialties')}</label>
                     <div className="flex flex-wrap gap-2">
                       {formData.specialties.map((specialty, index) => (
                         <span
@@ -405,10 +405,10 @@ export default function TeacherProfilePage() {
 
                 <div className="flex gap-4 pt-4">
                   <Button type="submit" disabled={saving}>
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? t('profile.saving') : t('profile.save_changes')}
                   </Button>
                   <Button type="button" variant="outline" onClick={fetchProfile}>
-                    Cancel
+                    {t('profile.cancel')}
                   </Button>
                 </div>
               </form>
