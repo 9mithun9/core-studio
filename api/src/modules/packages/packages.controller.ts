@@ -85,8 +85,57 @@ export const getCustomerPackages = asyncHandler(async (req: Request, res: Respon
     .sort({ createdAt: -1 })
     .lean();
 
+  // Add session counts for each package (same as getMyPackages)
+  const packagesWithCounts = await Promise.all(
+    packages.map(async (pkg) => {
+      // Count completed sessions (already done)
+      // Includes: COMPLETED, NO_SHOW, and past CONFIRMED sessions
+      const completedCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        $or: [
+          { status: { $in: [BookingStatus.COMPLETED, BookingStatus.NO_SHOW] } },
+          { status: BookingStatus.CONFIRMED, endTime: { $lt: new Date() } }
+        ],
+      });
+
+      // Count upcoming sessions (PENDING or CONFIRMED future sessions)
+      const upcomingCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+        startTime: { $gte: new Date() },
+      });
+
+      // Calculate remaining: Total - Completed - Upcoming
+      // This represents sessions not yet booked (available to book)
+      const remainingUnbooked = pkg.totalSessions - completedCount - upcomingCount;
+
+      // Count cancelled bookings (for admin reference)
+      const cancelledCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        status: BookingStatus.CANCELLED,
+      });
+
+      // Count pending bookings (subset of upcoming)
+      const pendingCount = await Booking.countDocuments({
+        packageId: pkg._id,
+        status: BookingStatus.PENDING,
+      });
+
+      return {
+        ...pkg,
+        completedCount,
+        upcomingCount,
+        remainingUnbooked,
+        remainingSessions: remainingUnbooked, // Update this to match the calculated value
+        cancelledCount,
+        pendingCount,
+        availableForBooking: remainingUnbooked,
+      };
+    })
+  );
+
   res.json({
-    packages,
+    packages: packagesWithCounts,
   });
 });
 
