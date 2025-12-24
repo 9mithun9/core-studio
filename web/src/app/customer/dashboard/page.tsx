@@ -655,6 +655,8 @@ export default function CustomerDashboard() {
                   onChange={(e) => setRequestForm({ ...requestForm, sessions: parseInt(e.target.value) })}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
+                  <option value={1}>{t('dashboard.requestModal.sessions1')}</option>
+                  <option value={5}>{t('dashboard.requestModal.sessions5')}</option>
                   <option value={10}>{t('dashboard.requestModal.sessions10')}</option>
                   <option value={20}>{t('dashboard.requestModal.sessions20')}</option>
                   <option value={30}>{t('dashboard.requestModal.sessions30')}</option>
