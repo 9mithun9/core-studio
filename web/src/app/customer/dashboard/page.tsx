@@ -40,10 +40,39 @@ export default function CustomerDashboard() {
   const [requestForm, setRequestForm] = useState({ packageType: 'private', sessions: 10, notes: '' });
   const [selectedReview, setSelectedReview] = useState<SessionReview | null>(null);
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [timeRemaining, setTimeRemaining] = useState<{days: number; hours: number; minutes: number; seconds: number} | null>(null);
 
   useEffect(() => {
     loadData();
   }, []);
+
+  // Countdown timer for next session
+  useEffect(() => {
+    if (!overview?.upcomingBookings?.[0]?.startTime) return;
+
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const sessionTime = new Date(overview.upcomingBookings[0].startTime).getTime();
+      const difference = sessionTime - now;
+
+      if (difference <= 0) {
+        setTimeRemaining(null);
+        return;
+      }
+
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+      setTimeRemaining({ days, hours, minutes, seconds });
+    };
+
+    calculateTimeRemaining();
+    const interval = setInterval(calculateTimeRemaining, 1000);
+
+    return () => clearInterval(interval);
+  }, [overview]);
 
   const loadData = async () => {
     try {
@@ -180,14 +209,123 @@ export default function CustomerDashboard() {
 
   return (
     <div className="space-y-6 md:space-y-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{t('dashboard.welcome')}, {overview.customer?.userId?.name}!</h1>
-          <p className="text-gray-600 mt-1 md:mt-2 text-sm md:text-base">{t('dashboard.subtitle')}</p>
+      {/* Hero Section & Next Session Row */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Hero Section */}
+        <div className="relative bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48"></div>
+          <div className="relative z-10">
+            <h1 className="text-2xl md:text-3xl font-bold mb-2">
+              {t('dashboard.welcome')}, {overview.customer?.userId?.name}!
+            </h1>
+            <p className="text-primary-100 mb-6 text-base md:text-lg">{t('dashboard.subtitle')}</p>
+            <Link href="/customer/calendar">
+              <Button size="lg" className="bg-white text-primary-700 hover:bg-gray-100">
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                {t('dashboard.bookSession')}
+              </Button>
+            </Link>
+          </div>
         </div>
-        <Link href="/customer/calendar">
-          <Button size="lg" className="w-full sm:w-auto">{t('dashboard.bookSession')}</Button>
-        </Link>
+
+        {/* Next Session */}
+        {overview.upcomingBookings && overview.upcomingBookings.length > 0 ? (
+          <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl">
+            {/* Animated background elements */}
+            <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+            </div>
+
+            {(() => {
+              const nextBooking = overview.upcomingBookings[0];
+              return (
+                <div className="relative z-10">
+                  {/* Header */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                        <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                        </svg>
+                      </div>
+                      <h3 className="text-lg md:text-xl font-bold">{t('dashboard.nextSession.title')}</h3>
+                    </div>
+                    <span className="inline-flex px-3 py-1 rounded-full text-xs font-medium bg-green-500 text-white">
+                      {nextBooking.status}
+                    </span>
+                  </div>
+
+                  {/* Session Info & Countdown in Row */}
+                  <div className="flex flex-col md:flex-row gap-4">
+                    {/* Session Details */}
+                    <div className="flex-1 space-y-2.5">
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <span className="text-sm md:text-base font-semibold">
+                          {formatStudioTime(nextBooking.startTime, 'EEEE, MMM d')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <span className="text-sm md:text-base text-blue-100">
+                          {formatStudioTime(nextBooking.startTime, 'p')}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <svg className="w-4 h-4 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        <span className="text-sm md:text-base">
+                          <span className="font-semibold">{nextBooking.teacherId?.userId?.name || 'Instructor'}</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Countdown Timer - Horizontal on larger screens */}
+                    {timeRemaining && (
+                      <div className="flex gap-3 md:gap-2 justify-center md:justify-end items-center">
+                        <div className="flex flex-col items-center">
+                          <div className="text-2xl md:text-3xl font-bold">{timeRemaining.days}</div>
+                          <div className="text-xs text-blue-200 uppercase mt-0.5">Days</div>
+                        </div>
+                        <div className="text-2xl md:text-3xl font-bold opacity-50">:</div>
+                        <div className="flex flex-col items-center">
+                          <div className="text-2xl md:text-3xl font-bold">{String(timeRemaining.hours).padStart(2, '0')}</div>
+                          <div className="text-xs text-blue-200 uppercase mt-0.5">Hours</div>
+                        </div>
+                        <div className="text-2xl md:text-3xl font-bold opacity-50">:</div>
+                        <div className="flex flex-col items-center">
+                          <div className="text-2xl md:text-3xl font-bold">{String(timeRemaining.minutes).padStart(2, '0')}</div>
+                          <div className="text-xs text-blue-200 uppercase mt-0.5">Mins</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        ) : (
+          <div className="relative bg-gray-100 rounded-2xl p-6 md:p-8 flex items-center justify-center">
+            <div className="text-center text-gray-500">
+              <svg className="w-16 h-16 mx-auto mb-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <p className="text-sm md:text-base font-medium mb-2">No Upcoming Sessions</p>
+              <Link href="/customer/calendar">
+                <Button size="sm" variant="outline">Book a Session</Button>
+              </Link>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Package Status Banners */}
@@ -214,29 +352,25 @@ export default function CustomerDashboard() {
         // Priority 1: No active packages (all expired or no packages at all)
         if (noActivePackage && (expiredPackages.length > 0 || allPackages.length === 0)) {
           return (
-            <Card className="bg-orange-50 border-orange-300 border-2">
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-orange-900 mb-1">{t('dashboard.packageExpired.title')}</h3>
-                    <p className="text-orange-800 mb-4 text-sm md:text-base">
-                      {t('dashboard.packageExpired.message')}
-                    </p>
-                    <Button
-                      onClick={() => setShowRequestModal(true)}
-                      className="bg-orange-600 hover:bg-orange-700 text-white w-full sm:w-auto"
-                    >
-                      {t('dashboard.packageExpired.action')}
-                    </Button>
-                  </div>
+            <div className="bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-xl p-6 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-1">{t('dashboard.packageExpired.title')}</h3>
+                  <p className="mb-4 opacity-90">{t('dashboard.packageExpired.message')}</p>
+                  <Button
+                    onClick={() => setShowRequestModal(true)}
+                    className="bg-white text-orange-600 hover:bg-gray-100"
+                  >
+                    {t('dashboard.packageExpired.action')}
+                  </Button>
+                </div>
+              </div>
+            </div>
           );
         }
 
@@ -245,66 +379,34 @@ export default function CustomerDashboard() {
           const pkg = lowSessionPackages[0];
           const remaining = pkg.remainingUnbooked ?? pkg.availableForBooking ?? pkg.remainingSessions;
           return (
-            <Card className="bg-yellow-50 border-yellow-300 border-2">
-              <CardContent className="pt-6">
-                <div className="flex flex-col sm:flex-row items-start gap-4">
-                  <div className="flex-shrink-0 w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-                    <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-bold text-yellow-900 mb-1">
-                      {remaining === 1 ? t('dashboard.lowSessions.titleOne') : t('dashboard.lowSessions.titleMultiple')}
-                    </h3>
-                    <p className="text-yellow-800 mb-4 text-sm md:text-base">
-                      {t('dashboard.lowSessions.message')} <strong>{remaining} {remaining > 1 ? t('dashboard.lowSessions.sessions') : t('dashboard.lowSessions.session')}</strong> {t('dashboard.lowSessions.messagePart2')} {pkg.name}. {t('dashboard.lowSessions.messagePart3')}
-                    </p>
-                    <Button
-                      onClick={() => setShowRequestModal(true)}
-                      className="bg-yellow-600 hover:bg-yellow-700 text-white w-full sm:w-auto"
-                    >
-                      {t('dashboard.lowSessions.action')}
-                    </Button>
-                  </div>
+            <div className="bg-gradient-to-r from-yellow-400 to-yellow-500 text-yellow-900 rounded-xl p-6 shadow-lg">
+              <div className="flex items-start gap-4">
+                <div className="flex-shrink-0 w-12 h-12 bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
                 </div>
-              </CardContent>
-            </Card>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-1">
+                    {remaining === 1 ? t('dashboard.lowSessions.titleOne') : t('dashboard.lowSessions.titleMultiple')}
+                  </h3>
+                  <p className="mb-4 opacity-90">
+                    {t('dashboard.lowSessions.message')} <strong>{remaining} {remaining > 1 ? t('dashboard.lowSessions.sessions') : t('dashboard.lowSessions.session')}</strong> {t('dashboard.lowSessions.messagePart2')} {pkg.name}. {t('dashboard.lowSessions.messagePart3')}
+                  </p>
+                  <Button
+                    onClick={() => setShowRequestModal(true)}
+                    className="bg-yellow-900 text-white hover:bg-yellow-800"
+                  >
+                    {t('dashboard.lowSessions.action')}
+                  </Button>
+                </div>
+              </div>
+            </div>
           );
         }
 
         return null;
       })()}
-
-      {/* Upcoming Sessions Quick View */}
-      {overview.upcomingBookings && overview.upcomingBookings.length > 0 && (
-        <Card className="bg-primary-50 border-primary-200">
-          <CardHeader>
-            <CardTitle className="text-primary-900 text-lg md:text-xl">{t('dashboard.nextSession.title')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {(() => {
-              const nextBooking = overview.upcomingBookings[0];
-              return (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div>
-                    <div className="text-xl md:text-2xl font-bold text-primary-900">
-                      {formatStudioTime(nextBooking.startTime, 'EEEE, MMM d')}
-                    </div>
-                    <div className="text-base md:text-lg text-primary-700 mt-1">
-                      {formatStudioTime(nextBooking.startTime, 'p')} {t('dashboard.nextSession.with')}{' '}
-                      {nextBooking.teacherId?.userId?.name || 'Instructor'}
-                    </div>
-                  </div>
-                  <span className="inline-flex px-4 py-2 rounded-full text-sm font-medium bg-green-100 text-green-800 capitalize">
-                    {nextBooking.status}
-                  </span>
-                </div>
-              );
-            })()}
-          </CardContent>
-        </Card>
-      )}
 
       {/* Packages and History - Side by Side Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
