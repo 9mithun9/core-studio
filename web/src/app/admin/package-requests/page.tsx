@@ -180,16 +180,27 @@ export default function AdminPackageRequests() {
               <CardHeader>
                 <div className="flex items-start justify-between">
                   <div>
-                    <button
-                      onClick={() => fetchCustomerDetails(request.customerId._id)}
-                      className="text-lg font-bold text-blue-600 hover:text-blue-800 hover:underline text-left"
-                    >
-                      {request.customerId?.userId?.name || 'Unknown Customer'}
-                    </button>
-                    <p className="text-sm text-gray-600 mt-1">
-                      {request.customerId?.userId?.email}
-                    </p>
-                    <p className="text-xs text-gray-500 mt-1">Click name to view customer profile</p>
+                    {request.customerId ? (
+                      <>
+                        <button
+                          onClick={() => fetchCustomerDetails(request.customerId._id)}
+                          className="text-lg font-bold text-blue-600 hover:text-blue-800 hover:underline text-left"
+                        >
+                          {request.customerId?.userId?.name || 'Unknown Customer'}
+                        </button>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {request.customerId?.userId?.email}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-1">Click name to view customer profile</p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="text-lg font-bold text-gray-400">
+                          Deleted Customer
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">Customer account no longer exists</p>
+                      </>
+                    )}
                   </div>
                   <span
                     className={`inline-flex px-3 py-1 rounded-full text-xs font-medium ${
@@ -252,19 +263,27 @@ export default function AdminPackageRequests() {
 
                 {request.status === 'pending' && (
                   <div className="flex gap-3 mt-4">
-                    <Button
-                      onClick={() => openApproveModal(request)}
-                      className="flex-1"
-                    >
-                      {t('registrations.approve')} & {t('registrations.createPackage')}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      onClick={() => handleReject(request._id)}
-                      className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
-                    >
-                      {t('registrations.reject')}
-                    </Button>
+                    {request.customerId ? (
+                      <>
+                        <Button
+                          onClick={() => openApproveModal(request)}
+                          className="flex-1"
+                        >
+                          {t('registrations.approve')} & {t('registrations.createPackage')}
+                        </Button>
+                        <Button
+                          variant="outline"
+                          onClick={() => handleReject(request._id)}
+                          className="flex-1 border-red-300 text-red-600 hover:bg-red-50"
+                        >
+                          {t('registrations.reject')}
+                        </Button>
+                      </>
+                    ) : (
+                      <div className="text-sm text-gray-500 italic p-3 bg-gray-50 rounded">
+                        Cannot approve/reject - customer account deleted
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>
@@ -354,6 +373,8 @@ export default function AdminPackageRequests() {
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
+                  <option value={1}>1 {t('registrations.session')}</option>
+                  <option value={5}>5 {t('registrations.sessions')}</option>
                   <option value={10}>10 {t('registrations.sessions')}</option>
                   <option value={20}>20 {t('registrations.sessions')}</option>
                   <option value={30}>30 {t('registrations.sessions')}</option>

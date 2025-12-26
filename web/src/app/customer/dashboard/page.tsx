@@ -192,8 +192,19 @@ export default function CustomerDashboard() {
 
       {/* Package Status Banners */}
       {(() => {
-        const activePackages = allPackages.filter((p) => p.status === 'active');
-        const expiredPackages = allPackages.filter((p) => p.status === 'expired');
+        const now = new Date();
+        // Consider a package active if status is 'active' AND validTo is in the future AND has remaining sessions
+        const activePackages = allPackages.filter(
+          (p) => p.status === 'active' &&
+                 new Date(p.validTo) > now &&
+                 (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) > 0
+        );
+        // Consider a package expired if status is 'expired' OR validTo has passed OR no remaining sessions
+        const expiredPackages = allPackages.filter(
+          (p) => p.status === 'expired' ||
+                 new Date(p.validTo) <= now ||
+                 (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) <= 0
+        );
         const lowSessionPackages = activePackages.filter(
           (p) => (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) <= 2 &&
                  (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) > 0
@@ -307,7 +318,12 @@ export default function CustomerDashboard() {
                   <CardDescription className="text-xs md:text-sm">{t('dashboard.myPackages.description')}</CardDescription>
                 </div>
                 {(() => {
-                  const hasActivePackage = allPackages.some(p => p.status === 'active');
+                  const now = new Date();
+                  const hasActivePackage = allPackages.some(
+                    p => p.status === 'active' &&
+                         new Date(p.validTo) > now &&
+                         (p.remainingUnbooked ?? p.availableForBooking ?? p.remainingSessions) > 0
+                  );
                   return (
                     <Button
                       size="sm"

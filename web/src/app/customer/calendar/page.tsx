@@ -185,9 +185,9 @@ export default function CustomerCalendar() {
 
       setSuccess(t('calendar.bookingSuccess'));
 
-      // Reset form
+      // Reset form - set to tomorrow (1 day ahead) instead of 2 days
       setNotes('');
-      setSelectedDate(addDays(new Date(), 2));
+      setSelectedDate(addDays(new Date(), 1));
       setSelectedTime('');
     } catch (err: any) {
       setError(err.response?.data?.error || t('calendar.errors.requestFailed'));
