@@ -70,17 +70,14 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         <div className="container mx-auto px-4 py-3 md:py-4">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/customer/dashboard" className="flex items-center gap-2 md:gap-3">
+            <Link href="/customer/dashboard" className="flex items-center">
               <Image
                 src="/logo.png"
                 alt="Core Studio Pilates"
-                width={40}
-                height={40}
-                className="object-contain w-8 h-8 md:w-10 md:h-10"
+                width={80}
+                height={80}
+                className="object-contain w-16 h-16 md:w-20 md:h-20"
               />
-              <div className="text-lg md:text-2xl font-bold text-primary-600 hidden sm:block">
-                Core Studio Pilates
-              </div>
             </Link>
 
             {/* Desktop Navigation */}

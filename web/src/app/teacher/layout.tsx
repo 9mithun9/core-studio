@@ -61,9 +61,9 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
               <Image
                 src="/logo.png"
                 alt="Core Studio Pilates"
-                width={200}
+                width={80}
                 height={80}
-                className="h-16 w-auto"
+                className="object-contain w-16 h-16 md:w-20 md:h-20"
                 priority
               />
             </Link>

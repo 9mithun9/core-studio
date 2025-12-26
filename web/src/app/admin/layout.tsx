@@ -50,9 +50,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <Image
                 src="/logo.png"
                 alt="Core Studio Pilates"
-                width={180}
-                height={70}
-                className="h-12 md:h-16 w-auto"
+                width={80}
+                height={80}
+                className="object-contain w-16 h-16 md:w-20 md:h-20"
                 priority
               />
             </Link>

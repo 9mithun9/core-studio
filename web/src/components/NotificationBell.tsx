@@ -246,7 +246,7 @@ export default function NotificationBell() {
                         )}
                       </div>
                       <p className="text-sm text-gray-600 mb-2">
-                        {notification.messageKey ? t(notification.messageKey, notification.data || {}) : notification.message}
+                        {notification.messageKey ? t(notification.messageKey, notification.data || {}) as string : notification.message}
                       </p>
                       <p className="text-xs text-gray-400">
                         {formatStudioTime(new Date(notification.createdAt))}
