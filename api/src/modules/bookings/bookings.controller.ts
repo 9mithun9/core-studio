@@ -523,7 +523,7 @@ export const markAttendance = asyncHandler(async (req: Request, res: Response) =
   const previousStatus = booking.status;
 
   if (data.status === BookingStatus.CANCELLED &&
-      (previousStatus === BookingStatus.CONFIRMED || previousStatus === BookingStatus.COMPLETED) &&
+      previousStatus === BookingStatus.CONFIRMED &&
       booking.packageId) {
     const packageData = await Package.findById(booking.packageId);
     if (packageData) {
@@ -1523,8 +1523,10 @@ export const cancelBooking = asyncHandler(async (req: Request, res: Response) =>
     const customer = await Customer.findById(booking.customerId);
     if (customer) {
       await NotificationService.createNotification({
-        userId: customer.userId,
+        userId: customer.userId as any,
         type: 'booking_cancelled',
+        title: 'Session Cancelled',
+        message: `Your session has been cancelled. Reason: ${booking.cancellationReason || 'No reason provided'}`,
         titleKey: 'notifications.bookingCancelled.title',
         messageKey: 'notifications.bookingCancelled.message',
         data: {

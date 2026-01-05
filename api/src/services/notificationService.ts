@@ -386,6 +386,8 @@ export class NotificationService {
     return this.createNotification({
       userId: params.customerId,
       type: 'booking_cancelled',
+      title: 'Session Cancelled',
+      message: `Your session with ${params.teacherName} on ${params.sessionDate.toLocaleDateString()} has been cancelled. ${params.reason || ''}`,
       titleKey: 'notificationTypes.booking_cancelled.teacherDeactivatedTitle',
       messageKey: 'notificationTypes.booking_cancelled.teacherDeactivatedMessage',
       data: {

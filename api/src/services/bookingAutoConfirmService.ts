@@ -60,6 +60,8 @@ export class BookingAutoConfirmService {
             await NotificationService.createNotification({
               userId: customer.userId,
               type: 'booking_approved' as any,
+              title: 'Session Confirmed (Auto)',
+              message: `Your session request with ${teacher?.userId?.name || 'teacher'} has been automatically confirmed.`,
               titleKey: 'notifications.bookingAutoConfirmed.title',
               messageKey: 'notifications.bookingAutoConfirmed.message',
               data: {
@@ -81,6 +83,8 @@ export class BookingAutoConfirmService {
             await NotificationService.createNotification({
               userId: teacher.userId,
               type: 'booking_approved' as any,
+              title: 'Session Auto-Confirmed',
+              message: `A session request from ${customer?.userId?.name || 'customer'} was automatically confirmed because you didn't respond within 12 hours.`,
               titleKey: 'notifications.bookingAutoConfirmedTeacher.title',
               messageKey: 'notifications.bookingAutoConfirmedTeacher.message',
               data: {

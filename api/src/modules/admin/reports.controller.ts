@@ -157,8 +157,12 @@ export const generatePaymentReport = asyncHandler(async (req: Request, res: Resp
 
       teacherSessions.forEach((session: any) => {
         const rawType = session.packageId?.type || 'group';
-        if (rawType === 'private' || rawType === 'duo' || rawType === 'group') {
-          sessionCounts[rawType]++;
+        if (rawType === 'private') {
+          sessionCounts.private++;
+        } else if (rawType === 'duo') {
+          sessionCounts.duo++;
+        } else if (rawType === 'group') {
+          sessionCounts.group++;
         }
       });
 

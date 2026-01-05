@@ -566,8 +566,8 @@ export const getRetentionInsights = asyncHandler(async (req: Request, res: Respo
 
   // Convert to array format for frontend
   Object.entries(usageMap).forEach(([day, hours]) => {
-    Object.entries(hours).forEach(([hour, sessions]) => {
-      peakUsage.push({ day, hour: parseInt(hour), sessions });
+    Object.entries(hours).forEach(([hour, value]) => {
+      peakUsage.push({ day, hour: parseInt(hour), value });
     });
   });
 
