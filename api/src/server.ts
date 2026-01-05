@@ -14,8 +14,23 @@ import { initializeInactiveCustomerScheduler } from '@/services/inactiveCustomer
 const app: Application = express();
 
 // Middleware
+const allowedOrigins = [
+  config.webUrl,
+  'https://core-studio-web-mog7.vercel.app',
+  'http://localhost:3000'
+];
+
 app.use(cors({
-  origin: config.webUrl,
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   exposedHeaders: ['Content-Disposition'],
 }));
