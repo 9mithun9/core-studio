@@ -383,8 +383,28 @@ export default function TeacherStudentsPage() {
         {/* Left: Student List */}
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg md:text-xl">{t('students.all_students')} ({students.length})</CardTitle>
-            <CardDescription className="text-xs md:text-sm">{t('students.click_to_view')}</CardDescription>
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-lg md:text-xl">{t('students.all_students')} ({students.length})</CardTitle>
+                <CardDescription className="text-xs md:text-sm">{t('students.click_to_view')}</CardDescription>
+              </div>
+              <Button
+                onClick={() => {
+                  fetchStudents();
+                  if (selectedStudent) {
+                    fetchStudentSessions(selectedStudent._id);
+                  }
+                }}
+                size="sm"
+                variant="outline"
+                className="flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span className="text-xs">Refresh</span>
+              </Button>
+            </div>
           </CardHeader>
           <CardContent>
             {/* Search */}
@@ -487,7 +507,12 @@ export default function TeacherStudentsPage() {
                       )}
                       <CardTitle className="text-lg md:text-xl">{selectedStudent.userId.name}</CardTitle>
                     </div>
-                    {selectedStudent.packages.filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0).length > 0 && (
+                    {(() => {
+                      const activePackages = selectedStudent.packages.filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0);
+                      console.log('Active packages with remaining sessions:', activePackages);
+                      console.log('All packages:', selectedStudent.packages);
+                      return activePackages.length > 0;
+                    })() && (
                       <div className="flex flex-col sm:flex-row gap-2">
                         <Button
                           onClick={() => setBookFutureDialog(true)}

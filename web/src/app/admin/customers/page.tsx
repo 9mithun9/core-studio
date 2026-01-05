@@ -122,7 +122,7 @@ export default function AdminCustomersPage() {
   };
 
   const hasFinishedAllPackages = (customer: CustomerWithSessions): boolean => {
-    return customer.packages.every((pkg) => pkg.status === 'used' || pkg.remainingSessions === 0);
+    return customer.packages.every((pkg) => pkg.status === 'used' || pkg.status === 'expired');
   };
 
   const getNextUpcomingSession = (customer: CustomerWithSessions) => {
@@ -205,8 +205,17 @@ export default function AdminCustomersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('customers.title')}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-green-50 pb-12">
+      <div className="container mx-auto px-4 py-8">
+        {/* Gradient Hero Header */}
+        <div className="relative bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold mb-2">{t('customers.title')}</h1>
+            <p className="text-green-100 text-lg">View and manage customer profiles and analytics</p>
+          </div>
+        </div>
 
       {/* Customers List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
@@ -1028,6 +1037,7 @@ export default function AdminCustomersPage() {
             </Card>
           )}
         </div>
+      </div>
       </div>
     </div>
   );

@@ -41,6 +41,14 @@
       "title": "Next Session",
       "with": "with"
     },
+    "weMissYou": {
+      "title": "We Miss You",
+      "daysSince": "It's been {{days}} days since your last session!",
+      "motivationMessage": "Your body is calling... it wants to move!",
+      "encouragementMessage": "Don't let your progress fade away! Come back stronger, more flexible, and more amazing than ever!",
+      "bookComebackSession": "Book Your Comeback Session!",
+      "viewPackages": "View Packages"
+    },
     "myPackages": {
       "title": "My Packages",
       "description": "All your session packages",
@@ -121,7 +129,7 @@
     "availableSlots": "Available Slots",
     "noSlotsAvailable": "No slots available",
     "confirmBooking": "Confirm Booking",
-    "bookingSuccess": "Booking request submitted successfully! You will receive confirmation via LINE shortly.",
+    "bookingSuccess": "Booking request submitted successfully!",
     "bookingError": "Failed to book session",
     "noPackages": {
       "title": "Ready to Start Your Journey?",
@@ -205,6 +213,7 @@
     "buyPackage": "Buy New Package",
     "requestPackage": "Request Package",
     "sessions": "sessions",
+    "session": "session",
     "popular": "POPULAR",
     "catalog": {
       "single": {

@@ -98,11 +98,12 @@ export const getCustomerPackages = asyncHandler(async (req: Request, res: Respon
         ],
       });
 
-      // Count upcoming sessions (PENDING or CONFIRMED future sessions)
+      // Count upcoming sessions (PENDING or CONFIRMED sessions that haven't ended yet)
+      // This includes currently running sessions
       const upcomingCount = await Booking.countDocuments({
         packageId: pkg._id,
         status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
-        startTime: { $gte: new Date() },
+        endTime: { $gte: new Date() },
       });
 
       // Calculate remaining: Total - Completed - Upcoming
@@ -121,6 +122,24 @@ export const getCustomerPackages = asyncHandler(async (req: Request, res: Respon
         status: BookingStatus.PENDING,
       });
 
+      // Determine correct status based on sessions status AND validity period
+      let correctStatus = pkg.status;
+      const now = new Date();
+      const validTo = new Date(pkg.validTo);
+
+      // Priority 1: Check if validity period has expired
+      if (validTo <= now) {
+        correctStatus = PackageStatus.EXPIRED;
+      }
+      // Priority 2: Check if all sessions are COMPLETED (not just booked)
+      else if (completedCount >= pkg.totalSessions) {
+        correctStatus = PackageStatus.USED;
+      }
+      // Priority 3: Has unbooked sessions or upcoming sessions, and within validity period
+      else if (validTo > now) {
+        correctStatus = PackageStatus.ACTIVE;
+      }
+
       return {
         ...pkg,
         completedCount,
@@ -130,6 +149,7 @@ export const getCustomerPackages = asyncHandler(async (req: Request, res: Respon
         cancelledCount,
         pendingCount,
         availableForBooking: remainingUnbooked,
+        status: correctStatus, // Use calculated status instead of stale DB status
       };
     })
   );
@@ -167,11 +187,12 @@ export const getMyPackages = asyncHandler(async (req: Request, res: Response) =>
         ],
       });
 
-      // Count upcoming sessions (PENDING or CONFIRMED future sessions)
+      // Count upcoming sessions (PENDING or CONFIRMED sessions that haven't ended yet)
+      // This includes currently running sessions
       const upcomingCount = await Booking.countDocuments({
         packageId: pkg._id,
         status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
-        startTime: { $gte: new Date() },
+        endTime: { $gte: new Date() },
       });
 
       // Calculate remaining: Total - Completed - Upcoming
@@ -190,6 +211,24 @@ export const getMyPackages = asyncHandler(async (req: Request, res: Response) =>
         status: BookingStatus.PENDING,
       });
 
+      // Determine correct status based on sessions status AND validity period
+      let correctStatus = pkg.status;
+      const now = new Date();
+      const validTo = new Date(pkg.validTo);
+
+      // Priority 1: Check if validity period has expired
+      if (validTo <= now) {
+        correctStatus = PackageStatus.EXPIRED;
+      }
+      // Priority 2: Check if all sessions are COMPLETED (not just booked)
+      else if (completedCount >= pkg.totalSessions) {
+        correctStatus = PackageStatus.USED;
+      }
+      // Priority 3: Has unbooked sessions or upcoming sessions, and within validity period
+      else if (validTo > now) {
+        correctStatus = PackageStatus.ACTIVE;
+      }
+
       return {
         ...pkg,
         completedCount,
@@ -198,6 +237,7 @@ export const getMyPackages = asyncHandler(async (req: Request, res: Response) =>
         cancelledCount,
         pendingCount,
         availableForBooking: remainingUnbooked,
+        status: correctStatus, // Use calculated status instead of stale DB status
       };
     })
   );

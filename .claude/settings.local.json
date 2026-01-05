@@ -36,7 +36,17 @@
       "Bash(for f in admin/*/page.tsx teacher/*/page.tsx customer/*/page.tsx)",
       "Bash(do grep -q \"useTranslation\" \"$f\")",
       "Bash(echo \"Missing: $f\")",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(npx cap init:*)",
+      "Bash(npx cap:*)",
+      "Bash(npx tsc --noEmit)",
+      "Bash(cross-env NODE_OPTIONS=--openssl-legacy-provider ts-node:*)",
+      "Bash(node_modules/.bin/ts-node:*)",
+      "Bash(cross-env PORT=3003 npm run dev:*)",
+      "Bash(set PORT=3003)",
+      "Bash(move:*)",
+      "Bash(npx next lint:*)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

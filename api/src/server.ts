@@ -8,6 +8,8 @@ import { errorHandler } from '@/middlewares';
 import routes from '@/routes';
 import { BookingAutoConfirmService } from '@/services/bookingAutoConfirmService';
 import { SchedulerService } from '@/services/schedulerService';
+import { initializeReportScheduler } from '@/services/reportScheduler';
+import { initializeInactiveCustomerScheduler } from '@/services/inactiveCustomerScheduler';
 
 const app: Application = express();
 
@@ -15,6 +17,7 @@ const app: Application = express();
 app.use(cors({
   origin: config.webUrl,
   credentials: true,
+  exposedHeaders: ['Content-Disposition'],
 }));
 
 app.use(express.json());
@@ -52,6 +55,12 @@ const startServer = async () => {
 
       // Start scheduler service for automatic session completion
       SchedulerService.initialize();
+
+      // Start report scheduler for automatic monthly payment reports
+      initializeReportScheduler();
+
+      // Start inactive customer scheduler for 15-day reminders
+      initializeInactiveCustomerScheduler();
     });
   } catch (error) {
     logger.error('Failed to start server:', error);

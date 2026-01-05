@@ -2,87 +2,69 @@
 
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
-import { useState } from 'react';
 
 export default function LanguageSwitcher() {
   const router = useRouter();
   const { i18n } = useTranslation();
-  const [isOpen, setIsOpen] = useState(false);
 
   const currentLanguage = i18n.language || 'en';
 
-  const languages = [
-    { code: 'en', name: 'English', flag: '🇬🇧' },
-    { code: 'th', name: 'ไทย', flag: '🇹🇭' },
-  ];
-
-  const handleLanguageChange = async (langCode: string) => {
-    await i18n.changeLanguage(langCode);
-    setIsOpen(false);
+  const handleLanguageToggle = async () => {
+    const newLang = currentLanguage === 'en' ? 'th' : 'en';
+    await i18n.changeLanguage(newLang);
     router.refresh();
   };
 
   return (
-    <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+    <button
+      onClick={handleLanguageToggle}
+      className="relative inline-flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-lg border-2 border-gray-200 hover:border-purple-400 hover:shadow-xl transition-all duration-300 group overflow-hidden"
+      title={currentLanguage === 'en' ? 'Switch to Thai' : 'Switch to English'}
+    >
+      {/* English Flag */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+          currentLanguage === 'en'
+            ? 'opacity-100 scale-100 rotate-0'
+            : 'opacity-0 scale-50 rotate-180'
+        }`}
       >
-        <span className="text-lg">
-          {languages.find((lang) => lang.code === currentLanguage)?.flag || '🌐'}
-        </span>
-        <span className="hidden sm:inline">
-          {languages.find((lang) => lang.code === currentLanguage)?.name || 'Language'}
-        </span>
-        <svg
-          className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+        <svg className="w-8 h-8" viewBox="0 0 60 30" xmlns="http://www.w3.org/2000/svg">
+          {/* UK Flag */}
+          <clipPath id="s">
+            <path d="M0,0 v30 h60 v-30 z"/>
+          </clipPath>
+          <clipPath id="t">
+            <path d="M30,15 h30 v15 z v-30 h-30 z h-30 v15 z v-15 h30 z"/>
+          </clipPath>
+          <g clipPath="url(#s)">
+            <path d="M0,0 v30 h60 v-30 z" fill="#012169"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" stroke="#fff" strokeWidth="6"/>
+            <path d="M0,0 L60,30 M60,0 L0,30" clipPath="url(#t)" stroke="#C8102E" strokeWidth="4"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#fff" strokeWidth="10"/>
+            <path d="M30,0 v30 M0,15 h60" stroke="#C8102E" strokeWidth="6"/>
+          </g>
         </svg>
-      </button>
+      </div>
 
-      {isOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-10"
-            onClick={() => setIsOpen(false)}
-          />
-          <div className="absolute right-0 z-20 mt-2 w-48 origin-top-right rounded-md bg-white shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="py-1">
-              {languages.map((lang) => (
-                <button
-                  key={lang.code}
-                  onClick={() => handleLanguageChange(lang.code)}
-                  className={`flex items-center w-full px-4 py-2 text-sm text-left ${
-                    currentLanguage === lang.code
-                      ? 'bg-primary-50 text-primary-700 font-medium'
-                      : 'text-gray-700 hover:bg-gray-50'
-                  }`}
-                >
-                  <span className="text-lg mr-3">{lang.flag}</span>
-                  <span>{lang.name}</span>
-                  {currentLanguage === lang.code && (
-                    <svg
-                      className="ml-auto w-5 h-5 text-primary-600"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-    </div>
+      {/* Thai Flag */}
+      <div
+        className={`absolute inset-0 flex items-center justify-center transition-all duration-500 ${
+          currentLanguage === 'th'
+            ? 'opacity-100 scale-100 rotate-0'
+            : 'opacity-0 scale-50 rotate-180'
+        }`}
+      >
+        <svg className="w-8 h-8" viewBox="0 0 60 40" xmlns="http://www.w3.org/2000/svg">
+          {/* Thai Flag */}
+          <rect width="60" height="40" fill="#A51931"/>
+          <rect y="6.67" width="60" height="26.66" fill="#F4F5F8"/>
+          <rect y="13.33" width="60" height="13.34" fill="#2D2A4A"/>
+        </svg>
+      </div>
+
+      {/* Hover Ring Effect */}
+      <div className="absolute inset-0 rounded-full bg-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+    </button>
   );
 }

@@ -12,3 +12,6 @@ export { CalendarConnection } from './CalendarConnection';
 export { RegistrationRequest } from './RegistrationRequest';
 export { PackageRequest } from './PackageRequest';
 export { SessionReview } from './SessionReview';
+export { PaymentReport } from './PaymentReport';
+export { Bonus } from './Bonus';
+export { Expense } from './Expense';

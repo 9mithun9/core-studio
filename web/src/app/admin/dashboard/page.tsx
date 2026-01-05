@@ -244,28 +244,43 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('dashboard.title')}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-blue-50 pb-12">
+      <div className="container mx-auto px-4 py-8">
+        {/* Gradient Hero Header */}
+        <div className="relative bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold mb-2">{t('dashboard.title')}</h1>
+            <p className="text-primary-100 text-lg">Overview of your studio's performance</p>
+          </div>
+        </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6 md:mb-8 max-w-2xl">
-        <Link href="/admin/package-requests">
-          <Card className="cursor-pointer hover:shadow-lg transition bg-yellow-50 border-yellow-200">
-            <CardContent className="pt-6">
-              <p className="text-xl md:text-2xl font-bold text-yellow-700">NEW</p>
-              <p className="text-xs md:text-sm text-gray-600">{t('dashboard.packageRequests')}</p>
-            </CardContent>
-          </Card>
-        </Link>
-        <Link href="/admin/bookings">
-          <Card className="cursor-pointer hover:shadow-lg transition">
-            <CardContent className="pt-6">
-              <p className="text-xl md:text-2xl font-bold">{analytics.overview.pendingBookings}</p>
-              <p className="text-xs md:text-sm text-gray-600">{t('dashboard.pendingRequests')}</p>
-            </CardContent>
-          </Card>
-        </Link>
-      </div>
+        {/* Quick Actions */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 max-w-2xl">
+          <Link href="/admin/package-requests">
+            <div className="relative bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-yellow-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="relative z-10">
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
+                  <p className="text-3xl font-bold mb-2">NEW</p>
+                  <p className="text-sm text-yellow-100 font-medium">{t('dashboard.packageRequests')}</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+          <Link href="/admin/bookings">
+            <div className="relative bg-gradient-to-br from-indigo-500 to-indigo-600 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300 cursor-pointer">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="relative z-10">
+                <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
+                  <p className="text-4xl font-bold mb-2">{analytics.overview.pendingBookings}</p>
+                  <p className="text-sm text-indigo-100 font-medium">{t('dashboard.pendingRequests')}</p>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
 
       {/* ========== SECTION 1: EXECUTIVE OVERVIEW ========== */}
       {executiveOverview && (
@@ -900,6 +915,7 @@ export default function AdminDashboard() {
           </div>
         </>
       )}
+      </div>
     </div>
   );
 }

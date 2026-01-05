@@ -3,7 +3,7 @@ import mongoose, { Schema, Document, Types } from 'mongoose';
 export interface IInAppNotification extends Document {
   _id: Types.ObjectId;
   userId: Types.ObjectId; // User who will receive the notification
-  type: 'booking_cancelled' | 'cancellation_requested' | 'package_requested' | 'package_approved' | 'package_rejected' | 'booking_requested' | 'booking_approved' | 'booking_rejected' | 'registration_requested' | 'registration_approved' | 'registration_rejected';
+  type: 'booking_cancelled' | 'cancellation_requested' | 'package_requested' | 'package_approved' | 'package_rejected' | 'booking_requested' | 'booking_approved' | 'booking_rejected' | 'registration_requested' | 'registration_approved' | 'registration_rejected' | 'inactive_reminder';
   title: string;
   message: string;
   titleKey?: string; // i18n translation key for title
@@ -26,7 +26,7 @@ const inAppNotificationSchema = new Schema<IInAppNotification>(
     },
     type: {
       type: String,
-      enum: ['booking_cancelled', 'cancellation_requested', 'package_requested', 'package_approved', 'package_rejected', 'booking_requested', 'booking_approved', 'booking_rejected', 'registration_requested', 'registration_approved', 'registration_rejected'],
+      enum: ['booking_cancelled', 'cancellation_requested', 'package_requested', 'package_approved', 'package_rejected', 'booking_requested', 'booking_approved', 'booking_rejected', 'registration_requested', 'registration_approved', 'registration_rejected', 'inactive_reminder'],
       required: true,
     },
     title: {

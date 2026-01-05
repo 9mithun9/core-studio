@@ -122,6 +122,7 @@ export interface ITeacher extends Document {
   workingHoursTemplate?: Record<string, any>;
   isActive: boolean;
   imageUrl?: string;
+  teacherType: 'freelance' | 'studio';
   createdAt: Date;
   updatedAt: Date;
 }
@@ -341,6 +342,111 @@ export interface CreateReviewRequest {
 
 // =====================================================
 // EXPRESS REQUEST EXTENSIONS
+// =====================================================
+// PAYMENT REPORT INTERFACES
+// =====================================================
+
+export interface IPaymentReport extends Document {
+  _id: Types.ObjectId;
+  month: number;
+  year: number;
+  reportType: 'monthly' | 'quarterly' | 'half-yearly' | 'yearly';
+  startDate: Date;
+  endDate: Date;
+  totalRevenue: number;
+  teacherPayments: Array<{
+    teacherId: Types.ObjectId;
+    teacherName: string;
+    teacherType: 'freelance' | 'studio';
+    sessions: {
+      private: {
+        count: number;
+        commission: number;
+      };
+      duo: {
+        count: number;
+        commission: number;
+      };
+      group: {
+        count: number;
+        commission: number;
+      };
+    };
+    totalSessions: number;
+    totalCommission: number;
+    baseSalary: number;
+    bonuses: Array<{
+      bonusId: Types.ObjectId;
+      amount: number;
+      reason: string;
+      type: 'one-time' | 'recurring';
+    }>;
+    totalBonuses: number;
+    totalPayment: number;
+  }>;
+  expenses: Array<{
+    expenseId: Types.ObjectId;
+    category: 'rent' | 'instruments' | 'electricity' | 'water' | 'others';
+    amount: number;
+    description: string;
+  }>;
+  totalExpenses: number;
+  totalTeacherPayments: number;
+  totalCosts: number;
+  profitLoss: number;
+  packagesSold: Array<{
+    packageId: Types.ObjectId;
+    customerId: Types.ObjectId;
+    customerName: string;
+    packageName: string;
+    packageType: string;
+    totalSessions: number;
+    price: number;
+    purchaseDate: Date;
+  }>;
+  totalPackagesSold: number;
+  generatedAt: Date;
+  generatedBy: 'auto' | 'manual';
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// =====================================================
+// Expense Interface
+// =====================================================
+
+export interface IExpense extends Document {
+  _id: Types.ObjectId;
+  reportId: Types.ObjectId;
+  month: number;
+  year: number;
+  category: 'rent' | 'instruments' | 'electricity' | 'water' | 'others';
+  amount: number;
+  description: string;
+  createdBy: Types.ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// =====================================================
+// Bonus Interface
+// =====================================================
+
+export interface IBonus extends Document {
+  _id: Types.ObjectId;
+  teacherId: Types.ObjectId;
+  amount: number;
+  reason: string;
+  type: 'one-time' | 'recurring';
+  month: number;
+  year: number;
+  status: 'pending' | 'approved' | 'paid' | 'cancelled';
+  approvedBy: Types.ObjectId;
+  notes?: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 // =====================================================
 
 declare global {

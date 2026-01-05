@@ -58,7 +58,9 @@
       "message": "{{customerName}} cancelled their booking on {{bookingDate}}",
       "messageWithReason": "{{customerName}} cancelled their booking on {{bookingDate}}. Reason: {{reason}}",
       "approvalTitle": "Cancellation Request Approved",
-      "approvalMessage": "Your cancellation request for the booking on {{bookingDate}} has been approved"
+      "approvalMessage": "Your cancellation request for the booking on {{bookingDate}} has been approved",
+      "teacherDeactivatedTitle": "Session Cancelled",
+      "teacherDeactivatedMessage": "Your session with {{teacherName}} on {{bookingDate}} has been cancelled. The teacher is no longer available. Please contact the studio to reschedule."
     },
     "cancellation_requested": {
       "title": "Cancellation Request",
@@ -101,6 +103,10 @@
     "registration_approved": {
       "title": "Registration Approved - Welcome!",
       "message": "Welcome! Your registration has been approved and you've been assigned a {{packageName}} package with {{totalSessions}} sessions. Start booking your classes now!"
+    },
+    "inactive_reminder": {
+      "title": "We Miss You!",
+      "message": "It's been a while since your last session. Ready to get back on track? Book a session today and continue your Pilates journey!"
     }
   }
 }

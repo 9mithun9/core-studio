@@ -105,16 +105,27 @@ export const getCustomerOverview = asyncHandler(async (req: Request, res: Respon
     .limit(5)
     .lean();
 
-  // Get total sessions completed
+  // Get total sessions completed (count)
   const completedSessions = await Booking.countDocuments({
     customerId: customer._id,
     status: 'completed',
   });
 
+  // Get recent completed bookings for calculating inactivity
+  const completedBookings = await Booking.find({
+    customerId: customer._id,
+    status: 'completed',
+  })
+    .sort({ startTime: -1 })
+    .limit(1)
+    .select('startTime')
+    .lean();
+
   res.json({
     customer,
     activePackages,
     upcomingBookings,
+    completedBookings,
     stats: {
       completedSessions,
     },

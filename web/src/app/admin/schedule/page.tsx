@@ -273,17 +273,52 @@ export default function AdminSchedule() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4 md:mb-6">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{t('schedule.title')}</h1>
-          <p className="text-sm md:text-base text-gray-600 mt-1 md:mt-2">{t('schedule.subtitle')}</p>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-orange-50 pb-12">
+      <div className="container mx-auto px-4 py-8">
+        {/* Gradient Hero Header */}
+        <div className="relative bg-gradient-to-r from-orange-600 to-orange-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">{t('schedule.title')}</h1>
+              <p className="text-orange-100 text-lg">{t('schedule.subtitle')}</p>
+            </div>
+            <div className="hidden md:flex gap-3">
+              <select
+                value={selectedTeacher}
+                onChange={(e) => setSelectedTeacher(e.target.value)}
+                className="px-4 py-2 text-sm border-0 bg-white text-gray-900 rounded-lg shadow-sm"
+              >
+                <option value="all">{t('schedule.allTeachers')}</option>
+                {teachers.map((teacher) => (
+                  <option key={teacher._id} value={teacher._id}>
+                    {teacher.userId?.name || 'Unknown'}
+                  </option>
+                ))}
+              </select>
+              <Button
+                onClick={() => {
+                  setSelectedSlot({ date: new Date(), hour: 9 });
+                  setShowBlockModal(true);
+                }}
+                className="bg-white text-orange-700 hover:bg-gray-100"
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                {t('schedule.blockTime')}
+              </Button>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col sm:flex-row gap-2 md:gap-3">
+
+        {/* Mobile Controls */}
+        <div className="md:hidden mb-6 flex flex-col gap-3">
           <select
             value={selectedTeacher}
             onChange={(e) => setSelectedTeacher(e.target.value)}
-            className="px-3 md:px-4 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+            className="px-4 py-2 text-sm border border-gray-300 rounded-lg"
           >
             <option value="all">{t('schedule.allTeachers')}</option>
             {teachers.map((teacher) => (
@@ -298,12 +333,11 @@ export default function AdminSchedule() {
               setShowBlockModal(true);
             }}
             size="sm"
-            className="text-xs md:text-sm"
+            className="w-full"
           >
             {t('schedule.blockTime')}
           </Button>
         </div>
-      </div>
 
       {selectedTeacher === 'all' && teachers.length > 0 && (
         <Card className="mb-3 md:mb-4">
@@ -653,6 +687,7 @@ export default function AdminSchedule() {
       )}
 
       <Toaster position="top-right" />
+      </div>
     </div>
   );
 }

@@ -69,25 +69,46 @@ export const requestBooking = asyncHandler(async (req: Request, res: Response) =
       throw new AppError('This package does not belong to you', 403);
     }
 
-    if (packageData.status !== PackageStatus.ACTIVE) {
+    // Calculate package status dynamically before checking
+    // Count completed sessions (COMPLETED, NO_SHOW, and past CONFIRMED sessions)
+    const completedCount = await Booking.countDocuments({
+      packageId: data.packageId,
+      $or: [
+        { status: { $in: [BookingStatus.COMPLETED, BookingStatus.NO_SHOW] } },
+        { status: BookingStatus.CONFIRMED, endTime: { $lt: new Date() } }
+      ],
+    });
+
+    // Calculate current package status
+    const now = new Date();
+    const validTo = new Date(packageData.validTo);
+    let currentStatus = packageData.status;
+
+    if (validTo <= now) {
+      currentStatus = PackageStatus.EXPIRED;
+    } else if (completedCount >= packageData.totalSessions) {
+      currentStatus = PackageStatus.USED;
+    } else if (validTo > now) {
+      currentStatus = PackageStatus.ACTIVE;
+    }
+
+    if (currentStatus !== PackageStatus.ACTIVE) {
       throw new AppError('Package is not active', 400);
     }
 
-    if (packageData.remainingSessions <= 0) {
-      throw new AppError('No sessions remaining in this package', 400);
-    }
-
-    // Count pending bookings for this package
-    const pendingBookingsCount = await Booking.countDocuments({
+    // Count upcoming sessions (PENDING or CONFIRMED sessions that haven't ended yet)
+    const upcomingCount = await Booking.countDocuments({
       packageId: data.packageId,
-      status: BookingStatus.PENDING,
+      status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+      endTime: { $gte: new Date() },
     });
 
-    // Check if we have enough sessions available (remaining - pending requests)
-    const availableSessions = packageData.remainingSessions - pendingBookingsCount;
+    // Calculate available sessions: Total - Completed - Upcoming
+    const availableSessions = packageData.totalSessions - completedCount - upcomingCount;
+
     if (availableSessions <= 0) {
       throw new AppError(
-        `No sessions available. You have ${pendingBookingsCount} pending request(s) awaiting teacher approval.`,
+        'No sessions remaining in this package. All sessions are either completed or already booked.',
         400
       );
     }
@@ -343,9 +364,8 @@ export const confirmBooking = asyncHandler(async (req: Request, res: Response) =
     const packageData = await Package.findById(booking.packageId);
     if (packageData) {
       packageData.remainingSessions -= 1;
-      if (packageData.remainingSessions === 0 && packageData.status === PackageStatus.ACTIVE) {
-        packageData.status = PackageStatus.USED;
-      }
+      // Note: We don't update status here - it's calculated dynamically when fetching packages
+      // based on completedCount, not remainingSessions
       await packageData.save();
     }
   }
@@ -510,10 +530,8 @@ export const markAttendance = asyncHandler(async (req: Request, res: Response) =
       // Refund the session back to the package
       packageData.remainingSessions += 1;
 
-      // Update status if needed
-      if (packageData.status === PackageStatus.USED && packageData.remainingSessions > 0) {
-        packageData.status = PackageStatus.ACTIVE;
-      }
+      // Note: We don't update status here - it's calculated dynamically when fetching packages
+      // When the cancelled booking is no longer counted in completedCount, status will update automatically
 
       await packageData.save();
     }
@@ -1168,9 +1186,7 @@ export const approveCancellation = asyncHandler(async (req: Request, res: Respon
       // Only add back if we don't exceed total sessions (safety check)
       if (packageData.remainingSessions < packageData.totalSessions) {
         packageData.remainingSessions += 1;
-        if (packageData.status === PackageStatus.USED && packageData.remainingSessions > 0) {
-          packageData.status = PackageStatus.ACTIVE;
-        }
+        // Note: We don't update status here - it's calculated dynamically when fetching packages
         await packageData.save();
       }
     }
@@ -1461,9 +1477,21 @@ export const cancelBooking = asyncHandler(async (req: Request, res: Response) =>
   const { id } = req.params;
   const { status, cancellationReason } = req.body;
 
-  const booking = await Booking.findById(id);
+  const booking = await Booking.findById(id).populate('customerId');
   if (!booking) {
     throw new AppError('Booking not found', 404);
+  }
+
+  // Check authorization: customers can only cancel their own bookings
+  if (req.user?.role === UserRole.CUSTOMER) {
+    const customer = await Customer.findOne({ userId: req.user._id });
+    if (!customer || booking.customerId._id.toString() !== customer._id.toString()) {
+      throw new AppError('You can only cancel your own bookings', 403);
+    }
+    // Customers can only cancel PENDING bookings directly (not CONFIRMED ones)
+    if (booking.status !== BookingStatus.PENDING) {
+      throw new AppError('You can only cancel pending booking requests. For confirmed bookings, please use the cancellation request feature.', 400);
+    }
   }
 
   // Only allow cancelling confirmed or pending bookings
@@ -1475,7 +1503,7 @@ export const cancelBooking = asyncHandler(async (req: Request, res: Response) =>
 
   // Update booking status
   booking.status = BookingStatus.CANCELLED;
-  booking.cancellationReason = cancellationReason || 'Cancelled by teacher';
+  booking.cancellationReason = cancellationReason || (req.user?.role === UserRole.CUSTOMER ? 'Cancelled by customer' : 'Cancelled by teacher');
   await booking.save();
 
   // Refund session if it was confirmed (session was already deducted)
@@ -1484,10 +1512,7 @@ export const cancelBooking = asyncHandler(async (req: Request, res: Response) =>
     if (packageData) {
       packageData.remainingSessions += 1;
 
-      // Update package status if needed
-      if (packageData.status === PackageStatus.USED && packageData.remainingSessions > 0) {
-        packageData.status = PackageStatus.ACTIVE;
-      }
+      // Note: We don't update status here - it's calculated dynamically when fetching packages
 
       await packageData.save();
     }

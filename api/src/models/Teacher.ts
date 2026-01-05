@@ -41,6 +41,12 @@ const teacherSchema = new Schema<ITeacher>(
       type: String,
       trim: true,
     },
+    teacherType: {
+      type: String,
+      enum: ['freelance', 'studio'],
+      default: 'freelance',
+      required: true,
+    },
   },
   {
     timestamps: true,

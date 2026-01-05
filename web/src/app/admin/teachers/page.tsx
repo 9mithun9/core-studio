@@ -28,6 +28,7 @@ interface TeacherWithDetails {
   defaultLocation?: string;
   isActive: boolean;
   imageUrl?: string;
+  teacherType: 'freelance' | 'studio';
   totalSessions: number;
   completedSessions: number;
   upcomingSessions: number;
@@ -119,8 +120,12 @@ export default function AdminTeachersPage() {
   const [detailsLoading, setDetailsLoading] = useState(false);
   const [trendsData, setTrendsData] = useState<TrendData[]>([]);
   const [teacherNames, setTeacherNames] = useState<string[]>([]);
-  const [trendPeriod, setTrendPeriod] = useState<string>('6');
+  const [trendPeriod, setTrendPeriod] = useState<string>('6months');
+  const [showActiveOnly, setShowActiveOnly] = useState<boolean>(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showDeactivateConfirm, setShowDeactivateConfirm] = useState(false);
+  const [sessionFilterMonth, setSessionFilterMonth] = useState<string>('all');
+  const [sessionFilterYear, setSessionFilterYear] = useState<number>(new Date().getFullYear());
   const [createForm, setCreateForm] = useState({
     name: '',
     email: '',
@@ -138,7 +143,7 @@ export default function AdminTeachersPage() {
 
   useEffect(() => {
     fetchTrendsData();
-  }, [trendPeriod]);
+  }, [trendPeriod, showActiveOnly]);
 
   useEffect(() => {
     let filtered = [...teachers];
@@ -167,6 +172,66 @@ export default function AdminTeachersPage() {
       console.error('Error fetching teachers:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleToggleActiveClick = (teacherId: string, currentStatus: boolean) => {
+    // If deactivating, show confirmation dialog
+    if (currentStatus) {
+      setShowDeactivateConfirm(true);
+    } else {
+      // If activating, proceed directly
+      handleToggleActive(teacherId, currentStatus);
+    }
+  };
+
+  const handleToggleActive = async (teacherId: string, currentStatus: boolean) => {
+    setShowDeactivateConfirm(false);
+
+    const loadingToast = toast.loading(
+      currentStatus ? t('teachers.deactivating') : t('teachers.activating')
+    );
+
+    try {
+      const response: any = await apiClient.patch(`/admin/teachers/${teacherId}/toggle-active`);
+
+      let successMessage = currentStatus
+        ? t('teachers.deactivatedSuccess')
+        : t('teachers.activatedSuccess');
+
+      // If sessions were cancelled, add that info to the message
+      if (response.cancelledSessions && response.cancelledSessions > 0) {
+        successMessage += ` ${response.cancelledSessions} future session(s) cancelled and customers notified.`;
+      }
+
+      toast.success(successMessage, { id: loadingToast });
+      fetchTeachers();
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.error || t('teachers.toggleFailed'),
+        { id: loadingToast }
+      );
+    }
+  };
+
+  const handleUpdateTeacherType = async (teacherId: string, newType: 'freelance' | 'studio') => {
+    const loadingToast = toast.loading(t('teachers.updatingType'));
+
+    try {
+      await apiClient.patch(`/admin/teachers/${teacherId}/type`, {
+        teacherType: newType,
+      });
+
+      toast.success(t('teachers.typeUpdatedSuccess'), { id: loadingToast });
+      fetchTeachers();
+      if (selectedTeacher?._id === teacherId) {
+        setSelectedTeacher({ ...selectedTeacher, teacherType: newType });
+      }
+    } catch (error: any) {
+      toast.error(
+        error.response?.data?.error || t('teachers.typeUpdateFailed'),
+        { id: loadingToast }
+      );
     }
   };
 
@@ -217,10 +282,17 @@ export default function AdminTeachersPage() {
     }
   };
 
-  const fetchTeacherDetails = async (teacherId: string) => {
+  const fetchTeacherDetails = async (teacherId: string, month?: string, year?: number) => {
     try {
       setDetailsLoading(true);
-      const data: any = await apiClient.get(`/admin/teachers/${teacherId}`);
+
+      const params: any = {};
+      if (month && month !== 'all') {
+        params.month = month;
+        params.year = year || sessionFilterYear;
+      }
+
+      const data: any = await apiClient.get(`/admin/teachers/${teacherId}`, { params });
       setTeacherStudents(data.students || []);
       setTeacherSessions(data.sessions || []);
       setDeepAnalysis(data.deepAnalysis || null);
@@ -233,8 +305,22 @@ export default function AdminTeachersPage() {
 
   const fetchTrendsData = async () => {
     try {
+      const params: any = {
+        activeOnly: showActiveOnly.toString()
+      };
+
+      // Check if period is a year (numeric) or a month period (6months/12months)
+      if (trendPeriod === '6months') {
+        params.months = '6';
+      } else if (trendPeriod === '12months') {
+        params.months = '12';
+      } else {
+        // It's a year
+        params.year = trendPeriod;
+      }
+
       const data: any = await apiClient.get('/admin/teacher-session-trends', {
-        params: { months: trendPeriod },
+        params,
       });
       setTrendsData(data.trends || []);
       setTeacherNames(data.teachers || []);
@@ -245,7 +331,10 @@ export default function AdminTeachersPage() {
 
   const handleSelectTeacher = (teacher: TeacherWithDetails) => {
     setSelectedTeacher(teacher);
-    fetchTeacherDetails(teacher._id);
+    // Reset filters when selecting a new teacher
+    setSessionFilterMonth('all');
+    setSessionFilterYear(new Date().getFullYear());
+    fetchTeacherDetails(teacher._id, 'all', new Date().getFullYear());
   };
 
   const getDaysSinceLastSession = (teacher: TeacherWithDetails): number | null => {
@@ -264,31 +353,87 @@ export default function AdminTeachersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-6 md:py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 md:mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold">{t('teachers.title')}</h1>
-        <Button onClick={() => setShowCreateModal(true)} size="sm" className="text-xs md:text-sm w-full sm:w-auto">
-          {t('teachers.createTeacher')}
-        </Button>
-      </div>
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-purple-50 pb-12">
+      <div className="container mx-auto px-4 py-8">
+        {/* Gradient Hero Header */}
+        <div className="relative bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
+          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
+          <div className="relative z-10 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2">{t('teachers.title')}</h1>
+              <p className="text-purple-100 text-lg">Manage your teaching staff and performance</p>
+            </div>
+            <Button
+              onClick={() => setShowCreateModal(true)}
+              size="lg"
+              className="bg-white text-purple-700 hover:bg-gray-100 hidden md:flex"
+            >
+              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+              </svg>
+              {t('teachers.createTeacher')}
+            </Button>
+          </div>
+        </div>
+
+        {/* Mobile Create Button */}
+        <div className="md:hidden mb-6">
+          <Button
+            onClick={() => setShowCreateModal(true)}
+            size="sm"
+            className="w-full"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+            </svg>
+            {t('teachers.createTeacher')}
+          </Button>
+        </div>
 
       {/* Teacher Sessions Graph */}
       <Card className="mb-4 md:mb-6">
         <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <div>
-              <CardTitle className="text-base md:text-lg">{t('teachers.sessionsOverTime')}</CardTitle>
-              <CardDescription className="text-xs md:text-sm">{t('teachers.completedByMonth')}</CardDescription>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+              <div>
+                <CardTitle className="text-base md:text-lg">{t('teachers.sessionsOverTime')}</CardTitle>
+                <CardDescription className="text-xs md:text-sm">{t('teachers.completedByMonth')}</CardDescription>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                {/* Active/All Teachers Toggle */}
+                <Select value={showActiveOnly.toString()} onValueChange={(val) => setShowActiveOnly(val === 'true')}>
+                  <SelectTrigger className="w-full sm:w-[160px] text-xs md:text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="true">{t('teachers.activeOnly')}</SelectItem>
+                    <SelectItem value="false">{t('teachers.allTeachersFilter')}</SelectItem>
+                  </SelectContent>
+                </Select>
+
+                {/* Combined Year/Period Selector */}
+                <Select value={trendPeriod} onValueChange={setTrendPeriod}>
+                  <SelectTrigger className="w-full sm:w-[160px] text-xs md:text-sm">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="6months">{t('teachers.last6Months')}</SelectItem>
+                    <SelectItem value="12months">{t('teachers.last12Months')}</SelectItem>
+                    {(() => {
+                      const currentYear = new Date().getFullYear();
+                      const years = [];
+                      for (let year = currentYear; year >= 2024; year--) {
+                        years.push(year);
+                      }
+                      return years.map(year => (
+                        <SelectItem key={year} value={year.toString()}>{year}</SelectItem>
+                      ));
+                    })()}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
-            <Select value={trendPeriod} onValueChange={setTrendPeriod}>
-              <SelectTrigger className="w-full sm:w-[180px] text-xs md:text-sm">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="6">{t('teachers.last6Months')}</SelectItem>
-                <SelectItem value="12">{t('teachers.last12Months')}</SelectItem>
-              </SelectContent>
-            </Select>
           </div>
         </CardHeader>
         <CardContent>
@@ -423,32 +568,35 @@ export default function AdminTeachersPage() {
           {selectedTeacher ? (
             <Card>
               <CardHeader>
-                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                  <div className="flex items-center gap-3 md:gap-4">
-                    {/* Profile photo */}
-                    <div className="flex-shrink-0">
-                      {selectedTeacher.imageUrl ? (
-                        <img
-                          src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedTeacher.imageUrl}`}
-                          alt="Profile"
-                          className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-4 border-primary-100 shadow-md"
-                        />
-                      ) : (
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl md:text-2xl font-bold text-gray-500 border-4 border-gray-300">
-                          {selectedTeacher.userId.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                <div className="flex flex-col gap-3">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3 md:gap-4">
+                      {/* Profile photo */}
+                      <div className="flex-shrink-0">
+                        {selectedTeacher.imageUrl ? (
+                          <img
+                            src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedTeacher.imageUrl}`}
+                            alt="Profile"
+                            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-4 border-primary-100 shadow-md"
+                          />
+                        ) : (
+                          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-200 flex items-center justify-center text-xl md:text-2xl font-bold text-gray-500 border-4 border-gray-300">
+                            {selectedTeacher.userId.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <div className="min-w-0">
+                        <CardTitle className="text-base md:text-lg truncate">{selectedTeacher.userId.name}</CardTitle>
+                        <CardDescription className="text-xs md:text-sm truncate">{selectedTeacher.userId.email}</CardDescription>
+                      </div>
                     </div>
-                    <div className="min-w-0">
-                      <CardTitle className="text-base md:text-lg truncate">{selectedTeacher.userId.name}</CardTitle>
-                      <CardDescription className="text-xs md:text-sm truncate">{selectedTeacher.userId.email}</CardDescription>
-                    </div>
+                    {!selectedTeacher.isActive && (
+                      <span className="px-3 py-1 bg-red-100 text-red-700 rounded text-xs md:text-sm font-medium self-start sm:self-center">
+                        {t('teachers.inactive')}
+                      </span>
+                    )}
                   </div>
-                  {!selectedTeacher.isActive && (
-                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded text-xs md:text-sm font-medium self-start sm:self-center">
-                      {t('teachers.inactive')}
-                    </span>
-                  )}
+
                 </div>
 
                 {/* Quick Stats */}
@@ -535,6 +683,64 @@ export default function AdminTeachersPage() {
                           </div>
                         </div>
                       )}
+
+                      {/* Teacher Type Control */}
+                      <div className="pt-4 border-t border-gray-200">
+                        <p className="text-xs md:text-sm font-medium text-gray-600 mb-3">{t('teachers.teacherType')}</p>
+                        <Select
+                          value={selectedTeacher.teacherType}
+                          onValueChange={(value: 'freelance' | 'studio') => handleUpdateTeacherType(selectedTeacher._id, value)}
+                        >
+                          <SelectTrigger className="w-full text-xs md:text-sm">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="freelance">
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium">{t('teachers.freelance')}</span>
+                                <span className="text-xs text-gray-500">{t('teachers.freelanceDesc')}</span>
+                              </div>
+                            </SelectItem>
+                            <SelectItem value="studio">
+                              <div className="flex flex-col items-start">
+                                <span className="font-medium">{t('teachers.studio')}</span>
+                                <span className="text-xs text-gray-500">{t('teachers.studioDesc')}</span>
+                              </div>
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Teacher Status Control */}
+                      <div className="pt-4 border-t border-gray-200">
+                        <p className="text-xs md:text-sm font-medium text-gray-600 mb-3">Teacher Status</p>
+                        <Button
+                          onClick={() => handleToggleActiveClick(selectedTeacher._id, selectedTeacher.isActive)}
+                          variant={selectedTeacher.isActive ? "outline" : "default"}
+                          size="sm"
+                          className={`w-full ${
+                            selectedTeacher.isActive
+                              ? 'border-red-300 text-red-700 hover:bg-red-50 hover:border-red-400'
+                              : 'bg-green-600 hover:bg-green-700 text-white'
+                          }`}
+                        >
+                          {selectedTeacher.isActive ? (
+                            <>
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                              </svg>
+                              {t('teachers.deactivate')}
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              {t('teachers.activate')}
+                            </>
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   </TabsContent>
 
@@ -571,6 +777,61 @@ export default function AdminTeachersPage() {
 
                   {/* Sessions Tab */}
                   <TabsContent value="sessions">
+                    {/* Month/Year Filter */}
+                    <div className="flex gap-2 mb-4 pb-4 border-b border-gray-200">
+                      <Select
+                        value={sessionFilterMonth}
+                        onValueChange={(val) => {
+                          setSessionFilterMonth(val);
+                          if (selectedTeacher) {
+                            fetchTeacherDetails(selectedTeacher._id, val, sessionFilterYear);
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="w-[140px] text-xs md:text-sm">
+                          <SelectValue placeholder="Select Month" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">All Time</SelectItem>
+                          <SelectItem value="1">January</SelectItem>
+                          <SelectItem value="2">February</SelectItem>
+                          <SelectItem value="3">March</SelectItem>
+                          <SelectItem value="4">April</SelectItem>
+                          <SelectItem value="5">May</SelectItem>
+                          <SelectItem value="6">June</SelectItem>
+                          <SelectItem value="7">July</SelectItem>
+                          <SelectItem value="8">August</SelectItem>
+                          <SelectItem value="9">September</SelectItem>
+                          <SelectItem value="10">October</SelectItem>
+                          <SelectItem value="11">November</SelectItem>
+                          <SelectItem value="12">December</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      <Select
+                        value={sessionFilterYear.toString()}
+                        onValueChange={(val) => {
+                          const year = Number(val);
+                          setSessionFilterYear(year);
+                          if (selectedTeacher) {
+                            fetchTeacherDetails(selectedTeacher._id, sessionFilterMonth, year);
+                          }
+                        }}
+                        disabled={sessionFilterMonth === 'all'}
+                      >
+                        <SelectTrigger className="w-[100px] text-xs md:text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {[2024, 2025, 2026].map((year) => (
+                            <SelectItem key={year} value={year.toString()}>
+                              {year}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     {detailsLoading ? (
                       <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.sessionsTab.loading')}</p>
                     ) : teacherSessions.length === 0 ? (
@@ -881,7 +1142,46 @@ export default function AdminTeachersPage() {
         </div>
       )}
 
+      {/* Deactivate Confirmation Dialog */}
+      {showDeactivateConfirm && selectedTeacher && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <div className="mb-4">
+              <h2 className="text-xl font-bold text-gray-900 mb-2">Deactivate Teacher?</h2>
+              <p className="text-sm text-gray-600 mb-3">
+                Are you sure you want to deactivate <span className="font-semibold">{selectedTeacher.userId.name}</span>?
+              </p>
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3 mb-3">
+                <p className="text-sm text-yellow-800">
+                  <strong>Warning:</strong> All future sessions will be automatically cancelled and customers will be notified.
+                </p>
+              </div>
+              <p className="text-xs text-gray-500">
+                This action can be reversed by activating the teacher again.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Button
+                onClick={() => setShowDeactivateConfirm(false)}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => handleToggleActive(selectedTeacher._id, selectedTeacher.isActive)}
+                className="flex-1 bg-red-600 hover:bg-red-700 text-white"
+              >
+                Yes, Deactivate
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <Toaster position="top-right" />
+      </div>
     </div>
   );
 }

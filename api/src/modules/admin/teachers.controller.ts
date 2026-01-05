@@ -5,6 +5,8 @@ import { Teacher, Booking, User } from '@/models';
 import { AppError, asyncHandler } from '@/middlewares';
 import { validateSchema } from '@/utils/validation';
 import { BookingStatus, UserRole, UserStatus } from '@/types';
+import { NotificationService } from '@/services/notificationService';
+import { logger } from '@/config/logger';
 
 // Validation schema for creating teacher
 const createTeacherSchema = z.object({
@@ -153,6 +155,7 @@ export const getAllTeachersWithDetails = asyncHandler(async (req: Request, res: 
 // Get detailed information about a specific teacher
 export const getTeacherDetails = asyncHandler(async (req: Request, res: Response) => {
   const { id } = req.params;
+  const { month, year } = req.query;
 
   const teacher = await Teacher.findById(id)
     .populate('userId', 'name email phone createdAt status')
@@ -162,8 +165,22 @@ export const getTeacherDetails = asyncHandler(async (req: Request, res: Response
     throw new AppError('Teacher not found', 404);
   }
 
+  // Build date filter for sessions if month/year provided
+  const bookingQuery: any = { teacherId: teacher._id };
+
+  if (month && year) {
+    const selectedDate = new Date(Number(year), Number(month) - 1, 1);
+    const startOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+    const endOfMonth = new Date(selectedDate.getFullYear(), selectedDate.getMonth() + 1, 0, 23, 59, 59, 999);
+
+    bookingQuery.startTime = {
+      $gte: startOfMonth,
+      $lte: endOfMonth,
+    };
+  }
+
   // Get all bookings for this teacher with customer details
-  const bookings = await Booking.find({ teacherId: teacher._id })
+  const bookings = await Booking.find(bookingQuery)
     .populate({
       path: 'customerId',
       populate: {
@@ -291,6 +308,113 @@ export const getTeacherDetails = asyncHandler(async (req: Request, res: Response
       avgSessionsPerMonth,
       popularPackageTypes,
       popularSessionTypes,
+    },
+  });
+});
+
+// Toggle teacher active status
+export const toggleTeacherActiveStatus = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  const teacher = await Teacher.findById(id).populate('userId', 'name');
+
+  if (!teacher) {
+    throw new AppError('Teacher not found', 404);
+  }
+
+  const wasActive = teacher.isActive;
+
+  // Toggle the isActive status
+  teacher.isActive = !teacher.isActive;
+  await teacher.save();
+
+  let cancelledSessionsCount = 0;
+
+  // If deactivating teacher, cancel all future sessions
+  if (wasActive && !teacher.isActive) {
+    const now = new Date();
+
+    // Find all future sessions (pending or confirmed) that haven't ended yet
+    const futureSessions = await Booking.find({
+      teacherId: teacher._id,
+      status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+      startTime: { $gt: now },
+    })
+      .populate({
+        path: 'customerId',
+        populate: {
+          path: 'userId',
+          select: 'name email',
+        },
+      })
+      .populate('packageId', 'name type');
+
+    cancelledSessionsCount = futureSessions.length;
+
+    // Cancel each session and notify the customer
+    for (const session of futureSessions) {
+      // Update session status to cancelled
+      session.status = BookingStatus.CANCELLED;
+      await session.save();
+
+      // Send notification to customer
+      if (session.customerId && (session.customerId as any).userId) {
+        try {
+          const customerUserId = (session.customerId as any).userId._id;
+          const customerName = (session.customerId as any).userId.name;
+          const teacherName = (teacher as any).userId?.name || 'Teacher';
+
+          await NotificationService.notifyBookingCancellation({
+            customerId: customerUserId,
+            customerName,
+            teacherName,
+            sessionDate: session.startTime,
+            reason: `The teacher is no longer available. Please contact the studio to reschedule.`,
+          });
+        } catch (notificationError) {
+          logger.error('Failed to send cancellation notification:', notificationError);
+        }
+      }
+    }
+
+    logger.info(`Deactivated teacher ${teacher._id} and cancelled ${cancelledSessionsCount} future sessions`);
+  }
+
+  res.json({
+    message: `Teacher ${teacher.isActive ? 'activated' : 'deactivated'} successfully`,
+    teacher: {
+      _id: teacher._id,
+      isActive: teacher.isActive,
+    },
+    cancelledSessions: cancelledSessionsCount,
+  });
+});
+
+// Update teacher type (freelance/studio)
+export const updateTeacherType = asyncHandler(async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const { teacherType } = req.body;
+
+  if (!teacherType || !['freelance', 'studio'].includes(teacherType)) {
+    throw new AppError('Invalid teacher type. Must be either "freelance" or "studio"', 400);
+  }
+
+  const teacher = await Teacher.findById(id);
+
+  if (!teacher) {
+    throw new AppError('Teacher not found', 404);
+  }
+
+  teacher.teacherType = teacherType;
+  await teacher.save();
+
+  logger.info(`Updated teacher ${teacher._id} type to ${teacherType}`);
+
+  res.json({
+    message: 'Teacher type updated successfully',
+    teacher: {
+      _id: teacher._id,
+      teacherType: teacher.teacherType,
     },
   });
 });

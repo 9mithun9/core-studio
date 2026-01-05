@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import { User, Customer, RegistrationRequest } from '@/models';
+import { User, Customer, RegistrationRequest, Teacher } from '@/models';
 import { hashPassword, comparePassword } from '@/utils/password';
 import { signToken, signRefreshToken } from '@/utils/jwt';
 import { validateSchema } from '@/utils/validation';
@@ -125,6 +125,14 @@ export const login = asyncHandler(async (req: Request, res: Response) => {
   // Check if user is active
   if (user.status !== 'active') {
     throw new AppError('Account is inactive', 401);
+  }
+
+  // If user is a teacher, check if teacher profile is active
+  if (user.role === UserRole.TEACHER) {
+    const teacher = await Teacher.findOne({ userId: user._id });
+    if (teacher && !teacher.isActive) {
+      throw new AppError('Your teacher account has been deactivated. Please contact the administrator.', 403);
+    }
   }
 
   // Generate tokens

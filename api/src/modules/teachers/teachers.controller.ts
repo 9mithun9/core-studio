@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { Teacher, Booking, Customer, User, Package, SessionReview } from '@/models';
 import { AppError, asyncHandler } from '@/middlewares';
-import { toStudioTime } from '@/utils/time';
+import { toStudioTime, formatStudioTime } from '@/utils/time';
 import { startOfDay, endOfDay, format } from 'date-fns';
 import { BookingStatus, PackageStatus } from '@/types';
 import { NotificationService } from '@/services/notificationService';
@@ -260,6 +260,54 @@ export const getMyStudents = asyncHandler(async (req: Request, res: Response) =>
         .sort({ createdAt: -1 })
         .lean();
 
+      // Calculate accurate remaining sessions for each package
+      const packagesWithAccurateCount = await Promise.all(
+        packages.map(async (pkg: any) => {
+          // Count completed sessions (COMPLETED, NO_SHOW, and past CONFIRMED sessions)
+          const completedCount = await Booking.countDocuments({
+            packageId: pkg._id,
+            $or: [
+              { status: { $in: [BookingStatus.COMPLETED, BookingStatus.NO_SHOW] } },
+              { status: BookingStatus.CONFIRMED, endTime: { $lt: new Date() } }
+            ],
+          });
+
+          // Count upcoming sessions (PENDING or CONFIRMED sessions that haven't ended yet)
+          const upcomingCount = await Booking.countDocuments({
+            packageId: pkg._id,
+            status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+            endTime: { $gte: new Date() },
+          });
+
+          // Calculate available sessions: Total - Completed - Upcoming
+          const remainingSessions = pkg.totalSessions - completedCount - upcomingCount;
+
+          // Determine correct status based on sessions status AND validity period
+          let correctStatus = pkg.status;
+          const now = new Date();
+          const validTo = new Date(pkg.validTo);
+
+          // Priority 1: Check if validity period has expired
+          if (validTo <= now) {
+            correctStatus = PackageStatus.EXPIRED;
+          }
+          // Priority 2: Check if all sessions are COMPLETED (not just booked)
+          else if (completedCount >= pkg.totalSessions) {
+            correctStatus = PackageStatus.USED;
+          }
+          // Priority 3: Has unbooked sessions or upcoming sessions, and within validity period
+          else if (validTo > now) {
+            correctStatus = PackageStatus.ACTIVE;
+          }
+
+          return {
+            ...pkg,
+            remainingSessions: Math.max(0, remainingSessions), // Ensure non-negative
+            status: correctStatus, // Use calculated status instead of stale DB status
+          };
+        })
+      );
+
       const sessions = await Booking.find({
         customerId: student._id,
         teacherId: teacher._id,
@@ -276,7 +324,7 @@ export const getMyStudents = asyncHandler(async (req: Request, res: Response) =>
 
       return {
         ...student,
-        packages,
+        packages: packagesWithAccurateCount,
         totalSessions: usedSessions.length,
         completedSessions,
       };
@@ -318,13 +366,53 @@ export const addManualSession = asyncHandler(async (req: Request, res: Response)
     throw new AppError('Package not found or does not belong to customer', 404);
   }
 
-  if (packageDoc.remainingSessions <= 0) {
-    throw new AppError('No remaining sessions in this package', 400);
+  // Calculate accurate remaining sessions and status
+  // Count completed sessions (COMPLETED, NO_SHOW, and past CONFIRMED sessions)
+  const completedCount = await Booking.countDocuments({
+    packageId: packageDoc._id,
+    $or: [
+      { status: { $in: [BookingStatus.COMPLETED, BookingStatus.NO_SHOW] } },
+      { status: BookingStatus.CONFIRMED, endTime: { $lt: new Date() } }
+    ],
+  });
+
+  // Calculate current package status dynamically
+  const now = new Date();
+  const validTo = new Date(packageDoc.validTo);
+  let currentStatus = packageDoc.status;
+
+  if (validTo <= now) {
+    currentStatus = PackageStatus.EXPIRED;
+  } else if (completedCount >= packageDoc.totalSessions) {
+    currentStatus = PackageStatus.USED;
+  } else if (validTo > now) {
+    currentStatus = PackageStatus.ACTIVE;
+  }
+
+  // Check package status
+  if (currentStatus !== PackageStatus.ACTIVE) {
+    throw new AppError('Package is not active', 400);
+  }
+
+  // Count upcoming sessions (PENDING or CONFIRMED sessions that haven't ended yet)
+  const upcomingCount = await Booking.countDocuments({
+    packageId: packageDoc._id,
+    status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+    endTime: { $gte: new Date() },
+  });
+
+  // Calculate available sessions: Total - Completed - Upcoming
+  const availableSessions = packageDoc.totalSessions - completedCount - upcomingCount;
+
+  if (availableSessions <= 0) {
+    throw new AppError(
+      'No sessions remaining in this package. All sessions are either completed or already booked.',
+      400
+    );
   }
 
   // Validate session date/time
   const startTime = new Date(sessionDate);
-  const now = new Date();
 
   // Check time is between 7 AM and 10 PM
   const hours = startTime.getHours();
@@ -362,9 +450,8 @@ export const addManualSession = asyncHandler(async (req: Request, res: Response)
   // Update package remaining sessions for both CONFIRMED and COMPLETED
   // Both statuses mean the session is reserved/used
   packageDoc.remainingSessions -= 1;
-  if (packageDoc.remainingSessions === 0 && packageDoc.status === PackageStatus.ACTIVE) {
-    packageDoc.status = PackageStatus.USED;
-  }
+  // Note: We don't update status here - it's calculated dynamically when fetching packages
+  // based on completedCount, not remainingSessions
   await packageDoc.save();
 
   await booking.populate([

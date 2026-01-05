@@ -58,7 +58,9 @@
       "message": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}}",
       "messageWithReason": "{{customerName}} ยกเลิกการจองเมื่อ {{bookingDate}} เหตุผล: {{reason}}",
       "approvalTitle": "อนุมัติคำขอยกเลิกแล้ว",
-      "approvalMessage": "คำขอยกเลิกของคุณสำหรับการจองเมื่อ {{bookingDate}} ได้รับการอนุมัติแล้ว"
+      "approvalMessage": "คำขอยกเลิกของคุณสำหรับการจองเมื่อ {{bookingDate}} ได้รับการอนุมัติแล้ว",
+      "teacherDeactivatedTitle": "ยกเลิกคลาสแล้ว",
+      "teacherDeactivatedMessage": "คลาสของคุณกับ {{teacherName}} เมื่อ {{bookingDate}} ถูกยกเลิก ครูไม่สามารถให้บริการได้อีกต่อไป กรุณาติดต่อสตูดิโอเพื่อนัดหมายใหม่"
     },
     "cancellation_requested": {
       "title": "คำขอยกเลิก",
@@ -101,6 +103,10 @@
     "registration_approved": {
       "title": "การลงทะเบียนได้รับการอนุมัติ - ยินดีต้อนรับ!",
       "message": "ยินดีต้อนรับ! การลงทะเบียนของคุณได้รับการอนุมัติและคุณได้รับแพ็กเกจ {{packageName}} จำนวน {{totalSessions}} คลาส เริ่มจองคลาสของคุณได้เลย!"
+    },
+    "inactive_reminder": {
+      "title": "เราคิดถึงคุณ!",
+      "message": "ไม่ได้เจอกันมานานแล้ว พร้อมกลับมาออกกำลังกายแล้วหรือยัง? จองคลาสวันนี้และเริ่มต้นการออกกำลังกายของคุณอีกครั้ง!"
     }
   }
 }

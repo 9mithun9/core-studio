@@ -26,6 +26,7 @@ const router = Router();
 router.post('/request', authMiddleware, requireCustomer, requestBooking);
 router.get('/me', authMiddleware, requireCustomer, getMyBookings);
 router.post('/:id/request-cancellation', authMiddleware, requireCustomer, requestCancellation);
+router.delete('/:id', authMiddleware, requireCustomer, cancelBooking);
 
 // Shared routes - Both customers and teachers need to check availability
 router.get('/availability', authMiddleware, getAvailability);

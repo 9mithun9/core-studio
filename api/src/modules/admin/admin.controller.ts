@@ -228,6 +228,54 @@ export const getAllCustomersWithSessions = asyncHandler(async (req: Request, res
         .sort({ createdAt: -1 })
         .lean();
 
+      // Calculate accurate remaining sessions for each package
+      const packagesWithAccurateCount = await Promise.all(
+        packages.map(async (pkg: any) => {
+          // Count completed sessions (COMPLETED, NO_SHOW, and past CONFIRMED sessions)
+          const completedCount = await Booking.countDocuments({
+            packageId: pkg._id,
+            $or: [
+              { status: { $in: [BookingStatus.COMPLETED, BookingStatus.NO_SHOW] } },
+              { status: BookingStatus.CONFIRMED, endTime: { $lt: new Date() } }
+            ],
+          });
+
+          // Count upcoming sessions (PENDING or CONFIRMED sessions that haven't ended yet)
+          const upcomingCount = await Booking.countDocuments({
+            packageId: pkg._id,
+            status: { $in: [BookingStatus.PENDING, BookingStatus.CONFIRMED] },
+            endTime: { $gte: new Date() },
+          });
+
+          // Calculate available sessions: Total - Completed - Upcoming
+          const remainingSessions = pkg.totalSessions - completedCount - upcomingCount;
+
+          // Determine correct status based on sessions status AND validity period
+          let correctStatus = pkg.status;
+          const now = new Date();
+          const validTo = new Date(pkg.validTo);
+
+          // Priority 1: Check if validity period has expired
+          if (validTo <= now) {
+            correctStatus = PackageStatus.EXPIRED;
+          }
+          // Priority 2: Check if all sessions are COMPLETED (not just booked)
+          else if (completedCount >= pkg.totalSessions) {
+            correctStatus = PackageStatus.USED;
+          }
+          // Priority 3: Has unbooked sessions or upcoming sessions, and within validity period
+          else if (validTo > now) {
+            correctStatus = PackageStatus.ACTIVE;
+          }
+
+          return {
+            ...pkg,
+            remainingSessions: Math.max(0, remainingSessions), // Ensure non-negative
+            status: correctStatus, // Use calculated status instead of stale DB status
+          };
+        })
+      );
+
       // DEEP ANALYTICS
       // Count completed sessions (includes NO_SHOW and past CONFIRMED sessions)
       // Any session that has passed is automatically considered completed
@@ -298,7 +346,7 @@ export const getAllCustomersWithSessions = asyncHandler(async (req: Request, res
       const result = {
         ...customer,
         sessions,
-        packages,
+        packages: packagesWithAccurateCount,
         totalSessions: sessions.length,
         completedSessions: completedSessions.length,
         upcomingSessions,
@@ -505,6 +553,7 @@ export const getMonthlyFinance = asyncHandler(async (req: Request, res: Response
       {
         $project: {
           teacherName: '$user.name',
+          teacherImage: '$teacher.imageUrl',
           sessionsCount: 1,
         },
       },
@@ -516,6 +565,12 @@ export const getMonthlyFinance = asyncHandler(async (req: Request, res: Response
     // Calculate total revenue
     const totalRevenue = packagesInMonth.reduce(
       (sum, pkg) => sum + (pkg.price || 0),
+      0
+    );
+
+    // Calculate total sessions sold (from packages)
+    const totalSessionsSold = packagesInMonth.reduce(
+      (sum, pkg) => sum + (pkg.totalSessions || 0),
       0
     );
 
@@ -536,6 +591,7 @@ export const getMonthlyFinance = asyncHandler(async (req: Request, res: Response
         total: packagesInMonth.length,
         byType: Object.values(packagesByType),
         details: packagesWithTeacher, // Include detailed package info
+        totalSessionsSold, // Total sessions from all packages sold
       },
       sessions: {
         total: totalSessions,
@@ -618,44 +674,86 @@ export const getFinanceTrends = asyncHandler(async (req: Request, res: Response)
 // Get teacher session trends for graphs (last 6 or 12 months)
 export const getTeacherSessionTrends = asyncHandler(async (req: Request, res: Response) => {
   try {
-    const { months = '6' } = req.query;
+    const { months = '6', year, activeOnly = 'false' } = req.query;
     const monthsCount = Number(months);
+    const targetYear = year ? Number(year) : new Date().getFullYear();
+    const showActiveOnly = activeOnly === 'true';
     const now = new Date();
 
-    // Get all active teachers
-    const teachers = await Teacher.find()
+    // Build teacher query based on activeOnly filter
+    const teacherQuery: any = {};
+    if (showActiveOnly) {
+      teacherQuery.isActive = true;
+    }
+
+    // Get teachers based on filter
+    const teachers = await Teacher.find(teacherQuery)
       .populate('userId', 'name')
       .lean();
 
     const trends = [];
 
-    for (let i = monthsCount - 1; i >= 0; i--) {
-      const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const startOfTargetMonth = startOfMonth(targetDate);
-      const endOfTargetMonth = endOfMonth(targetDate);
+    // If year is specified, show all 12 months of that year
+    // Otherwise, show last N months from current date
+    if (year) {
+      for (let month = 0; month < 12; month++) {
+        const targetDate = new Date(targetYear, month, 1);
+        const startOfTargetMonth = startOfMonth(targetDate);
+        const endOfTargetMonth = endOfMonth(targetDate);
 
-      const monthData: any = {
-        month: targetDate.toLocaleString('default', { month: 'short' }),
-        year: targetDate.getFullYear(),
-        monthYear: `${targetDate.toLocaleString('default', { month: 'short' })} ${targetDate.getFullYear()}`,
-      };
+        const monthData: any = {
+          month: targetDate.toLocaleString('default', { month: 'short' }),
+          year: targetDate.getFullYear(),
+          monthYear: `${targetDate.toLocaleString('default', { month: 'short' })} ${targetDate.getFullYear()}`,
+        };
 
-      // Get sessions for each teacher in this month
-      for (const teacher of teachers) {
-        const teacherName = (teacher as any).userId.name;
-        const sessionsCount = await Booking.countDocuments({
-          teacherId: teacher._id,
-          status: BookingStatus.COMPLETED,
-          startTime: {
-            $gte: startOfTargetMonth,
-            $lte: endOfTargetMonth,
-          },
-        });
+        // Get sessions for each teacher in this month
+        for (const teacher of teachers) {
+          const teacherName = (teacher as any).userId.name;
+          const sessionsCount = await Booking.countDocuments({
+            teacherId: teacher._id,
+            status: BookingStatus.COMPLETED,
+            startTime: {
+              $gte: startOfTargetMonth,
+              $lte: endOfTargetMonth,
+            },
+          });
 
-        monthData[teacherName] = sessionsCount;
+          monthData[teacherName] = sessionsCount;
+        }
+
+        trends.push(monthData);
       }
+    } else {
+      // Original logic: last N months from current date
+      for (let i = monthsCount - 1; i >= 0; i--) {
+        const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const startOfTargetMonth = startOfMonth(targetDate);
+        const endOfTargetMonth = endOfMonth(targetDate);
 
-      trends.push(monthData);
+        const monthData: any = {
+          month: targetDate.toLocaleString('default', { month: 'short' }),
+          year: targetDate.getFullYear(),
+          monthYear: `${targetDate.toLocaleString('default', { month: 'short' })} ${targetDate.getFullYear()}`,
+        };
+
+        // Get sessions for each teacher in this month
+        for (const teacher of teachers) {
+          const teacherName = (teacher as any).userId.name;
+          const sessionsCount = await Booking.countDocuments({
+            teacherId: teacher._id,
+            status: BookingStatus.COMPLETED,
+            startTime: {
+              $gte: startOfTargetMonth,
+              $lte: endOfTargetMonth,
+            },
+          });
+
+          monthData[teacherName] = sessionsCount;
+        }
+
+        trends.push(monthData);
+      }
     }
 
     // Get teacher names for the graph
@@ -664,7 +762,7 @@ export const getTeacherSessionTrends = asyncHandler(async (req: Request, res: Re
     res.json({
       trends,
       teachers: teacherNames,
-      period: `${monthsCount} months`,
+      period: year ? `Year ${year}` : `${monthsCount} months`,
     });
   } catch (error) {
     logger.error('Error fetching teacher session trends:', error);
@@ -844,5 +942,26 @@ export const getCustomerDemographics = asyncHandler(async (req: Request, res: Re
   } catch (error) {
     logger.error('Error fetching customer demographics:', error);
     throw new AppError('Failed to fetch customer demographics', 500);
+  }
+});
+
+// Manual trigger for inactive customer check (for testing)
+export const triggerInactiveCustomerCheck = asyncHandler(async (req: Request, res: Response) => {
+  try {
+    logger.info('Manually triggering inactive customer check...');
+
+    // Import the function
+    const { checkInactiveCustomers } = require('@/services/inactiveCustomerScheduler');
+
+    // Run the check
+    await checkInactiveCustomers();
+
+    res.json({
+      success: true,
+      message: 'Inactive customer check completed successfully',
+    });
+  } catch (error) {
+    logger.error('Error in manual inactive customer check:', error);
+    throw new AppError('Failed to run inactive customer check', 500);
   }
 });

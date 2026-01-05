@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { verifyToken } from '@/utils/jwt';
-import { User } from '@/models';
+import { User, Teacher } from '@/models';
 import { logger } from '@/config/logger';
+import { UserRole } from '@/types';
 
 export const authMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
@@ -36,6 +37,15 @@ export const authMiddleware = async (req: Request, res: Response, next: NextFunc
     if (user.status !== 'active') {
       res.status(401).json({ error: 'User account is inactive' });
       return;
+    }
+
+    // If user is a teacher, check if teacher profile is active
+    if (user.role === UserRole.TEACHER) {
+      const teacher = await Teacher.findOne({ userId: user._id });
+      if (!teacher || !teacher.isActive) {
+        res.status(401).json({ error: 'Teacher account is inactive. Please contact administrator.' });
+        return;
+      }
     }
 
     // Attach user to request

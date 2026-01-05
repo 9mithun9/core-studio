@@ -8,7 +8,7 @@ export class NotificationService {
    */
   static async createNotification(params: {
     userId: Types.ObjectId;
-    type: 'booking_cancelled' | 'cancellation_requested' | 'package_requested' | 'package_approved' | 'package_rejected' | 'booking_requested' | 'booking_approved' | 'booking_rejected' | 'registration_requested' | 'registration_approved' | 'registration_rejected';
+    type: 'booking_cancelled' | 'cancellation_requested' | 'package_requested' | 'package_approved' | 'package_rejected' | 'booking_requested' | 'booking_approved' | 'booking_rejected' | 'registration_requested' | 'registration_approved' | 'registration_rejected' | 'inactive_reminder';
     title: string;
     message: string;
     titleKey?: string;
@@ -371,5 +371,28 @@ export class NotificationService {
     // For now, we'll just log it or send email
     logger.info(`Registration rejected for ${params.customerEmail}. Reason: ${params.reason || 'Not specified'}`);
     // TODO: Implement email notification for rejected registrations
+  }
+
+  /**
+   * Notify customer about booking cancellation (e.g., teacher deactivated)
+   */
+  static async notifyBookingCancellation(params: {
+    customerId: Types.ObjectId;
+    customerName: string;
+    teacherName: string;
+    sessionDate: Date;
+    reason?: string;
+  }) {
+    return this.createNotification({
+      userId: params.customerId,
+      type: 'booking_cancelled',
+      titleKey: 'notificationTypes.booking_cancelled.teacherDeactivatedTitle',
+      messageKey: 'notificationTypes.booking_cancelled.teacherDeactivatedMessage',
+      data: {
+        teacherName: params.teacherName,
+        bookingDate: params.sessionDate.toLocaleDateString(),
+        reason: params.reason,
+      },
+    });
   }
 }

@@ -66,72 +66,72 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
-      <header className="bg-white border-b sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-3 md:py-4">
+      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
+        <div className="container mx-auto px-4 py-4 md:py-5">
           <div className="flex items-center justify-between">
             {/* Logo */}
-            <Link href="/customer/dashboard" className="flex items-center">
+            <Link href="/customer/dashboard" className="flex items-center hover:opacity-90 transition-opacity">
               <Image
                 src="/logo.png"
                 alt="Core Studio Pilates"
-                width={80}
-                height={80}
-                className="object-contain w-16 h-16 md:w-20 md:h-20"
+                width={96}
+                height={96}
+                className="object-contain w-20 h-20 md:w-24 md:h-24"
               />
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden lg:flex items-center gap-6">
+            <nav className="hidden lg:flex items-center gap-2">
               <Link
                 href="/customer/dashboard"
-                className="text-gray-600 hover:text-primary-600 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/customer/packages"
-                className="text-gray-600 hover:text-primary-600 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
               >
                 {t('nav.packages')}
               </Link>
               <Link
                 href="/customer/teachers"
-                className="text-gray-600 hover:text-primary-600 transition-colors"
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
               >
                 {t('nav.teachers')}
               </Link>
             </nav>
 
             {/* Right Side Actions */}
-            <div className="flex items-center gap-2 md:gap-3">
+            <div className="flex items-center gap-3 md:gap-4">
               <LanguageSwitcher />
               <NotificationBell />
 
               {/* Profile */}
               <Link
                 href="/customer/profile"
-                className="hidden md:flex items-center gap-2 text-sm text-gray-600 hover:text-primary-600 font-medium cursor-pointer transition-colors border-l pl-3 md:pl-4"
+                className="hidden md:flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 font-medium rounded-lg transition-all border-l border-gray-200 ml-2 pl-5"
               >
                 {customerProfile?.profilePhoto ? (
                   customerProfile.profilePhoto.startsWith('http') ? (
                     <img
                       src={customerProfile.profilePhoto}
                       alt={user?.name}
-                      className="w-8 h-8 rounded-full object-cover border-2 border-primary-200"
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-purple-200"
                     />
                   ) : (
                     <img
                       src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${customerProfile.profilePhoto}`}
                       alt={user?.name}
-                      className="w-8 h-8 rounded-full object-cover border-2 border-primary-200"
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-purple-200"
                     />
                   )
                 ) : (
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-sm font-bold">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-purple-200">
                     {user?.name.charAt(0).toUpperCase()}
                   </div>
                 )}
-                <span className="hidden xl:inline">{user?.name}</span>
+                <span className="hidden xl:inline font-semibold">{user?.name}</span>
               </Link>
 
               {/* Desktop Logout */}
@@ -139,7 +139,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="hidden md:flex text-sm"
+                className="hidden md:flex text-sm font-medium border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50"
               >
                 {t('common:logout', { ns: 'common' })}
               </Button>
@@ -147,7 +147,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2 text-gray-600 hover:text-primary-600"
+                className="lg:hidden p-2.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
               >
                 <svg
                   className="w-6 h-6"
@@ -177,31 +177,31 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
 
           {/* Mobile Menu */}
           {mobileMenuOpen && (
-            <nav className="lg:hidden mt-4 pb-4 border-t pt-4 space-y-3">
+            <nav className="lg:hidden mt-5 pb-4 border-t border-gray-200 pt-5 space-y-2">
               <Link
                 href="/customer/dashboard"
-                className="block py-2 text-gray-600 hover:text-primary-600"
+                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/customer/packages"
-                className="block py-2 text-gray-600 hover:text-primary-600"
+                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.packages')}
               </Link>
               <Link
                 href="/customer/teachers"
-                className="block py-2 text-gray-600 hover:text-primary-600"
+                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.teachers')}
               </Link>
               <Link
                 href="/customer/profile"
-                className="block py-2 text-gray-600 hover:text-primary-600 flex items-center gap-2"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {customerProfile?.profilePhoto ? (
@@ -209,17 +209,17 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                     <img
                       src={customerProfile.profilePhoto}
                       alt={user?.name}
-                      className="w-6 h-6 rounded-full object-cover border border-primary-200"
+                      className="w-7 h-7 rounded-full object-cover ring-2 ring-purple-200"
                     />
                   ) : (
                     <img
                       src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${customerProfile.profilePhoto}`}
                       alt={user?.name}
-                      className="w-6 h-6 rounded-full object-cover border border-primary-200"
+                      className="w-7 h-7 rounded-full object-cover ring-2 ring-purple-200"
                     />
                   )
                 ) : (
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xs font-bold">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-purple-200">
                     {user?.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -229,7 +229,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="w-full mt-2"
+                className="w-full mt-3 font-medium border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50"
               >
                 {t('common:logout', { ns: 'common' })}
               </Button>

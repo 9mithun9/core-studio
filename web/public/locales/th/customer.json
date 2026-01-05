@@ -41,6 +41,14 @@
       "title": "คลาสถัดไป",
       "with": "กับ"
     },
+    "weMissYou": {
+      "title": "เราคิดถึงคุณ",
+      "daysSince": "ห่างหายกันมา {{days}} วันแล้วนับจากคลาสล่าสุดของคุณ!",
+      "motivationMessage": "ร่างกายของคุณกำลังเรียกหา... มันอยากเคลื่อนไหว!",
+      "encouragementMessage": "อย่าปล่อยให้ความก้าวหน้าของคุณจางหายไป! กลับมาแข็งแกร่ง ยืดหยุ่น และสวยงามกว่าเดิม!",
+      "bookComebackSession": "จองคลาสกลับมา!",
+      "viewPackages": "ดูแพ็คเกจ"
+    },
     "myPackages": {
       "title": "แพ็คเกจของฉัน",
       "description": "แพ็คเกจคลาสทั้งหมดของคุณ",
@@ -121,7 +129,7 @@
     "availableSlots": "ช่วงเวลาว่าง",
     "noSlotsAvailable": "ไม่มีช่วงเวลาว่าง",
     "confirmBooking": "ยืนยันการจอง",
-    "bookingSuccess": "ส่งคำขอจองสำเร็จแล้ว! คุณจะได้รับการยืนยันทาง LINE ในไม่ช้า",
+    "bookingSuccess": "ส่งคำขอจองสำเร็จแล้ว!",
     "bookingError": "การจองคลาสล้มเหลว",
     "noPackages": {
       "title": "พร้อมเริ่มต้นการเดินทางของคุณแล้วหรือยัง?",
@@ -205,6 +213,7 @@
     "buyPackage": "ซื้อแพ็คเกจใหม่",
     "requestPackage": "ขอแพ็คเกจ",
     "sessions": "คลาส",
+    "session": "คลาส",
     "popular": "ยอดนิยม",
     "catalog": {
       "single": {
