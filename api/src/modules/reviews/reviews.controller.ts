@@ -132,7 +132,7 @@ export const updateReview = asyncHandler(async (req: Request, res: Response) => 
   // Validate ratings if provided
   if (ratings) {
     const ratingValues = Object.values(ratings);
-    if (ratingValues.some((rating) => rating < 1 || rating > 5)) {
+    if (ratingValues.some((rating) => typeof rating === 'number' && (rating < 1 || rating > 5))) {
       throw new AppError('All ratings must be between 1 and 5', 400);
     }
     review.ratings = ratings;

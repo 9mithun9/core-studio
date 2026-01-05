@@ -128,11 +128,11 @@ export class LineService {
       const result = await this.sendTemplatedNotification(notification);
 
       if (result.success) {
-        notification.status = 'sent';
+        notification.status = 'sent' as any;
         notification.sentAt = new Date();
         sent++;
       } else {
-        notification.status = 'failed';
+        notification.status = 'failed' as any;
         notification.errorMessage = result.error;
         failed++;
       }

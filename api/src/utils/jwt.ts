@@ -4,13 +4,13 @@ import { AuthTokenPayload } from '@/types';
 
 export const signToken = (payload: AuthTokenPayload): string => {
   return jwt.sign(payload, config.jwtSecret, {
-    expiresIn: config.jwtExpiresIn,
+    expiresIn: config.jwtExpiresIn as string,
   });
 };
 
 export const signRefreshToken = (payload: AuthTokenPayload): string => {
   return jwt.sign(payload, config.jwtRefreshSecret, {
-    expiresIn: config.jwtRefreshExpiresIn,
+    expiresIn: config.jwtRefreshExpiresIn as string,
   });
 };
 

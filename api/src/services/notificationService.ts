@@ -393,6 +393,7 @@ export class NotificationService {
         bookingDate: params.sessionDate.toLocaleDateString(),
         reason: params.reason,
       },
+      relatedModel: 'Booking'
     });
   }
 }

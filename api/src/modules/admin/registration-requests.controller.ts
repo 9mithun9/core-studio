@@ -89,7 +89,7 @@ export const approveRegistration = asyncHandler(async (req: Request, res: Respon
   // Create package for the customer
   const validFrom = new Date();
   const validTo = new Date();
-  validTo.setMonth(validTo.getMonth() + packageData.validityMonths);
+  validTo.setMonth(validTo.getMonth() + (packageData.validityMonths || 1));
 
   await Package.create({
     customerId: customer._id,

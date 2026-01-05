@@ -249,11 +249,67 @@ export default function CustomerDashboard() {
             </div>
           </div>
 
-          {/* Next Session */}
+          {/* Next Session OR Congratulations */}
           {(() => {
             const hasUpcomingSessions = overview.upcomingBookings && overview.upcomingBookings.length > 0;
             const daysSinceLastSession = getDaysSinceLastSession();
             const shouldShowWeMissYou = daysSinceLastSession !== null && daysSinceLastSession >= 15 && !hasUpcomingSessions;
+
+            // Check if user has no active packages (completed all sessions)
+            const activePackages = allPackages.filter((p) => p.status === 'active');
+            const expiredPackages = allPackages.filter((p) => p.status === 'expired');
+            const usedPackages = allPackages.filter((p) => p.status === 'used');
+            const noActivePackage = activePackages.length === 0;
+
+            // Priority 1: Show Congratulations if completed all sessions (USED status, no active, no expired)
+            if (noActivePackage && usedPackages.length > 0 && expiredPackages.length === 0) {
+              return (
+                <div className="relative bg-gradient-to-br from-yellow-400 via-amber-500 to-yellow-600 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl">
+                  {/* Animated background elements */}
+                  <div className="absolute top-0 right-0 w-48 h-48 md:w-64 md:h-64 bg-yellow-300 opacity-20 rounded-full -mr-24 -mt-24 md:-mr-32 md:-mt-32 animate-pulse"></div>
+                  <div className="absolute bottom-0 left-0 w-32 h-32 md:w-48 md:h-48 bg-amber-400 opacity-20 rounded-full -ml-16 -mb-16 md:-ml-24 md:-mb-24 animate-pulse" style={{ animationDelay: '1s' }}></div>
+
+                  {/* Sparkle effects - hidden on mobile */}
+                  <div className="hidden md:block absolute top-4 right-4 text-white opacity-40 animate-pulse">
+                    <svg className="w-6 md:w-8 h-6 md:h-8" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" />
+                    </svg>
+                  </div>
+                  <div className="hidden md:block absolute bottom-8 right-16 text-white opacity-30 animate-pulse" style={{ animationDelay: '0.5s' }}>
+                    <svg className="w-5 md:w-6 h-5 md:h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 0L14.59 8.41L23 11L14.59 13.59L12 22L9.41 13.59L1 11L9.41 8.41L12 0Z" />
+                    </svg>
+                  </div>
+
+                  <div className="relative z-10">
+                    {/* Title with shine effect */}
+                    <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
+                      <h3 className="text-xl md:text-3xl font-black text-white drop-shadow-lg">
+                        Congratulations!
+                      </h3>
+                      <span className="text-2xl md:text-4xl animate-bounce">🎉</span>
+                      <span className="text-2xl md:text-4xl animate-bounce" style={{ animationDelay: '0.1s' }}>✨</span>
+                    </div>
+
+                    {/* Message */}
+                    <p className="text-base md:text-lg text-white mb-4 md:mb-6 font-medium drop-shadow-md leading-relaxed">
+                      You've completed all your sessions! Amazing dedication! 💪
+                    </p>
+
+                    {/* CTA Button with golden theme */}
+                    <Button
+                      onClick={() => setShowRequestModal(true)}
+                      className="w-full md:w-auto bg-white text-amber-600 hover:bg-amber-50 font-bold text-base md:text-lg px-6 md:px-8 py-3 md:py-6 rounded-xl shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300"
+                    >
+                      <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                      </svg>
+                      Book Your Next Package
+                    </Button>
+                  </div>
+                </div>
+              );
+            }
 
           if (hasUpcomingSessions) {
             // Show countdown to next session
@@ -444,32 +500,7 @@ export default function CustomerDashboard() {
         );
         const noActivePackage = activePackages.length === 0;
 
-        // Priority 1: Completed all sessions (USED status) - Congratulations banner
-        if (noActivePackage && usedPackages.length > 0 && expiredPackages.length === 0) {
-          return (
-            <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-xl p-6 shadow-lg">
-              <div className="flex items-start gap-4">
-                <div className="flex-shrink-0 w-12 h-12 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
-                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-xl font-bold mb-1">Congratulations! 🎉</h3>
-                  <p className="mb-4 opacity-90">
-                    You've completed all your sessions! Let's continue your journey and keep up the great work.
-                  </p>
-                  <Button
-                    onClick={() => setShowRequestModal(true)}
-                    className="bg-white text-green-600 hover:bg-gray-100"
-                  >
-                    Book a New Package
-                  </Button>
-                </div>
-              </div>
-            </div>
-          );
-        }
+        // Priority 1: Completed all sessions - already shown in grid layout above, skip here
 
         // Priority 2: Package expired or no packages
         if (noActivePackage && (expiredPackages.length > 0 || allPackages.length === 0)) {

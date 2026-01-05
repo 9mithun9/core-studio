@@ -59,14 +59,15 @@ export class BookingAutoConfirmService {
 
             await NotificationService.createNotification({
               userId: customer.userId,
-              type: NotificationType.BOOKING_CONFIRMED,
-              title: 'Session Confirmed (Auto)',
-              message: `Your session request with ${teacher?.userId?.name || 'teacher'} has been automatically confirmed.`,
-              channel: NotificationChannel.IN_APP,
-              metadata: {
-                bookingId: booking._id.toString(),
-                autoConfirmed: true,
+              type: 'booking_approved' as any,
+              titleKey: 'notifications.bookingAutoConfirmed.title',
+              messageKey: 'notifications.bookingAutoConfirmed.message',
+              data: {
+                teacherName: teacher?.userId?.name || 'teacher',
+                autoConfirmed: true
               },
+              relatedId: booking._id,
+              relatedModel: 'Booking'
             });
 
             logger.info(`✓ Auto-confirmed booking ${booking._id} for customer ${customer.userId?.name}`);
@@ -79,14 +80,15 @@ export class BookingAutoConfirmService {
 
             await NotificationService.createNotification({
               userId: teacher.userId,
-              type: NotificationType.BOOKING_CONFIRMED,
-              title: 'Session Auto-Confirmed',
-              message: `A session request from ${customer?.userId?.name || 'customer'} was automatically confirmed because you didn't respond within 12 hours.`,
-              channel: NotificationChannel.IN_APP,
-              metadata: {
-                bookingId: booking._id.toString(),
-                autoConfirmed: true,
+              type: 'booking_approved' as any,
+              titleKey: 'notifications.bookingAutoConfirmedTeacher.title',
+              messageKey: 'notifications.bookingAutoConfirmedTeacher.message',
+              data: {
+                customerName: customer?.userId?.name || 'customer',
+                autoConfirmed: true
               },
+              relatedId: booking._id,
+              relatedModel: 'Booking'
             });
           }
 

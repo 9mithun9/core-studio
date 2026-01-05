@@ -140,7 +140,7 @@ export const generatePaymentReport = asyncHandler(async (req: Request, res: Resp
   // Calculate payment for each teacher
   const allTeacherPayments = await Promise.all(
     teachers.map(async (teacher: any) => {
-      const teacherType = teacher.teacherType || 'freelance';
+      const teacherType: 'freelance' | 'studio' = teacher.teacherType || 'freelance';
       const rates = PAYMENT_RATES[teacherType];
 
       // Get teacher's completed sessions
@@ -156,9 +156,9 @@ export const generatePaymentReport = asyncHandler(async (req: Request, res: Resp
       };
 
       teacherSessions.forEach((session: any) => {
-        const sessionType = session.packageId?.type || 'group'; // Use package type directly
-        if (sessionType === 'private' || sessionType === 'duo' || sessionType === 'group') {
-          sessionCounts[sessionType]++;
+        const rawType = session.packageId?.type || 'group';
+        if (rawType === 'private' || rawType === 'duo' || rawType === 'group') {
+          sessionCounts[rawType]++;
         }
       });
 

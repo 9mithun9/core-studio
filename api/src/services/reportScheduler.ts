@@ -86,7 +86,7 @@ async function generateMonthlyReport() {
     // Calculate payment for each teacher
     const teacherPayments = await Promise.all(
       teachers.map(async (teacher: any) => {
-        const teacherType = teacher.teacherType || 'freelance';
+        const teacherType = (teacher.teacherType || 'freelance') as 'freelance' | 'studio';
         const rates = PAYMENT_RATES[teacherType];
 
         // Get teacher's completed sessions

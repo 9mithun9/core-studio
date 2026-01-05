@@ -523,7 +523,7 @@ export const markAttendance = asyncHandler(async (req: Request, res: Response) =
   const previousStatus = booking.status;
 
   if (data.status === BookingStatus.CANCELLED &&
-      previousStatus === BookingStatus.CONFIRMED &&
+      (previousStatus === BookingStatus.CONFIRMED || previousStatus === BookingStatus.COMPLETED) &&
       booking.packageId) {
     const packageData = await Package.findById(booking.packageId);
     if (packageData) {
@@ -871,7 +871,7 @@ export const getAvailability = asyncHandler(async (req: Request, res: Response) 
         new Date(dbBooking.endTime).getTime() === new Date(gcBlock.endTime).getTime();
 
       const sameTeacher =
-        dbBooking.teacherId?.userId?.name === gcBlock.teacherId?.userId?.name;
+        (dbBooking.teacherId as any)?.userId?.name === gcBlock.teacherId?.userId?.name;
 
       return sameTime && sameTeacher;
     });
@@ -1520,17 +1520,20 @@ export const cancelBooking = asyncHandler(async (req: Request, res: Response) =>
 
   // Send notification to customer
   try {
-    await NotificationService.sendNotification({
-      userId: (await Customer.findById(booking.customerId))!.userId,
-      type: NotificationType.BOOKING_CANCELLED,
-      title: 'Session Cancelled',
-      message: `Your session has been cancelled. Reason: ${booking.cancellationReason}`,
-      channel: NotificationChannel.LINE,
-      metadata: {
-        bookingId: booking._id.toString(),
-        reason: booking.cancellationReason,
-      },
-    });
+    const customer = await Customer.findById(booking.customerId);
+    if (customer) {
+      await NotificationService.createNotification({
+        userId: customer.userId,
+        type: 'booking_cancelled',
+        titleKey: 'notifications.bookingCancelled.title',
+        messageKey: 'notifications.bookingCancelled.message',
+        data: {
+          reason: booking.cancellationReason || 'No reason provided'
+        },
+        relatedId: booking._id,
+        relatedModel: 'Booking'
+      });
+    }
   } catch (error) {
     logger.error('Failed to send cancellation notification:', error);
   }
