@@ -498,6 +498,9 @@ export const markAttendance = asyncHandler(async (req: Request, res: Response) =
     throw new AppError('Only confirmed bookings can have attendance marked', 400);
   }
 
+  // Save previous status BEFORE updating
+  const previousStatus = booking.status;
+
   // Convert NO_SHOW to CANCELLED and increment cancellation count
   if (data.status === BookingStatus.NO_SHOW) {
     booking.status = BookingStatus.CANCELLED;
@@ -520,8 +523,6 @@ export const markAttendance = asyncHandler(async (req: Request, res: Response) =
 
   // Handle package session refund for cancellation
   // Sessions are deducted when CONFIRMED, so we need to refund if cancelled
-  const previousStatus = booking.status;
-
   if (data.status === BookingStatus.CANCELLED &&
       previousStatus === BookingStatus.CONFIRMED &&
       booking.packageId) {
