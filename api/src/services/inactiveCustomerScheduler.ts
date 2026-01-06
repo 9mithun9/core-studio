@@ -33,16 +33,30 @@ async function checkInactiveCustomers() {
     for (const customer of customers) {
       const userId = (customer as any).userId._id;
 
-      // Check if we already sent an inactive reminder to this customer today
-      const todayNotification = await InAppNotification.findOne({
-        userId,
-        type: 'inactive_reminder',
-        createdAt: { $gte: startOfToday },
+      // Check if customer has any active packages
+      const activePackages = await Package.find({
+        customerId: customer._id,
+        isActive: true,
+        remainingSessions: { $gt: 0 },
+        expiryDate: { $gt: now },
       });
 
-      if (todayNotification) {
-        // Already sent notification today, skip
-        continue;
+      const hasActivePackage = activePackages.length > 0;
+
+      // For customers WITHOUT active packages, send daily reminders
+      // For customers WITH active packages, only send if they haven't received one today
+      if (hasActivePackage) {
+        // Check if we already sent an inactive reminder to this customer today
+        const todayNotification = await InAppNotification.findOne({
+          userId,
+          type: 'inactive_reminder',
+          createdAt: { $gte: startOfToday },
+        });
+
+        if (todayNotification) {
+          // Already sent notification today, skip
+          continue;
+        }
       }
 
       // Find the most recent completed or confirmed booking for this customer
@@ -65,16 +79,6 @@ async function checkInactiveCustomers() {
         shouldNotifyInactivity = true;
         daysSinceLastSession = Math.floor((now.getTime() - new Date(recentBooking.startTime).getTime()) / (1000 * 60 * 60 * 24));
       }
-
-      // Check if customer has any active packages
-      const activePackages = await Package.find({
-        customerId: customer._id,
-        isActive: true,
-        remainingSessions: { $gt: 0 },
-        expiryDate: { $gt: now },
-      });
-
-      const hasActivePackage = activePackages.length > 0;
 
       // Check if customer has completed all sessions and has no active package
       const shouldNotifyNoPackage = !hasActivePackage;
