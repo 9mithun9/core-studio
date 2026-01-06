@@ -114,7 +114,7 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
       </div>
 
       {/* Floating Header */}
-      <header className="">
+      <header className="relative" style={{ zIndex: 10 }}>
         <div className="container mx-auto px-4 pt-6">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-100 px-4 py-3 backdrop-blur-sm bg-white/95">
           <div className="flex items-center justify-between">
