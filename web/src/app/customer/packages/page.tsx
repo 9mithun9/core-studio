@@ -82,8 +82,7 @@ export default function PackagesPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div className="space-y-12">
         {/* Type Selector Pills */}
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 p-2 bg-white rounded-full shadow-lg">
@@ -212,11 +211,10 @@ export default function PackagesPage() {
             );
           })}
         </div>
-      </div>
 
       {/* Package Request Modal */}
       {showRequestModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div className="fixed bg-black bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm" style={{ zIndex: 9999, top: '-100px', left: 0, right: 0, bottom: 0 }}>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
             {/* Header with Gradient */}
             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 md:px-8 py-6 md:py-8 relative overflow-hidden">

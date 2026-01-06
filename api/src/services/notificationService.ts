@@ -1,6 +1,7 @@
 import { Types } from 'mongoose';
-import { InAppNotification } from '@/models';
+import { InAppNotification, User } from '@/models';
 import { logger } from '@/config/logger';
+import { LineService } from '@/modules/line/line.service';
 
 export class NotificationService {
   /**
@@ -18,6 +19,7 @@ export class NotificationService {
     relatedModel?: 'Booking' | 'Package' | 'PackageRequest' | 'RegistrationRequest';
   }) {
     try {
+      // Create in-app notification
       const notification = await InAppNotification.create({
         userId: params.userId,
         type: params.type,
@@ -32,10 +34,51 @@ export class NotificationService {
       });
 
       logger.info(`Notification created for user ${params.userId}: ${params.type}`);
+
+      // Send LINE notification asynchronously (don't wait for it)
+      this.sendLineNotification(params.userId, params.title, params.message).catch(err => {
+        logger.error('Failed to send LINE notification:', err);
+      });
+
       return notification;
     } catch (error) {
       logger.error('Error creating notification:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Send LINE notification to user
+   */
+  private static async sendLineNotification(
+    userId: Types.ObjectId,
+    title: string,
+    message: string
+  ): Promise<void> {
+    try {
+      // Get user to check if they have LINE connected
+      const user = await User.findById(userId);
+
+      if (!user) {
+        logger.warn(`User ${userId} not found for LINE notification`);
+        return;
+      }
+
+      if (!user.lineUserId) {
+        logger.debug(`User ${userId} doesn't have LINE connected. Skipping LINE notification.`);
+        return;
+      }
+
+      // Format the LINE message
+      const lineMessage = `📢 ${title}\n\n${message}`;
+
+      // Send via LINE
+      await LineService.sendMessage(user.lineUserId, lineMessage);
+
+      logger.info(`LINE notification sent to user ${userId}`);
+    } catch (error) {
+      logger.error('Error sending LINE notification:', error);
+      // Don't throw - we don't want LINE failures to break notification creation
     }
   }
 

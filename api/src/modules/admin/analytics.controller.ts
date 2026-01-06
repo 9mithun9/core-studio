@@ -535,7 +535,7 @@ export const getRetentionInsights = asyncHandler(async (req: Request, res: Respo
   }
 
   // Peak Usage Time - Heatmap data (7 AM - 10 PM)
-  const peakUsage: Array<{ day: string; hour: number; value: number }> = [];
+  const peakUsage: Array<{ day: string; hour: number; sessions: number }> = [];
   const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
   const hoursRange = Array.from({ length: 16 }, (_, i) => i + 7); // 7 AM to 10 PM (22)
 
@@ -566,8 +566,8 @@ export const getRetentionInsights = asyncHandler(async (req: Request, res: Respo
 
   // Convert to array format for frontend
   Object.entries(usageMap).forEach(([day, hours]) => {
-    Object.entries(hours).forEach(([hour, value]) => {
-      peakUsage.push({ day, hour: parseInt(hour), value });
+    Object.entries(hours).forEach(([hour, sessions]) => {
+      peakUsage.push({ day, hour: parseInt(hour), sessions });
     });
   });
 

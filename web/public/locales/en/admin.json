@@ -446,6 +446,8 @@
     "renewedPackages": "Renewed Packages",
     "customerLTV": "Customer Lifetime Value Trend",
     "avgLTV": "Average LTV over time",
+    "peakUsageAnalytics": "Peak Usage Analytics",
+    "sessionBookingPatterns": "Session booking patterns by day and hour",
     "peakUsageHeatmap": "Peak Usage Heatmap",
     "sessionsByDayHour": "Session bookings by day and hour (7 AM - 10 PM)",
     "totalSessions": "Total Sessions",

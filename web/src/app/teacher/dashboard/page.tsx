@@ -550,7 +550,7 @@ export default function TeacherDashboard() {
               ) : (
                 <div className="space-y-3 md:space-y-4">
                   {todaysSessions.map((session) => (
-                    <div key={session._id} className="border-2 border-gray-200 rounded-xl p-3 md:p-5 hover:shadow-lg transition-all hover:border-primary-300 bg-white">
+                    <div key={session._id} className="border-2 border-gray-200 rounded-xl p-3 md:p-5 hover:shadow-lg transition-all hover:border-primary-300 bg-white/80 backdrop-blur-md">
                       {/* Header Section */}
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3 md:mb-4 pb-3 md:pb-4 border-b border-gray-100">
                         <div className="flex-1">

@@ -244,18 +244,8 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-blue-50 pb-12">
+    <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4 py-8">
-        {/* Gradient Hero Header */}
-        <div className="relative bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
-          <div className="relative z-10">
-            <h1 className="text-4xl font-bold mb-2">{t('dashboard.title')}</h1>
-            <p className="text-primary-100 text-lg">Overview of your studio's performance</p>
-          </div>
-        </div>
-
         {/* Quick Actions */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8 max-w-2xl">
           <Link href="/admin/package-requests">
@@ -290,68 +280,111 @@ export default function AdminDashboard() {
             <p className="text-sm md:text-base text-gray-600 mt-1">Key performance indicators and business health metrics</p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 mb-6 md:mb-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
             {/* Total Revenue KPI */}
-            <Card className="bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs md:text-sm font-medium text-blue-700">{t('dashboard.totalRevenue')}</p>
+            <div
+              className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-help"
+              title="Total revenue generated this month from all package sales"
+            >
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-indigo-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium opacity-90">{t('dashboard.totalRevenue')}</p>
                   {executiveOverview.revenueGrowth !== 0 && (
-                    <span className={`text-xs font-semibold ${executiveOverview.revenueGrowth > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${executiveOverview.revenueGrowth > 0 ? 'bg-green-500' : 'bg-red-500'}`}>
                       {executiveOverview.revenueGrowth > 0 ? '↑' : '↓'} {Math.abs(executiveOverview.revenueGrowth).toFixed(1)}%
                     </span>
                   )}
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-blue-900">฿{executiveOverview.totalRevenue.toLocaleString()}</p>
-                <p className="text-xs text-blue-600 mt-1">{t('dashboard.thisMonth')}</p>
-              </CardContent>
-            </Card>
-
-            {/* Revenue Growth KPI */}
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
-              <CardContent className="pt-6">
-                <p className="text-xs md:text-sm font-medium text-green-700 mb-2">{t('dashboard.revenueGrowth')}</p>
-                <p className="text-2xl md:text-3xl font-bold text-green-900">
-                  {executiveOverview.revenueGrowth > 0 ? '+' : ''}{executiveOverview.revenueGrowth.toFixed(1)}%
-                </p>
-                <p className="text-xs text-green-600 mt-1">{t('dashboard.monthOverMonth')}</p>
-              </CardContent>
-            </Card>
+                <p className="text-3xl md:text-4xl font-bold mb-1">฿{executiveOverview.totalRevenue.toLocaleString()}</p>
+                <p className="text-xs opacity-75">{t('dashboard.thisMonth')}</p>
+              </div>
+            </div>
 
             {/* Active Customers KPI */}
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="text-xs md:text-sm font-medium text-purple-700">{t('dashboard.activeCustomers')}</p>
+            <div
+              className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-help"
+              title="Number of customers who had at least one session this month"
+            >
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-pink-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-3">
+                  <p className="text-sm font-medium opacity-90">{t('dashboard.activeCustomers')}</p>
                   {executiveOverview.activeCustomersLastMonth > 0 && (
-                    <span className={`text-xs font-semibold ${executiveOverview.activeCustomers >= executiveOverview.activeCustomersLastMonth ? 'text-green-600' : 'text-red-600'}`}>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${executiveOverview.activeCustomers >= executiveOverview.activeCustomersLastMonth ? 'bg-green-500' : 'bg-red-500'}`}>
                       {executiveOverview.activeCustomers >= executiveOverview.activeCustomersLastMonth ? '↑' : '↓'}
                       {Math.abs(executiveOverview.activeCustomers - executiveOverview.activeCustomersLastMonth)}
                     </span>
                   )}
                 </div>
-                <p className="text-2xl md:text-3xl font-bold text-purple-900">{executiveOverview.activeCustomers}</p>
-                <p className="text-xs text-purple-600 mt-1">{t('dashboard.thisMonth')}</p>
-              </CardContent>
-            </Card>
-
-            {/* ARPU KPI */}
-            <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
-              <CardContent className="pt-6">
-                <p className="text-xs md:text-sm font-medium text-orange-700 mb-2">{t('dashboard.avgRevenuePerUser')}</p>
-                <p className="text-2xl md:text-3xl font-bold text-orange-900">฿{(executiveOverview.averageRevenuePerUser || 0).toLocaleString()}</p>
-                <p className="text-xs text-orange-600 mt-1">ARPU</p>
-              </CardContent>
-            </Card>
+                <p className="text-3xl md:text-4xl font-bold mb-1">{executiveOverview.activeCustomers}</p>
+                <p className="text-xs opacity-75">{t('dashboard.thisMonth')}</p>
+              </div>
+            </div>
 
             {/* Session Completion Rate KPI */}
-            <Card className="bg-gradient-to-br from-teal-50 to-teal-100 border-teal-200">
-              <CardContent className="pt-6">
-                <p className="text-xs md:text-sm font-medium text-teal-700 mb-2">{t('dashboard.completionRate')}</p>
-                <p className="text-2xl md:text-3xl font-bold text-teal-900">{(executiveOverview.sessionCompletionRate || 0).toFixed(1)}%</p>
-                <p className="text-xs text-teal-600 mt-1">{t('dashboard.sessionsCompleted')}</p>
-              </CardContent>
-            </Card>
+            <div
+              className="relative bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-help"
+              title="Percentage of booked sessions that were successfully completed"
+            >
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-cyan-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <p className="text-sm font-medium opacity-90 mb-3">{t('dashboard.completionRate')}</p>
+                <p className="text-3xl md:text-4xl font-bold mb-1">{(executiveOverview.sessionCompletionRate || 0).toFixed(1)}%</p>
+                <p className="text-xs opacity-75">{t('dashboard.sessionsCompleted')}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
+            {/* Revenue Growth KPI */}
+            <div
+              className="relative bg-gradient-to-br from-green-600 via-green-700 to-emerald-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-help"
+              title="Percentage change in revenue compared to last month"
+            >
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-emerald-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <p className="text-sm font-medium opacity-90 mb-3">{t('dashboard.revenueGrowth')}</p>
+                <p className="text-3xl md:text-4xl font-bold mb-1">
+                  {executiveOverview.revenueGrowth > 0 ? '+' : ''}{executiveOverview.revenueGrowth.toFixed(1)}%
+                </p>
+                <p className="text-xs opacity-75">{t('dashboard.monthOverMonth')}</p>
+              </div>
+            </div>
+
+            {/* ARPU KPI */}
+            <div
+              className="relative bg-gradient-to-br from-orange-600 via-orange-700 to-amber-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-help"
+              title="Average Revenue Per User - Total revenue divided by active customers"
+            >
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-amber-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <p className="text-sm font-medium opacity-90 mb-3">{t('dashboard.avgRevenuePerUser')}</p>
+                <p className="text-3xl md:text-4xl font-bold mb-1">฿{(executiveOverview.averageRevenuePerUser || 0).toLocaleString()}</p>
+                <p className="text-xs opacity-75">ARPU</p>
+              </div>
+            </div>
+
+            {/* Churn Rate KPI */}
+            {customerIntel && (
+              <div
+                className="relative bg-gradient-to-br from-red-600 via-red-700 to-rose-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300 cursor-help"
+                title="Percentage of customers who have been inactive for 3+ months"
+              >
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-red-400 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+                <div className="relative z-10">
+                  <p className="text-sm font-medium opacity-90 mb-3">{t('dashboard.churnRate')}</p>
+                  <p className="text-3xl md:text-4xl font-bold mb-1">{customerIntel.churnRate.toFixed(1)}%</p>
+                  <p className="text-xs opacity-75">{t('dashboard.customersInactive')}</p>
+                </div>
+              </div>
+            )}
           </div>
         </>
       )}
@@ -487,18 +520,7 @@ export default function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
-            {/* Churn Rate */}
-            <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
-              <CardHeader>
-                <CardTitle className="text-base md:text-lg text-red-900">{t('dashboard.churnRate')}</CardTitle>
-                <CardDescription className="text-xs md:text-sm">{t('dashboard.customersInactive')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <p className="text-4xl md:text-5xl font-bold text-red-900">{customerIntel.churnRate.toFixed(1)}%</p>
-              </CardContent>
-            </Card>
-
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 mb-6 md:mb-8">
             {/* Gender Distribution */}
             <Card>
               <CardHeader>
@@ -797,6 +819,16 @@ export default function AdminDashboard() {
                 </ResponsiveContainer>
               </CardContent>
             </Card>
+          </div>
+        </>
+      )}
+
+      {/* ========== SECTION 6: PEAK USAGE ANALYTICS ========== */}
+      {retentionInsights && (
+        <>
+          <div className="mt-12 md:mt-16 mb-4 md:mb-6 pt-8 md:pt-12 border-t-2 border-gray-200">
+            <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-gray-900">{t('dashboard.peakUsageAnalytics')}</h2>
+            <p className="text-sm md:text-base text-gray-600 mt-1">{t('dashboard.sessionBookingPatterns')}</p>
           </div>
 
           {/* Peak Usage Heatmap and Summary */}

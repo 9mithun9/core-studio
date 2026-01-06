@@ -7,9 +7,17 @@
     border-color: #e5e7eb;
   }
 
+  html, body {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+  }
+
   body {
-    @apply bg-white text-gray-900;
+    @apply text-gray-900;
     font-family: system-ui, -apple-system, sans-serif;
+    background: linear-gradient(to bottom right, rgba(243, 232, 255, 0.5), white, rgba(239, 246, 255, 0.5));
+    background-attachment: fixed;
   }
 }
 
@@ -40,5 +48,96 @@
 
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Chrome, Safari and Opera */
+  }
+
+  /* Falling particles animation - like gentle snowflakes */
+  @keyframes fall-1 {
+    0% {
+      transform: translateY(-100px) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) translateX(30px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fall-2 {
+    0% {
+      transform: translateY(-100px) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) translateX(-30px) rotate(-360deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fall-3 {
+    0% {
+      transform: translateY(-100px) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(50vh) translateX(20px) rotate(180deg);
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) translateX(-20px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+
+  @keyframes fall-4 {
+    0% {
+      transform: translateY(-100px) translateX(0) rotate(0deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    50% {
+      transform: translateY(50vh) translateX(-15px) rotate(-180deg);
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100vh) translateX(25px) rotate(-360deg);
+      opacity: 0;
+    }
+  }
+
+  .animate-fall-1 {
+    animation: fall-1 12s linear infinite;
+  }
+
+  .animate-fall-2 {
+    animation: fall-2 15s linear infinite;
+  }
+
+  .animate-fall-3 {
+    animation: fall-3 18s linear infinite;
+  }
+
+  .animate-fall-4 {
+    animation: fall-4 20s linear infinite;
   }
 }

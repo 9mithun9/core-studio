@@ -46,7 +46,7 @@ export default function TeachersPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mb-4"></div>
           <p className="text-lg text-gray-600">{t('teachers.loading')}</p>
@@ -56,8 +56,7 @@ export default function TeachersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div>
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 mb-4">
@@ -205,7 +204,6 @@ export default function TeachersPage() {
             </div>
           </div>
         )}
-      </div>
     </div>
   );
 }

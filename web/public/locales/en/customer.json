@@ -41,6 +41,11 @@
       "title": "Next Session",
       "with": "with"
     },
+    "congratulations": {
+      "title": "Congratulations!",
+      "message": "You've completed all your sessions! Amazing dedication! 💪",
+      "button": "Book Your Next Package"
+    },
     "weMissYou": {
       "title": "We Miss You",
       "daysSince": "It's been {{days}} days since your last session!",

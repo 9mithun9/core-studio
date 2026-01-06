@@ -64,10 +64,154 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4 md:py-5">
+    <div className="relative min-h-screen overflow-x-hidden">
+      {/* Well-being Background Pattern */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none" style={{ zIndex: 0, top: '-100px', bottom: 0 }}>
+        {/* Background Image */}
+        <div className="absolute inset-0">
+          <Image
+            src="/background-1.jpg"
+            alt="Background"
+            fill
+            className="object-cover blur-sm"
+            priority
+            quality={100}
+          />
+          {/* Overlay for better text readability */}
+          <div className="absolute inset-0 bg-white/30"></div>
+        </div>
+        {/* Falling snowflakes - actual snowflake shapes */}
+        <svg className="absolute top-0 left-[5%] w-8 h-8 text-purple-400/70 animate-fall-1" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0L13 8L12 11L11 8L12 0ZM12 13L13 16L12 24L11 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12ZM4 4L9 9L7 11L4 8L2 11L4 4ZM15 13L17 15L20 20L15 17L13 15L15 13ZM20 4L18 7L15 10L17 13L20 20L22 13L15 10L18 7L20 4Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[15%] w-7 h-7 text-blue-300/60 animate-fall-2" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12ZM5 5L10 10L8 12L5 9L3 12L5 5ZM16 12L18 14L19 19L16 16L14 14L16 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[25%] w-6 h-6 text-pink-400/65 animate-fall-3" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12ZM4 4L9.5 9.5L7.5 11.5L4 8L2 11.5L4 4Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[35%] w-7 h-7 text-purple-300/55 animate-fall-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[45%] w-8 h-8 text-indigo-400/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[55%] w-6 h-6 text-blue-400/60 animate-fall-2" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[65%] w-7 h-7 text-pink-300/65 animate-fall-3" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[75%] w-6 h-6 text-purple-400/60 animate-fall-4" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[85%] w-8 h-8 text-blue-300/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[95%] w-6 h-6 text-indigo-300/60 animate-fall-2" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+
+        {/* Second row with delay */}
+        <svg className="absolute top-0 left-[10%] w-7 h-7 text-pink-400/65 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '2s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[20%] w-6 h-6 text-purple-300/60 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '2.5s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[30%] w-8 h-8 text-blue-400/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '3s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[40%] w-7 h-7 text-indigo-300/60 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '3.5s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[50%] w-6 h-6 text-pink-300/65 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '4s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[60%] w-7 h-7 text-purple-400/65 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '4.5s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[70%] w-8 h-8 text-blue-300/60 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '5s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[80%] w-6 h-6 text-pink-400/65 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '5.5s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[90%] w-7 h-7 text-indigo-400/60 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '6s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+
+        {/* Third row - more snowflakes */}
+        <svg className="absolute top-0 left-[3%] w-7 h-7 text-blue-300/65 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '7s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[8%] w-6 h-6 text-purple-300/60 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '7.5s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[12%] w-7 h-7 text-pink-400/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '8s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[18%] w-8 h-8 text-indigo-300/60 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '8.5s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[22%] w-6 h-6 text-blue-400/65 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '9s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[28%] w-7 h-7 text-purple-400/60 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '9.5s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[32%] w-6 h-6 text-pink-300/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '10s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[38%] w-8 h-8 text-blue-300/60 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '10.5s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[42%] w-7 h-7 text-indigo-400/65 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '11s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[48%] w-6 h-6 text-purple-300/60 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '11.5s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[52%] w-7 h-7 text-pink-400/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '12s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[58%] w-8 h-8 text-blue-400/65 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '12.5s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[62%] w-6 h-6 text-indigo-300/60 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '13s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[68%] w-7 h-7 text-purple-400/65 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '13.5s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[72%] w-6 h-6 text-pink-300/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '14s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[78%] w-8 h-8 text-blue-300/60 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '14.5s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[82%] w-7 h-7 text-indigo-400/65 animate-fall-2" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '15s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[88%] w-6 h-6 text-purple-300/60 animate-fall-4" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '15.5s' }}>
+          <path d="M12 2L12.5 10L12 12L11.5 10L12 2ZM12 14L12.5 16L12 22L11.5 16L12 14ZM2 12L10 11.5L12 12L10 12.5L2 12ZM14 12L16 11.5L22 12L16 12.5L14 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[92%] w-7 h-7 text-pink-400/65 animate-fall-1" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '16s' }}>
+          <path d="M12 0L12.5 8L12 11L11.5 8L12 0ZM12 13L12.5 16L12 24L11.5 16L12 13ZM0 12L8 11L11 12L8 13L0 12ZM13 12L16 11L24 12L16 13L13 12Z"/>
+        </svg>
+        <svg className="absolute top-0 left-[97%] w-8 h-8 text-blue-400/65 animate-fall-3" viewBox="0 0 24 24" fill="currentColor" style={{ animationDelay: '16.5s' }}>
+          <path d="M12 1L12.5 9L12 11L11.5 9L12 1ZM12 13L12.5 15L12 23L11.5 15L12 13ZM1 12L9 11.5L11 12L9 12.5L1 12ZM13 12L15 11.5L23 12L15 12.5L13 12Z"/>
+        </svg>
+
+        {/* Floating gentle circles in background */}
+        <div className="absolute top-20 left-10 w-32 h-32 bg-purple-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-blue-200/20 rounded-full blur-3xl"></div>
+        <div className="absolute top-1/2 left-1/2 w-36 h-36 bg-pink-200/15 rounded-full blur-3xl"></div>
+      </div>
+      {/* Floating Header */}
+      <header className="">
+        <div className="container mx-auto px-4 pt-6">
+          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 px-4 py-3 backdrop-blur-sm bg-white/95">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/customer/dashboard" className="flex items-center hover:opacity-90 transition-opacity">
@@ -235,11 +379,12 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
               </Button>
             </nav>
           )}
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 py-6 md:py-8">{children}</main>
+      <main className="relative container mx-auto px-4 py-6 md:py-8" style={{ zIndex: 1 }}>{children}</main>
     </div>
   );
 }

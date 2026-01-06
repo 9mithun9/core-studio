@@ -285,7 +285,7 @@ export default function CustomerDashboard() {
                     {/* Title with shine effect */}
                     <div className="flex items-center gap-2 md:gap-3 mb-2 md:mb-3">
                       <h3 className="text-xl md:text-3xl font-black text-white drop-shadow-lg">
-                        Congratulations!
+                        {t('dashboard.congratulations.title')}
                       </h3>
                       <span className="text-2xl md:text-4xl animate-bounce">🎉</span>
                       <span className="text-2xl md:text-4xl animate-bounce" style={{ animationDelay: '0.1s' }}>✨</span>
@@ -293,7 +293,7 @@ export default function CustomerDashboard() {
 
                     {/* Message */}
                     <p className="text-base md:text-lg text-white mb-4 md:mb-6 font-medium drop-shadow-md leading-relaxed">
-                      You've completed all your sessions! Amazing dedication! 💪
+                      {t('dashboard.congratulations.message')}
                     </p>
 
                     {/* CTA Button with golden theme */}
@@ -304,7 +304,7 @@ export default function CustomerDashboard() {
                       <svg className="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
-                      Book Your Next Package
+                      {t('dashboard.congratulations.button')}
                     </Button>
                   </div>
                 </div>
@@ -989,7 +989,7 @@ export default function CustomerDashboard() {
 
       {/* Package Request Modal */}
       {showRequestModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 p-4 backdrop-blur-sm">
+        <div className="fixed bg-black bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm" style={{ zIndex: 9999, top: '-100px', left: 0, right: 0, bottom: 0 }}>
           <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
             {/* Header with Gradient */}
             <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 md:px-8 py-6 md:py-8 relative overflow-hidden">

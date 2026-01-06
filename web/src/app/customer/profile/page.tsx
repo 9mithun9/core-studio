@@ -212,7 +212,7 @@ export default function CustomerProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
           <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mb-4"></div>
           <p className="text-lg text-gray-600">{t('profile.loading')}</p>
@@ -223,7 +223,7 @@ export default function CustomerProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="bg-white rounded-3xl p-16 shadow-xl border border-gray-200 text-center max-w-2xl mx-auto">
           <p className="text-lg text-gray-600">{t('profile.notFound')}</p>
         </div>
@@ -232,8 +232,7 @@ export default function CustomerProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Photo Section */}
           <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
@@ -510,7 +509,6 @@ export default function CustomerProfilePage() {
             </div>
           </div>
         </div>
-      </div>
 
       <Toaster position="top-right" />
     </div>
