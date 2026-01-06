@@ -4,10 +4,24 @@ import { logger } from '@/config/logger';
 import { User, MessageTemplate, Notification } from '@/models';
 import { NotificationType } from '@/types';
 
-const lineClient = new Client({
-  channelAccessToken: config.lineChannelAccessToken,
-  channelSecret: config.lineChannelSecret,
-});
+let lineClient: Client | null = null;
+
+// Initialize LINE client only if credentials are available
+function getLineClient(): Client | null {
+  if (lineClient) return lineClient;
+
+  if (!config.lineChannelAccessToken || !config.lineChannelSecret) {
+    logger.warn('LINE credentials not configured. LINE messaging features will be disabled.');
+    return null;
+  }
+
+  lineClient = new Client({
+    channelAccessToken: config.lineChannelAccessToken,
+    channelSecret: config.lineChannelSecret,
+  });
+
+  return lineClient;
+}
 
 export class LineService {
   /**
@@ -28,13 +42,20 @@ export class LineService {
    * Send a LINE message to a user
    */
   static async sendMessage(lineUserId: string, message: string): Promise<void> {
+    const client = getLineClient();
+
+    if (!client) {
+      logger.warn('LINE client not available. Skipping message send.');
+      return;
+    }
+
     try {
       const textMessage: TextMessage = {
         type: 'text',
         text: message,
       };
 
-      await lineClient.pushMessage(lineUserId, textMessage);
+      await client.pushMessage(lineUserId, textMessage);
       logger.info(`Sent LINE message to ${lineUserId}`);
     } catch (error) {
       logger.error('Error sending LINE message:', error);
