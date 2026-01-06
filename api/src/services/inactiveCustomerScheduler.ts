@@ -43,22 +43,6 @@ async function checkInactiveCustomers() {
 
       const hasActivePackage = activePackages.length > 0;
 
-      // For customers WITHOUT active packages, send daily reminders
-      // For customers WITH active packages, only send if they haven't received one today
-      if (hasActivePackage) {
-        // Check if we already sent an inactive reminder to this customer today
-        const todayNotification = await InAppNotification.findOne({
-          userId,
-          type: 'inactive_reminder',
-          createdAt: { $gte: startOfToday },
-        });
-
-        if (todayNotification) {
-          // Already sent notification today, skip
-          continue;
-        }
-      }
-
       // Find the most recent completed or confirmed booking for this customer
       const recentBooking = await Booking.findOne({
         customerId: customer._id,
