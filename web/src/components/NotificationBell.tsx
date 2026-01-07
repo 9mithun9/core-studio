@@ -163,7 +163,7 @@ export default function NotificationBell() {
       {/* Bell Icon Button */}
       <button
         onClick={() => setShowDropdown(!showDropdown)}
-        className="relative p-2.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-purple-500"
+        className="relative p-2.5 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-orange-500"
       >
         {/* Bell SVG Icon */}
         <svg
@@ -193,12 +193,12 @@ export default function NotificationBell() {
       {showDropdown && (
         <div className="absolute right-0 mt-3 w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 z-[9999] max-h-[600px] overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-purple-600 to-indigo-600">
+          <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center bg-gradient-to-r from-orange-600 to-pink-600">
             <h3 className="text-lg font-bold text-white">{t('notifications.title')}</h3>
             {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-sm text-white hover:text-purple-100 font-medium underline decoration-2 underline-offset-2 transition-colors"
+                className="text-sm text-white hover:text-orange-100 font-medium underline decoration-2 underline-offset-2 transition-colors"
               >
                 {t('notifications.markAllRead')}
               </button>
@@ -209,14 +209,14 @@ export default function NotificationBell() {
           <div className="overflow-y-auto flex-1">
             {loading ? (
               <div className="p-12 text-center">
-                <div className="inline-block w-8 h-8 border-3 border-purple-600 border-t-transparent rounded-full animate-spin mb-3"></div>
+                <div className="inline-block w-8 h-8 border-3 border-orange-600 border-t-transparent rounded-full animate-spin mb-3"></div>
                 <p className="text-sm text-gray-500">{t('notifications.loading')}</p>
               </div>
             ) : notifications.length === 0 ? (
               <div className="p-12 text-center">
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-purple-100 to-indigo-100 rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-orange-100 to-pink-100 rounded-full flex items-center justify-center">
                   <svg
-                    className="w-10 h-10 text-purple-600"
+                    className="w-10 h-10 text-orange-600"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -237,8 +237,8 @@ export default function NotificationBell() {
                 <div
                   key={notification._id}
                   onClick={() => handleNotificationClick(notification)}
-                  className={`px-5 py-4 border-b border-gray-100 hover:bg-purple-50 transition-all cursor-pointer group ${
-                    !notification.isRead ? 'bg-gradient-to-r from-purple-50 to-indigo-50' : 'bg-white'
+                  className={`px-5 py-4 border-b border-gray-100 hover:bg-orange-50 transition-all cursor-pointer group ${
+                    !notification.isRead ? 'bg-gradient-to-r from-orange-50 to-pink-50' : 'bg-white'
                   }`}
                 >
                   <div className="flex justify-between items-start gap-3">
@@ -248,7 +248,7 @@ export default function NotificationBell() {
                           {notification.titleKey ? t(notification.titleKey) : notification.title}
                         </h4>
                         {!notification.isRead && (
-                          <span className="w-2.5 h-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-full flex-shrink-0 mt-1 shadow-sm"></span>
+                          <span className="w-2.5 h-2.5 bg-gradient-to-r from-orange-600 to-pink-600 rounded-full flex-shrink-0 mt-1 shadow-sm"></span>
                         )}
                       </div>
                       <p className="text-sm text-gray-600 mb-2 leading-relaxed">
@@ -267,7 +267,7 @@ export default function NotificationBell() {
                       {!notification.isRead && (
                         <button
                           onClick={(e) => markAsReadOnly(notification._id, e)}
-                          className="p-1.5 text-purple-600 hover:bg-purple-100 rounded-md transition-colors"
+                          className="p-1.5 text-orange-600 hover:bg-orange-100 rounded-md transition-colors"
                           title={t('notifications.markAsRead')}
                         >
                           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

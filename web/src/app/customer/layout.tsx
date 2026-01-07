@@ -211,7 +211,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
       {/* Floating Header */}
       <header className="relative" style={{ zIndex: 10 }}>
         <div className="container mx-auto px-4 pt-6">
-          <div className="bg-white rounded-2xl shadow-lg border border-gray-100 px-4 py-3 backdrop-blur-sm bg-white/95">
+          <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/customer/dashboard" className="flex items-center hover:opacity-90 transition-opacity">
@@ -228,19 +228,19 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <nav className="hidden lg:flex items-center gap-2">
               <Link
                 href="/customer/dashboard"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/customer/packages"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
               >
                 {t('nav.packages')}
               </Link>
               <Link
                 href="/customer/teachers"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
               >
                 {t('nav.teachers')}
               </Link>
@@ -254,24 +254,24 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
               {/* Profile */}
               <Link
                 href="/customer/profile"
-                className="hidden md:flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-purple-600 hover:bg-purple-50 font-medium rounded-lg transition-all border-l border-gray-200 ml-2 pl-5"
+                className="hidden md:flex items-center gap-3 px-3 py-2 text-sm text-gray-700 hover:text-orange-600 hover:bg-orange-50 font-medium rounded-lg transition-all border-l border-gray-200 ml-2 pl-5"
               >
                 {customerProfile?.profilePhoto ? (
                   customerProfile.profilePhoto.startsWith('http') ? (
                     <img
                       src={customerProfile.profilePhoto}
                       alt={user?.name}
-                      className="w-9 h-9 rounded-full object-cover ring-2 ring-purple-200"
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-orange-200"
                     />
                   ) : (
                     <img
                       src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${customerProfile.profilePhoto}`}
                       alt={user?.name}
-                      className="w-9 h-9 rounded-full object-cover ring-2 ring-purple-200"
+                      className="w-9 h-9 rounded-full object-cover ring-2 ring-orange-200"
                     />
                   )
                 ) : (
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-sm font-bold ring-2 ring-purple-200">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center text-white text-sm font-bold ring-2 ring-orange-200">
                     {user?.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -283,7 +283,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="hidden md:flex text-sm font-medium border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50"
+                className="hidden md:flex text-sm font-medium border-gray-300 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50"
               >
                 {t('common:logout', { ns: 'common' })}
               </Button>
@@ -291,7 +291,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
               {/* Mobile Menu Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="lg:hidden p-2.5 text-gray-600 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="lg:hidden p-2.5 text-gray-600 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
               >
                 <svg
                   className="w-6 h-6"
@@ -324,28 +324,28 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <nav className="lg:hidden mt-5 pb-4 border-t border-gray-200 pt-5 space-y-2">
               <Link
                 href="/customer/dashboard"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/customer/packages"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.packages')}
               </Link>
               <Link
                 href="/customer/teachers"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.teachers')}
               </Link>
               <Link
                 href="/customer/profile"
-                className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-purple-600 hover:bg-purple-50 rounded-lg transition-all"
+                className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {customerProfile?.profilePhoto ? (
@@ -353,17 +353,17 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                     <img
                       src={customerProfile.profilePhoto}
                       alt={user?.name}
-                      className="w-7 h-7 rounded-full object-cover ring-2 ring-purple-200"
+                      className="w-7 h-7 rounded-full object-cover ring-2 ring-orange-200"
                     />
                   ) : (
                     <img
                       src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${customerProfile.profilePhoto}`}
                       alt={user?.name}
-                      className="w-7 h-7 rounded-full object-cover ring-2 ring-purple-200"
+                      className="w-7 h-7 rounded-full object-cover ring-2 ring-orange-200"
                     />
                   )
                 ) : (
-                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white text-xs font-bold ring-2 ring-purple-200">
+                  <div className="w-7 h-7 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center text-white text-xs font-bold ring-2 ring-orange-200">
                     {user?.name.charAt(0).toUpperCase()}
                   </div>
                 )}
@@ -373,7 +373,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
                 variant="outline"
                 size="sm"
                 onClick={handleLogout}
-                className="w-full mt-3 font-medium border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50"
+                className="w-full mt-3 font-medium border-gray-300 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50"
               >
                 {t('common:logout', { ns: 'common' })}
               </Button>

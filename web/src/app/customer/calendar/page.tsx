@@ -240,7 +240,7 @@ export default function CustomerCalendar() {
             </div>
           </div>
         ) : packages.length === 0 ? (
-          <div className="bg-white rounded-3xl shadow-xl border border-gray-200 overflow-hidden max-w-2xl mx-auto">
+          <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden max-w-2xl mx-auto">
             <div className="relative bg-gradient-to-br from-purple-600 to-indigo-600 p-8">
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full -mr-20 -mt-20"></div>

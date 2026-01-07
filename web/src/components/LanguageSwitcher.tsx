@@ -18,7 +18,7 @@ export default function LanguageSwitcher() {
   return (
     <button
       onClick={handleLanguageToggle}
-      className="relative inline-flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-lg border-2 border-gray-200 hover:border-purple-400 hover:shadow-xl transition-all duration-300 group overflow-hidden"
+      className="relative inline-flex items-center justify-center w-14 h-14 bg-white rounded-full shadow-lg border-2 border-gray-200 hover:border-orange-400 hover:shadow-xl transition-all duration-300 group overflow-hidden"
       title={currentLanguage === 'en' ? 'Switch to Thai' : 'Switch to English'}
     >
       {/* English Flag */}
@@ -64,7 +64,7 @@ export default function LanguageSwitcher() {
       </div>
 
       {/* Hover Ring Effect */}
-      <div className="absolute inset-0 rounded-full bg-purple-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
+      <div className="absolute inset-0 rounded-full bg-orange-400 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
     </button>
   );
 }

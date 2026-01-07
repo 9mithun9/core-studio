@@ -8,7 +8,8 @@
     "start": "cross-env NODE_OPTIONS=--openssl-legacy-provider node dist/server.js",
     "test": "jest",
     "seed": "cross-env NODE_OPTIONS=--openssl-legacy-provider ts-node-dev -r tsconfig-paths/register scripts/seed.ts",
-    "fix-package-sessions": "cross-env NODE_OPTIONS=--openssl-legacy-provider ts-node-dev -r tsconfig-paths/register scripts/fixPackageSessions.ts"
+    "fix-package-sessions": "cross-env NODE_OPTIONS=--openssl-legacy-provider ts-node-dev -r tsconfig-paths/register scripts/fixPackageSessions.ts",
+    "test-inactive": "cross-env NODE_OPTIONS=--openssl-legacy-provider ts-node-dev -r tsconfig-paths/register scripts/testInactiveCustomers.ts"
   },
   "dependencies": {
     "@line/bot-sdk": "^9.0.0",
