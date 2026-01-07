@@ -209,7 +209,7 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         <div className="absolute top-1/2 left-1/2 w-36 h-36 bg-pink-200/15 rounded-full blur-3xl"></div>
       </div>
       {/* Floating Header */}
-      <header className="relative" style={{ zIndex: 10 }}>
+      <header className="relative" style={{ zIndex: 9 }}>
         <div className="container mx-auto px-4 pt-6">
           <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 px-4 py-3">
           <div className="flex items-center justify-between">
