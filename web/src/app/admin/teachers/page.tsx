@@ -107,6 +107,31 @@ const TEACHER_COLORS = [
   '#84cc16', // lime
 ];
 
+// Custom Tooltip Component with Glassmorphism Design
+const CustomTooltip = ({ active, payload, label }: any) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+        <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+        <div className="space-y-1.5">
+          {payload.map((entry: any, index: number) => (
+            <div key={index} className="flex items-center gap-2">
+              <div
+                className="w-3 h-3 rounded-full"
+                style={{ backgroundColor: entry.color }}
+              />
+              <span className="text-sm text-gray-700">
+                {entry.name}: <span className="font-semibold text-gray-900">{entry.value}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+  return null;
+};
+
 export default function AdminTeachersPage() {
   const { t } = useTranslation('admin');
   const [teachers, setTeachers] = useState<TeacherWithDetails[]>([]);
@@ -406,7 +431,7 @@ export default function AdminTeachersPage() {
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="monthYear" />
               <YAxis />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
               <Legend />
               {teacherNames.map((teacherName, index) => (
                 <Line
