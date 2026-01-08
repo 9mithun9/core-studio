@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import '@/lib/i18n';
 
 export default function TeacherLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { t } = useTranslation(['teacher', 'common']);
   const [user, setUser] = useState<any>(null);
   const [teacherProfile, setTeacherProfile] = useState<any>(null);
@@ -77,8 +78,6 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
             priority
             quality={100}
           />
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-white/30"></div>
         </div>
         {/* Falling snowflakes - actual snowflake shapes */}
         <svg className="absolute top-0 left-[5%] w-8 h-8 text-purple-400/70 animate-fall-1" viewBox="0 0 24 24" fill="currentColor">
@@ -114,14 +113,14 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
       </div>
 
       {/* Floating Header */}
-      <header className="relative" style={{ zIndex: 9 }}>
+      <header className="relative z-50">
         <div className="container mx-auto px-4 pt-6">
           <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/teacher/dashboard" className="flex items-center hover:opacity-90 transition-opacity">
               <Image
-                src="/logo.png"
+                src="/logo-2.png"
                 alt="Core Studio Pilates"
                 width={96}
                 height={96}
@@ -133,19 +132,31 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
             <nav className="hidden lg:flex items-center gap-2">
               <Link
                 href="/teacher/dashboard"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/teacher/dashboard'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/teacher/my-calendar"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/teacher/my-calendar'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 {t('nav.myCalendar')}
               </Link>
               <Link
                 href="/teacher/students"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/teacher/students'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 {t('nav.students')}
               </Link>
@@ -221,21 +232,33 @@ export default function TeacherLayout({ children }: { children: React.ReactNode 
             <nav className="lg:hidden mt-5 pb-4 border-t border-gray-200 pt-5 space-y-2">
               <Link
                 href="/teacher/dashboard"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/teacher/dashboard'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/teacher/my-calendar"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/teacher/my-calendar'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.myCalendar')}
               </Link>
               <Link
                 href="/teacher/students"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/teacher/students'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.students')}

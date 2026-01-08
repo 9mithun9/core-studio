@@ -353,44 +353,8 @@ export default function AdminTeachersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-purple-50 pb-12">
-      <div className="container mx-auto px-4 py-8">
-        {/* Gradient Hero Header */}
-        <div className="relative bg-gradient-to-r from-purple-600 to-purple-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
-          <div className="relative z-10 flex items-center justify-between">
-            <div>
-              <h1 className="text-4xl font-bold mb-2">{t('teachers.title')}</h1>
-              <p className="text-purple-100 text-lg">Manage your teaching staff and performance</p>
-            </div>
-            <Button
-              onClick={() => setShowCreateModal(true)}
-              size="lg"
-              className="bg-white text-purple-700 hover:bg-gray-100 hidden md:flex"
-            >
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-              </svg>
-              {t('teachers.createTeacher')}
-            </Button>
-          </div>
-        </div>
-
-        {/* Mobile Create Button */}
-        <div className="md:hidden mb-6">
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            size="sm"
-            className="w-full"
-          >
-            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-            </svg>
-            {t('teachers.createTeacher')}
-          </Button>
-        </div>
-
+    <div className="pb-12">
+      <div>
       {/* Teacher Sessions Graph */}
       <Card className="mb-4 md:mb-6">
         <CardHeader>
@@ -463,12 +427,26 @@ export default function AdminTeachersPage() {
       {/* Two Column Layout */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Left: Teacher List */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base md:text-lg">{t('teachers.allTeachers', { count: teachers.length })}</CardTitle>
-            <CardDescription className="text-xs md:text-sm">{t('teachers.clickToView')}</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-white">{t('teachers.allTeachers', { count: teachers.length })}</h3>
+                <p className="text-orange-100 text-sm">{t('teachers.clickToView')}</p>
+              </div>
+              <Button
+                onClick={() => setShowCreateModal(true)}
+                size="sm"
+                className="bg-white/90 hover:bg-white text-orange-600 border-white/40 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+                <span className="hidden md:inline whitespace-nowrap">{t('teachers.createTeacher')}</span>
+              </Button>
+            </div>
+          </div>
+          <div className="p-6">
             {/* Search */}
             <div className="mb-3 md:mb-4">
               <input
@@ -476,7 +454,7 @@ export default function AdminTeachersPage() {
                 placeholder={t('teachers.searchPlaceholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 md:px-4 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                className="w-full px-3 md:px-4 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
               />
 
               {searchQuery && (
@@ -486,7 +464,7 @@ export default function AdminTeachersPage() {
               )}
             </div>
 
-            <div className="space-y-2 md:space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-2 md:space-y-3 max-h-[600px] overflow-y-auto scrollbar-hide">
               {filteredTeachers.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">
                   {searchQuery
@@ -501,10 +479,10 @@ export default function AdminTeachersPage() {
                     <div
                       key={teacher._id}
                       onClick={() => handleSelectTeacher(teacher)}
-                      className={`border rounded-lg p-3 md:p-4 cursor-pointer transition ${
+                      className={`border rounded-xl p-3 md:p-4 cursor-pointer transition backdrop-blur-sm ${
                         selectedTeacher?._id === teacher._id
-                          ? 'border-primary-600 bg-primary-50'
-                          : 'hover:border-primary-300 hover:bg-gray-50'
+                          ? 'border-orange-400 bg-orange-50/50 shadow-md'
+                          : 'border-white/60 bg-white/40 hover:border-orange-300 hover:bg-white/60 hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-3">
@@ -560,14 +538,14 @@ export default function AdminTeachersPage() {
                 })
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Right: Teacher Details with Tabs */}
         <div>
           {selectedTeacher ? (
-            <Card>
-              <CardHeader>
+            <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
                 <div className="flex flex-col gap-3">
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
                     <div className="flex items-center gap-3 md:gap-4">
@@ -586,8 +564,8 @@ export default function AdminTeachersPage() {
                         )}
                       </div>
                       <div className="min-w-0">
-                        <CardTitle className="text-base md:text-lg truncate">{selectedTeacher.userId.name}</CardTitle>
-                        <CardDescription className="text-xs md:text-sm truncate">{selectedTeacher.userId.email}</CardDescription>
+                        <h3 className="text-lg md:text-xl font-bold text-white truncate">{selectedTeacher.userId.name}</h3>
+                        <p className="text-orange-100 text-sm truncate">{selectedTeacher.userId.email}</p>
                       </div>
                     </div>
                     {!selectedTeacher.isActive && (
@@ -598,43 +576,64 @@ export default function AdminTeachersPage() {
                   </div>
 
                 </div>
+              </div>
 
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mt-3 md:mt-4">
-                  <div className="text-center p-2 md:p-3 bg-gray-50 rounded">
-                    <p className="text-xl md:text-2xl font-bold text-gray-800">
+              {/* Quick Stats */}
+              <div className="p-6">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 md:gap-4 mb-6">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
+                    <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                       {selectedTeacher.completedSessions}
                     </p>
-                    <p className="text-xs text-gray-500">{t('teachers.stats.completed')}</p>
+                    <p className="text-xs text-gray-600">{t('teachers.stats.completed')}</p>
                   </div>
-                  <div className="text-center p-2 md:p-3 bg-blue-50 rounded">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
                     <p className="text-xl md:text-2xl font-bold text-blue-600">
                       {selectedTeacher.todaySessions}
                     </p>
-                    <p className="text-xs text-gray-500">{t('teachers.stats.today')}</p>
+                    <p className="text-xs text-gray-600">{t('teachers.stats.today')}</p>
                   </div>
-                  <div className="text-center p-2 md:p-3 bg-green-50 rounded">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
                     <p className="text-xl md:text-2xl font-bold text-green-600">
                       {selectedTeacher.thisWeekSessions}
                     </p>
-                    <p className="text-xs text-gray-500">{t('teachers.stats.thisWeek')}</p>
+                    <p className="text-xs text-gray-600">{t('teachers.stats.thisWeek')}</p>
                   </div>
-                  <div className="text-center p-2 md:p-3 bg-purple-50 rounded">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
                     <p className="text-xl md:text-2xl font-bold text-purple-600">
                       {selectedTeacher.totalStudents}
                     </p>
-                    <p className="text-xs text-gray-500">{t('teachers.stats.students')}</p>
+                    <p className="text-xs text-gray-600">{t('teachers.stats.students')}</p>
                   </div>
                 </div>
-              </CardHeader>
 
-              <CardContent>
+                <div>
                 <Tabs defaultValue="overview" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 text-xs md:text-sm">
-                    <TabsTrigger value="overview">{t('teachers.tabs.overview')}</TabsTrigger>
-                    <TabsTrigger value="students">{t('teachers.tabs.students')}</TabsTrigger>
-                    <TabsTrigger value="sessions">{t('teachers.tabs.sessions')}</TabsTrigger>
-                    <TabsTrigger value="analytics">{t('teachers.tabs.analytics')}</TabsTrigger>
+                  <TabsList className="flex w-full gap-2 bg-transparent h-auto p-0">
+                    <TabsTrigger
+                      value="overview"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('teachers.tabs.overview')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="students"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('teachers.tabs.students')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="sessions"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('teachers.tabs.sessions')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="analytics"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('teachers.tabs.analytics')}
+                    </TabsTrigger>
                   </TabsList>
 
                   {/* Overview Tab */}
@@ -751,7 +750,7 @@ export default function AdminTeachersPage() {
                     ) : teacherStudents.length === 0 ? (
                       <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.studentsTab.noStudents')}</p>
                     ) : (
-                      <div className="space-y-2 md:space-y-3 max-h-[500px] overflow-y-auto">
+                      <div className="space-y-2 md:space-y-3 max-h-[500px] overflow-y-auto scrollbar-hide">
                         {teacherStudents.map((student) => (
                           <div key={student.customer._id} className="border rounded-lg p-2 md:p-3">
                             <div className="flex items-center justify-between gap-3">
@@ -837,7 +836,7 @@ export default function AdminTeachersPage() {
                     ) : teacherSessions.length === 0 ? (
                       <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">{t('teachers.sessionsTab.noSessions')}</p>
                     ) : (
-                      <div className="space-y-2 md:space-y-3 max-h-[500px] overflow-y-auto">
+                      <div className="space-y-2 md:space-y-3 max-h-[500px] overflow-y-auto scrollbar-hide">
                         {teacherSessions.map((session) => {
                           const isUpcoming = new Date(session.startTime) > new Date();
                           let statusClass = 'bg-gray-100 text-gray-800';
@@ -998,97 +997,98 @@ export default function AdminTeachersPage() {
                     )}
                   </TabsContent>
                 </Tabs>
-              </CardContent>
-            </Card>
+                </div>
+              </div>
+            </div>
           ) : (
-            <Card>
-              <CardContent className="py-8 md:py-12 text-center">
-                <p className="text-xs md:text-sm text-gray-500">{t('teachers.selectToView')}</p>
-              </CardContent>
-            </Card>
+            <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 p-12 text-center">
+              <p className="text-gray-600">{t('teachers.selectToView')}</p>
+            </div>
           )}
         </div>
       </div>
 
       {/* Create Teacher Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-3 md:mb-4">
-              <h2 className="text-lg md:text-xl font-bold">{t('teachers.createModal.title')}</h2>
-              <button
-                onClick={() => setShowCreateModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="bg-white/30 backdrop-blur-xl rounded-3xl border-2 border-white/40 shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-6 py-4 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-bold text-white">{t('teachers.createModal.title')}</h2>
+                <button
+                  onClick={() => setShowCreateModal(false)}
+                  className="text-white/80 hover:text-white transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3 md:space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-120px)] scrollbar-hide">
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
-                  {t('teachers.createModal.name')}
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.name')} *
                 </label>
                 <input
                   type="text"
                   value={createForm.name}
                   onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('teachers.createModal.namePlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
-                  {t('teachers.createModal.email')}
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.email')} *
                 </label>
                 <input
                   type="email"
                   value={createForm.email}
                   onChange={(e) => setCreateForm({ ...createForm, email: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('teachers.createModal.emailPlaceholder')}
                 />
               </div>
 
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
-                  {t('teachers.createModal.password')}
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  {t('teachers.createModal.password')} *
                 </label>
                 <input
                   type="password"
                   value={createForm.password}
                   onChange={(e) => setCreateForm({ ...createForm, password: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('teachers.createModal.passwordPlaceholder')}
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3 md:gap-4">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('teachers.createModal.phone')}
                   </label>
                   <input
                     type="tel"
                     value={createForm.phone}
                     onChange={(e) => setCreateForm({ ...createForm, phone: e.target.value })}
-                    className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder={t('teachers.createModal.phonePlaceholder')}
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     {t('teachers.createModal.yearsOfExperience')}
                   </label>
                   <input
                     type="number"
                     value={createForm.yearsOfExperience}
                     onChange={(e) => setCreateForm({ ...createForm, yearsOfExperience: e.target.value })}
-                    className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     placeholder={t('teachers.createModal.experiencePlaceholder')}
                     min="0"
                   />
@@ -1096,47 +1096,47 @@ export default function AdminTeachersPage() {
               </div>
 
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('teachers.createModal.bio')}
                 </label>
                 <textarea
                   value={createForm.bio}
                   onChange={(e) => setCreateForm({ ...createForm, bio: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('teachers.createModal.bioPlaceholder')}
                   rows={3}
                 />
               </div>
 
               <div>
-                <label className="block text-xs md:text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('teachers.createModal.specialties')}
                 </label>
                 <input
                   type="text"
                   value={createForm.specialties}
                   onChange={(e) => setCreateForm({ ...createForm, specialties: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  className="w-full px-3 py-2 text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('teachers.createModal.specialtiesPlaceholder')}
                 />
-                <p className="text-xs text-gray-500 mt-1">{t('teachers.createModal.specialtiesHelp')}</p>
+                <p className="text-xs text-gray-600 mt-1">{t('teachers.createModal.specialtiesHelp')}</p>
               </div>
+            </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 mt-4 md:mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowCreateModal(false)}
-                  className="flex-1 text-xs md:text-sm"
-                >
-                  {t('teachers.createModal.cancel')}
-                </Button>
-                <Button
-                  onClick={handleCreateTeacher}
-                  className="flex-1 text-xs md:text-sm"
-                >
-                  {t('teachers.createModal.create')}
-                </Button>
-              </div>
+            <div className="px-6 py-4 border-t border-white/20 bg-white/20 backdrop-blur-sm flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowCreateModal(false)}
+                className="flex-1 border-gray-300 hover:bg-white/50"
+              >
+                {t('teachers.createModal.cancel')}
+              </Button>
+              <Button
+                onClick={handleCreateTeacher}
+                className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white"
+              >
+                {t('teachers.createModal.create')}
+              </Button>
             </div>
           </div>
         </div>

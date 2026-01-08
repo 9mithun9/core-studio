@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -14,6 +13,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { formatStudioTime } from '@/lib/date';
 
 interface Student {
@@ -70,6 +70,7 @@ export default function TeacherStudentsPage() {
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [studentSessions, setStudentSessions] = useState<Session[]>([]);
   const [sessionsLoading, setSessionsLoading] = useState(false);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | null>(null);
 
   // Add Session Form State
   const [sessionForm, setSessionForm] = useState({
@@ -376,17 +377,17 @@ export default function TeacherStudentsPage() {
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8">{t('students.title')}</h1>
+      <h1 className="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-gray-900">{t('students.title')}</h1>
 
       {/* Two Column Layout */}
       <div className="grid md:grid-cols-2 gap-4 md:gap-6">
         {/* Left: Student List */}
-        <Card>
-          <CardHeader>
+        <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <CardTitle className="text-lg md:text-xl">{t('students.all_students')} ({students.length})</CardTitle>
-                <CardDescription className="text-xs md:text-sm">{t('students.click_to_view')}</CardDescription>
+                <h3 className="text-lg md:text-xl font-bold text-white">{t('students.all_students')} ({students.length})</h3>
+                <p className="text-xs md:text-sm text-orange-100">{t('students.click_to_view')}</p>
               </div>
               <Button
                 onClick={() => {
@@ -397,7 +398,7 @@ export default function TeacherStudentsPage() {
                 }}
                 size="sm"
                 variant="outline"
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -405,8 +406,8 @@ export default function TeacherStudentsPage() {
                 <span className="text-xs">Refresh</span>
               </Button>
             </div>
-          </CardHeader>
-          <CardContent>
+          </div>
+          <div className="p-6">
             {/* Search */}
             <div className="mb-4">
               <input
@@ -414,7 +415,7 @@ export default function TeacherStudentsPage() {
                 placeholder={t('students.search_placeholder')}
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600 text-xs md:text-sm"
+                className="w-full px-3 md:px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-xs md:text-sm"
               />
 
               {searchQuery && (
@@ -424,7 +425,7 @@ export default function TeacherStudentsPage() {
               )}
             </div>
 
-            <div className="space-y-3 max-h-[600px] overflow-y-auto">
+            <div className="space-y-3 max-h-[600px] overflow-y-auto" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
               {filteredStudents.length === 0 ? (
                 <p className="text-gray-500 text-center py-8 text-xs md:text-sm">
                   {searchQuery
@@ -439,10 +440,10 @@ export default function TeacherStudentsPage() {
                     <div
                       key={student._id}
                       onClick={() => setSelectedStudent(student)}
-                      className={`border rounded-lg p-3 md:p-4 cursor-pointer transition ${
+                      className={`border rounded-xl p-3 md:p-4 cursor-pointer transition backdrop-blur-sm ${
                         selectedStudent?._id === student._id
-                          ? 'border-primary-600 bg-primary-50'
-                          : 'hover:border-primary-300 hover:bg-gray-50'
+                          ? 'border-orange-400 bg-orange-50/50 shadow-md'
+                          : 'border-white/60 bg-white/40 hover:border-orange-300 hover:bg-white/60 hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-center justify-between">
@@ -456,14 +457,14 @@ export default function TeacherStudentsPage() {
                           {/* Status badges */}
                           <div className="flex gap-2 mt-2">
                             {activePackages.length === 0 && (
-                              <span className="text-xs px-2 py-1 bg-orange-100 text-orange-700 rounded">
+                              <span className="text-xs px-2 py-1 bg-orange-100/80 text-orange-700 rounded-lg backdrop-blur-sm">
                                 {t('students.no_active_packages')}
                               </span>
                             )}
                           </div>
                         </div>
                         <div className="text-right">
-                          <p className="text-xl md:text-2xl font-bold text-primary-600">
+                          <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                             {student.completedSessions}
                           </p>
                           <p className="text-xs text-gray-500">{t('students.sessions')}</p>
@@ -474,317 +475,341 @@ export default function TeacherStudentsPage() {
                 })
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Right: Student Details */}
         <div>
           {selectedStudent ? (
-            <div className="space-y-4 md:space-y-6">
-              {/* Student Info */}
-              <Card>
-                <CardHeader>
-                  <div className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3 md:gap-4">
-                      {selectedStudent.profilePhoto ? (
-                        selectedStudent.profilePhoto.startsWith('http') ? (
-                          <img
-                            src={selectedStudent.profilePhoto}
-                            alt={selectedStudent.userId.name}
-                            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-primary-200"
-                          />
-                        ) : (
-                          <img
-                            src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedStudent.profilePhoto}`}
-                            alt={selectedStudent.userId.name}
-                            className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-primary-200"
-                          />
-                        )
+            <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+              {/* Header with student info and action buttons */}
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
+                <div className="flex flex-col gap-4">
+                  <div className="flex items-center gap-3 md:gap-4">
+                    {selectedStudent.profilePhoto ? (
+                      selectedStudent.profilePhoto.startsWith('http') ? (
+                        <img
+                          src={selectedStudent.profilePhoto}
+                          alt={selectedStudent.userId.name}
+                          className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white/40 ring-2 ring-white/20"
+                        />
                       ) : (
-                        <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-xl md:text-2xl font-bold">
-                          {selectedStudent.userId.name.charAt(0).toUpperCase()}
+                        <img
+                          src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedStudent.profilePhoto}`}
+                          alt={selectedStudent.userId.name}
+                          className="w-12 h-12 md:w-16 md:h-16 rounded-full object-cover border-2 border-white/40 ring-2 ring-white/20"
+                        />
+                      )
+                    ) : (
+                      <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-white/30 backdrop-blur-sm border-2 border-white/40 flex items-center justify-center text-white text-xl md:text-2xl font-bold shadow-lg">
+                        {selectedStudent.userId.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <h3 className="text-lg md:text-xl font-bold text-white">{selectedStudent.userId.name}</h3>
+                  </div>
+                  {(() => {
+                    const activePackages = selectedStudent.packages.filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0);
+                    return activePackages.length > 0;
+                  })() && (
+                    <div className="flex flex-col sm:flex-row gap-2">
+                      <Button
+                        onClick={() => setBookFutureDialog(true)}
+                        size="sm"
+                        variant="default"
+                        className="w-full sm:w-auto bg-white/90 hover:bg-white text-orange-600 border-white/40"
+                      >
+                        <span className="text-xs md:text-sm font-semibold">{t('students.book_future')}</span>
+                      </Button>
+                      <Button
+                        onClick={() => setAddSessionDialog(true)}
+                        size="sm"
+                        variant="outline"
+                        className="w-full sm:w-auto bg-white/20 hover:bg-white/30 text-white border-white/40"
+                      >
+                        <span className="text-xs md:text-sm font-semibold">{t('students.record_past')}</span>
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Quick Stats */}
+              <div className="grid grid-cols-2 gap-4 p-6 border-b border-white/30">
+                <div className="text-center">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                    {selectedStudent.totalSessions}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{t('students.totalSessions')}</p>
+                </div>
+                <div className="text-center">
+                  <p className="text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {selectedStudent.completedSessions}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-1">{t('students.completed')}</p>
+                </div>
+              </div>
+
+              {/* Tabs */}
+              <div className="p-6">
+                <Tabs defaultValue="profile" className="w-full">
+                  <TabsList className="flex w-full gap-2 bg-transparent h-auto p-0">
+                    <TabsTrigger
+                      value="profile"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('students.profile')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="packages"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('students.packages')}
+                    </TabsTrigger>
+                  </TabsList>
+
+                {/* Profile Tab */}
+                <TabsContent value="profile" className="space-y-4">
+                  {/* Basic Info */}
+                  {(selectedStudent.dateOfBirth || selectedStudent.gender || selectedStudent.height || selectedStudent.weight) && (
+                    <div className="grid grid-cols-2 gap-4 pb-4 border-b">
+                      {selectedStudent.dateOfBirth && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">{t('students.age')}</p>
+                          <p className="font-medium">{new Date().getFullYear() - new Date(selectedStudent.dateOfBirth).getFullYear()} {t('students.years')}</p>
                         </div>
                       )}
-                      <CardTitle className="text-lg md:text-xl">{selectedStudent.userId.name}</CardTitle>
+                      {selectedStudent.gender && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">{t('students.gender')}</p>
+                          <p className="font-medium capitalize">{selectedStudent.gender}</p>
+                        </div>
+                      )}
+                      {selectedStudent.height && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">{t('students.height')}</p>
+                          <p className="font-medium">{selectedStudent.height} {t('students.cm')}</p>
+                        </div>
+                      )}
+                      {selectedStudent.weight && (
+                        <div>
+                          <p className="text-xs text-gray-500 mb-1">{t('students.weight')}</p>
+                          <p className="font-medium">{selectedStudent.weight} {t('students.kg')}</p>
+                        </div>
+                      )}
                     </div>
-                    {(() => {
-                      const activePackages = selectedStudent.packages.filter((pkg) => pkg.status === 'active' && pkg.remainingSessions > 0);
-                      console.log('Active packages with remaining sessions:', activePackages);
-                      console.log('All packages:', selectedStudent.packages);
-                      return activePackages.length > 0;
-                    })() && (
-                      <div className="flex flex-col sm:flex-row gap-2">
-                        <Button
-                          onClick={() => setBookFutureDialog(true)}
-                          size="sm"
-                          variant="default"
-                          className="w-full sm:w-auto"
-                        >
-                          <span className="text-xs md:text-sm">{t('students.book_future')}</span>
-                        </Button>
-                        <Button
-                          onClick={() => setAddSessionDialog(true)}
-                          size="sm"
-                          variant="outline"
-                          className="w-full sm:w-auto"
-                        >
-                          <span className="text-xs md:text-sm">{t('students.record_past')}</span>
-                        </Button>
-                      </div>
-                    )}
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Basic Info */}
-                    {(selectedStudent.dateOfBirth || selectedStudent.gender || selectedStudent.height || selectedStudent.weight) && (
-                      <div className="grid grid-cols-2 gap-4 pb-4 border-b">
-                        {selectedStudent.dateOfBirth && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">{t('students.age')}</p>
-                            <p className="font-medium">{new Date().getFullYear() - new Date(selectedStudent.dateOfBirth).getFullYear()} {t('students.years')}</p>
-                          </div>
-                        )}
-                        {selectedStudent.gender && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">{t('students.gender')}</p>
-                            <p className="font-medium capitalize">{selectedStudent.gender}</p>
-                          </div>
-                        )}
-                        {selectedStudent.height && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">{t('students.height')}</p>
-                            <p className="font-medium">{selectedStudent.height} {t('students.cm')}</p>
-                          </div>
-                        )}
-                        {selectedStudent.weight && (
-                          <div>
-                            <p className="text-xs text-gray-500 mb-1">{t('students.weight')}</p>
-                            <p className="font-medium">{selectedStudent.weight} {t('students.kg')}</p>
-                          </div>
-                        )}
-                      </div>
-                    )}
+                  )}
 
-                    {/* Contact Info */}
-                    <div className="space-y-2">
-                      <p className="text-sm">
-                        <span className="font-medium text-gray-500">{t('students.email')}:</span>{' '}
-                        <span className="text-gray-900">{selectedStudent.userId.email}</span>
-                      </p>
-                      {selectedStudent.userId.phone && (
+                  {/* Contact Info */}
+                  <div className="space-y-2">
+                    <p className="text-sm">
+                      <span className="font-medium text-gray-500">{t('students.email')}:</span>{' '}
+                      <span className="text-gray-900">{selectedStudent.userId.email}</span>
+                    </p>
+                    {selectedStudent.userId.phone && (
+                      <a
+                        href={`https://line.me/ti/p/~${selectedStudent.userId.phone.replace(/[^0-9]/g, '')}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline transition-colors text-sm"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
+                        </svg>
+                        {selectedStudent.userId.phone}
+                      </a>
+                    )}
+                    {(selectedStudent.emergencyContactName && selectedStudent.emergencyContactPhone) && (
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium text-gray-500 whitespace-nowrap">{t('students.emergencyContact')}:</span>
+                        <span className="text-gray-900">{selectedStudent.emergencyContactName}</span>
+                        <span className="text-gray-400">-</span>
                         <a
-                          href={`https://line.me/ti/p/~${selectedStudent.userId.phone.replace(/[^0-9]/g, '')}`}
+                          href={`https://line.me/ti/p/~${selectedStudent.emergencyContactPhone.replace(/[^0-9]/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline transition-colors text-sm"
+                          className="flex items-center gap-1 text-green-600 hover:text-green-700 hover:underline transition-colors"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
                           </svg>
-                          {selectedStudent.userId.phone}
+                          {selectedStudent.emergencyContactPhone}
                         </a>
-                      )}
-                      {(selectedStudent.emergencyContactName && selectedStudent.emergencyContactPhone) && (
-                        <div className="flex items-center gap-2 text-sm">
-                          <span className="font-medium text-gray-500 whitespace-nowrap">{t('students.emergencyContact')}:</span>
-                          <span className="text-gray-900">{selectedStudent.emergencyContactName}</span>
-                          <span className="text-gray-400">-</span>
-                          <a
-                            href={`https://line.me/ti/p/~${selectedStudent.emergencyContactPhone.replace(/[^0-9]/g, '')}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-1 text-green-600 hover:text-green-700 hover:underline transition-colors"
-                          >
-                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                              <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
-                            </svg>
-                            {selectedStudent.emergencyContactPhone}
-                          </a>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Medical Notes */}
-                    {(selectedStudent.healthNotes || selectedStudent.medicalNotes) && (
-                      <div className="p-3 bg-red-50 border border-red-200 rounded">
-                        <p className="text-xs font-medium text-red-600 mb-1">{t('students.medicalConditions')}</p>
-                        <p className="text-sm text-red-700">{selectedStudent.healthNotes || selectedStudent.medicalNotes}</p>
                       </div>
                     )}
-
-                    <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-gray-800">
-                          {selectedStudent.totalSessions}
-                        </p>
-                        <p className="text-xs text-gray-500">{t('students.totalSessions')}</p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-green-600">
-                          {selectedStudent.completedSessions}
-                        </p>
-                        <p className="text-xs text-gray-500">{t('students.completed')}</p>
-                      </div>
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
 
-              {/* Packages */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('students.packages')} ({selectedStudent.packages.length})</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {selectedStudent.packages.length === 0 ? (
-                    <p className="text-gray-500">{t('students.noPackages')}</p>
-                  ) : (
-                    <div className="space-y-3">
-                      {selectedStudent.packages.map((pkg) => (
-                        <div key={pkg._id} className="border rounded-lg p-3">
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <p className="font-medium">{pkg.name}</p>
-                              <div className="flex items-center gap-2 mt-1">
-                                <span
-                                  className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                    pkg.type === 'private'
-                                      ? 'bg-blue-100 text-blue-800'
-                                      : pkg.type === 'duo'
-                                      ? 'bg-green-100 text-green-800'
-                                      : 'bg-purple-100 text-purple-800'
+                  {/* Medical Notes */}
+                  {(selectedStudent.healthNotes || selectedStudent.medicalNotes) && (
+                    <div className="p-3 bg-red-50 border border-red-200 rounded">
+                      <p className="text-xs font-medium text-red-600 mb-1">{t('students.medicalConditions')}</p>
+                      <p className="text-sm text-red-700">{selectedStudent.healthNotes || selectedStudent.medicalNotes}</p>
+                    </div>
+                  )}
+                </TabsContent>
+
+                {/* Packages Tab */}
+                <TabsContent value="packages" className="space-y-6">
+                  {/* Packages List */}
+                  <div>
+                    <h4 className="font-semibold text-gray-900 mb-3">{t('students.packages')} ({selectedStudent.packages.length})</h4>
+                    {selectedStudent.packages.length === 0 ? (
+                      <p className="text-gray-600">{t('students.noPackages')}</p>
+                    ) : (
+                      <div className="space-y-3 max-h-[240px] overflow-y-auto scrollbar-hide">
+                        {selectedStudent.packages.map((pkg) => {
+                          const isSelected = selectedPackageId === pkg._id;
+                          return (
+                            <div
+                              key={pkg._id}
+                              onClick={() => setSelectedPackageId(isSelected ? null : pkg._id)}
+                              className={`border rounded-xl p-3 cursor-pointer transition-all ${
+                                isSelected
+                                  ? 'border-orange-400 bg-gradient-to-br from-orange-400/20 to-pink-400/20 backdrop-blur-md shadow-lg'
+                                  : 'border-white/60 bg-white/40 backdrop-blur-sm hover:border-orange-300 hover:bg-white/50'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <div>
+                                  <p className="font-semibold text-gray-900">{pkg.name}</p>
+                                  <div className="flex items-center gap-2 mt-1">
+                                    <span
+                                      className={`inline-block px-2 py-0.5 rounded-lg text-xs font-medium backdrop-blur-sm ${
+                                        pkg.type === 'private'
+                                          ? 'bg-blue-100/80 text-blue-800'
+                                          : pkg.type === 'duo'
+                                          ? 'bg-green-100/80 text-green-800'
+                                          : 'bg-purple-100/80 text-purple-800'
+                                      }`}
+                                    >
+                                      {pkg.type.charAt(0).toUpperCase() + pkg.type.slice(1)}
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="text-right">
+                                  <p className="text-lg font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                                    {pkg.remainingSessions}/{pkg.totalSessions}
+                                  </p>
+                                  <p className="text-xs text-gray-600">{t('students.remaining')}</p>
+                                  <span
+                                    className={`inline-block mt-1 px-2 py-1 rounded-lg text-xs backdrop-blur-sm ${
+                                      pkg.status === 'active'
+                                        ? 'bg-green-100/80 text-green-800'
+                                        : pkg.status === 'used'
+                                        ? 'bg-gray-100/80 text-gray-800'
+                                        : pkg.status === 'expired'
+                                        ? 'bg-red-100/80 text-red-800'
+                                        : 'bg-gray-100/80 text-gray-800'
+                                    }`}
+                                  >
+                                    {pkg.status}
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Sessions for Selected Package */}
+                  {selectedPackageId && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">
+                        {t('students.sessionsForPackage')} ({studentSessions.filter((s: any) => s.packageId?._id === selectedPackageId).length})
+                      </h4>
+                      {sessionsLoading ? (
+                        <p className="text-gray-600 text-center py-8">{t('students.loadingSessions')}</p>
+                      ) : (
+                        <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-hide">
+                          {studentSessions
+                            .filter((s: any) => s.packageId?._id === selectedPackageId)
+                            .map((session) => {
+                              const isUpcoming = new Date(session.startTime) > new Date();
+                              let statusClass = 'bg-gray-100/80 text-gray-800';
+
+                              if (session.status === 'completed') {
+                                statusClass = 'bg-green-100/80 text-green-800';
+                              } else if (session.status === 'cancelled') {
+                                statusClass = 'bg-red-100/80 text-red-800';
+                              } else if (session.status === 'confirmed' && isUpcoming) {
+                                statusClass = 'bg-blue-100/80 text-blue-800';
+                              } else if (session.status === 'pending') {
+                                statusClass = 'bg-yellow-100/80 text-yellow-800';
+                              }
+
+                              return (
+                                <div
+                                  key={session._id}
+                                  className={`border rounded-xl p-3 backdrop-blur-sm ${
+                                    isUpcoming ? 'bg-blue-50/50 border-blue-300' : 'bg-white/40 border-white/60'
                                   }`}
                                 >
-                                  {pkg.type.charAt(0).toUpperCase() + pkg.type.slice(1)}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="text-right">
-                              <p className="text-lg font-bold">
-                                {pkg.remainingSessions}/{pkg.totalSessions}
-                              </p>
-                              <p className="text-xs text-gray-500">{t('students.remaining')}</p>
-                              <span
-                                className={`inline-block mt-1 px-2 py-1 rounded text-xs ${
-                                  pkg.status === 'active'
-                                    ? 'bg-green-100 text-green-800'
-                                    : pkg.status === 'used'
-                                    ? 'bg-gray-100 text-gray-800'
-                                    : pkg.status === 'expired'
-                                    ? 'bg-red-100 text-red-800'
-                                    : 'bg-gray-100 text-gray-800'
-                                }`}
-                              >
-                                {pkg.status}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-
-              {/* Session History */}
-              <Card>
-                <CardHeader>
-                  <CardTitle>{t('students.sessionHistory')} ({studentSessions.length})</CardTitle>
-                  <CardDescription>{t('students.sessionHistoryDesc')}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  {sessionsLoading ? (
-                    <p className="text-gray-500 text-center py-8">{t('students.loadingSessions')}</p>
-                  ) : studentSessions.length === 0 ? (
-                    <p className="text-gray-500 text-center py-8">{t('students.noSessions')}</p>
-                  ) : (
-                    <div className="space-y-3 max-h-[500px] overflow-y-auto">
-                      {studentSessions.map((session) => {
-                        const isUpcoming = new Date(session.startTime) > new Date();
-                        let statusClass = 'bg-gray-100 text-gray-800';
-
-                        if (session.status === 'completed') {
-                          statusClass = 'bg-green-100 text-green-800';
-                        } else if (session.status === 'cancelled') {
-                          statusClass = 'bg-red-100 text-red-800';
-                        } else if (session.status === 'confirmed' && isUpcoming) {
-                          statusClass = 'bg-blue-100 text-blue-800';
-                        } else if (session.status === 'pending') {
-                          statusClass = 'bg-yellow-100 text-yellow-800';
-                        }
-
-                        return (
-                          <div
-                            key={session._id}
-                            className={`border rounded-lg p-3 ${
-                              isUpcoming ? 'bg-blue-50 border-blue-200' : ''
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div>
-                                <p className="font-medium">
-                                  {formatStudioTime(session.startTime, 'PPP')}
-                                </p>
-                                <p className="text-sm text-gray-600">
-                                  {formatStudioTime(session.startTime, 'p')} -{' '}
-                                  {formatStudioTime(session.endTime, 'p')}
-                                </p>
-                                <div className="flex gap-2 mt-2">
-                                  <span className="text-xs px-2 py-1 bg-purple-100 text-purple-700 rounded capitalize">
-                                    {session.type}
-                                  </span>
-                                  {session.packageId && (
-                                    <span className="text-xs px-2 py-1 bg-blue-100 text-blue-700 rounded">
-                                      {session.packageId.name}
+                                  <div className="flex items-center justify-between">
+                                    <div>
+                                      <p className="font-semibold text-gray-900">
+                                        {formatStudioTime(session.startTime, 'PPP')}
+                                      </p>
+                                      <p className="text-sm text-gray-600">
+                                        {formatStudioTime(session.startTime, 'p')} -{' '}
+                                        {formatStudioTime(session.endTime, 'p')}
+                                      </p>
+                                      <div className="flex gap-2 mt-2">
+                                        <span className="text-xs px-2 py-1 bg-purple-100/80 text-purple-700 rounded-lg capitalize backdrop-blur-sm">
+                                          {session.type}
+                                        </span>
+                                      </div>
+                                      {session.notes && (
+                                        <p className="text-sm text-gray-600 mt-2 italic">
+                                          "{session.notes}"
+                                        </p>
+                                      )}
+                                    </div>
+                                    <span className={`px-3 py-1 rounded-lg text-xs font-medium backdrop-blur-sm ${statusClass}`}>
+                                      {session.status}
                                     </span>
-                                  )}
+                                  </div>
                                 </div>
-                                {session.notes && (
-                                  <p className="text-sm text-gray-500 mt-2 italic">
-                                    "{session.notes}"
-                                  </p>
-                                )}
-                              </div>
-                              <span className={`px-3 py-1 rounded text-xs font-medium ${statusClass}`}>
-                                {session.status}
-                              </span>
-                            </div>
-                          </div>
-                        );
-                      })}
+                              );
+                            })}
+                          {studentSessions.filter((s: any) => s.packageId?._id === selectedPackageId).length === 0 && (
+                            <p className="text-gray-600 text-center py-8">{t('students.noSessionsForPackage')}</p>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </TabsContent>
+              </Tabs>
+              </div>
             </div>
           ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-gray-500">{t('students.selectStudent')}</p>
-              </CardContent>
-            </Card>
+            <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 p-12 text-center">
+              <p className="text-gray-600">{t('students.selectStudent')}</p>
+            </div>
           )}
         </div>
       </div>
 
       {/* Add Session Dialog */}
       <Dialog open={addSessionDialog} onOpenChange={setAddSessionDialog}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>{t('students.recordPastSession')} {selectedStudent?.userId.name}</DialogTitle>
-            <DialogDescription>
-              {t('students.recordPastSessionDesc')}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 !bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl">
+          <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm p-4 md:p-6 rounded-t-lg border-b border-white/20">
+            <DialogHeader>
+              <DialogTitle className="text-xl text-white font-bold">{t('students.recordPastSession')} {selectedStudent?.userId.name}</DialogTitle>
+              <DialogDescription className="text-orange-100">
+                {t('students.recordPastSessionDesc')}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
           <form onSubmit={handleAddSession}>
-            <div className="space-y-4">
+            <div className="p-4 md:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('students.package')} *
                 </label>
                 <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   value={sessionForm.packageId}
                   onChange={(e) =>
                     setSessionForm({ ...sessionForm, packageId: e.target.value })
@@ -808,7 +833,7 @@ export default function TeacherStudentsPage() {
                 </label>
                 <input
                   type="date"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   min={(() => {
                     const selectedPkg: any = selectedStudent?.packages.find(p => p._id === sessionForm.packageId);
                     return selectedPkg?.validFrom ? new Date(selectedPkg.validFrom).toISOString().split('T')[0] : undefined;
@@ -844,7 +869,7 @@ export default function TeacherStudentsPage() {
                   {loadingAvailability && <span className="text-xs text-gray-500 ml-2">{t('students.loadingAvailability')}</span>}
                 </label>
                 <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   value={sessionForm.sessionTime}
                   onChange={(e) =>
                     setSessionForm({ ...sessionForm, sessionTime: e.target.value })
@@ -904,7 +929,7 @@ export default function TeacherStudentsPage() {
                   {t('students.notes')}
                 </label>
                 <textarea
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   rows={3}
                   value={sessionForm.notes}
                   onChange={(e) =>
@@ -915,7 +940,7 @@ export default function TeacherStudentsPage() {
               </div>
             </div>
 
-            <DialogFooter className="mt-6">
+            <DialogFooter className="mt-6 pb-2">
               <Button
                 type="button"
                 variant="outline"
@@ -928,10 +953,11 @@ export default function TeacherStudentsPage() {
                     notes: ''
                   });
                 }}
+                className="border-gray-300 hover:bg-white/50"
               >
                 {t('students.cancel')}
               </Button>
-              <Button type="submit">{t('students.addSession')}</Button>
+              <Button type="submit" className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white">{t('students.addSession')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>
@@ -939,21 +965,23 @@ export default function TeacherStudentsPage() {
 
       {/* Book Future Session Dialog */}
       <Dialog open={bookFutureDialog} onOpenChange={setBookFutureDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>{t('students.bookFutureSession')} {selectedStudent?.userId.name}</DialogTitle>
-            <DialogDescription>
-              {t('students.bookFutureSessionDesc')}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 !bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl">
+          <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm p-4 md:p-6 rounded-t-lg border-b border-white/20">
+            <DialogHeader>
+              <DialogTitle className="text-xl text-white font-bold">{t('students.bookFutureSession')} {selectedStudent?.userId.name}</DialogTitle>
+              <DialogDescription className="text-orange-100">
+                {t('students.bookFutureSessionDesc')}
+              </DialogDescription>
+            </DialogHeader>
+          </div>
           <form onSubmit={handleBookFutureSession}>
-            <div className="space-y-4">
+            <div className="p-4 md:p-6 space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   {t('students.package')} *
                 </label>
                 <select
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   value={futureBookingForm.packageId}
                   onChange={(e) => {
                     setFutureBookingForm({ ...futureBookingForm, packageId: e.target.value });
@@ -980,7 +1008,7 @@ export default function TeacherStudentsPage() {
                 </label>
                 <input
                   type="date"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   min={(() => {
                     const selectedPkg: any = selectedStudent?.packages.find(p => p._id === futureBookingForm.packageId);
                     return selectedPkg?.validFrom ? new Date(selectedPkg.validFrom).toISOString().split('T')[0] : undefined;
@@ -1040,14 +1068,14 @@ export default function TeacherStudentsPage() {
                         key={time}
                         type="button"
                         onClick={() => setFutureBookingForm({ ...futureBookingForm, selectedTime: time })}
-                        className={`px-3 py-2 border rounded text-sm font-medium transition relative group ${
+                        className={`px-3 py-2 border rounded-lg text-sm font-medium transition relative group backdrop-blur-sm ${
                           isSelected
-                            ? 'bg-primary-600 text-white border-primary-600'
+                            ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white border-orange-400'
                             : isBlocked
-                            ? 'bg-red-50 text-red-700 border-red-300 hover:bg-red-100'
+                            ? 'bg-red-50/80 text-red-700 border-red-300 hover:bg-red-100/80'
                             : isPartial
-                            ? 'bg-yellow-50 text-yellow-700 border-yellow-300 hover:bg-yellow-100'
-                            : 'bg-green-50 text-green-700 border-green-300 hover:bg-green-100'
+                            ? 'bg-yellow-50/80 text-yellow-700 border-yellow-300 hover:bg-yellow-100/80'
+                            : 'bg-green-50/80 text-green-700 border-green-300 hover:bg-green-100/80'
                         }`}
                       >
                         {displayTime}
@@ -1146,7 +1174,7 @@ export default function TeacherStudentsPage() {
                   {t('students.notes')}
                 </label>
                 <textarea
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   rows={3}
                   value={futureBookingForm.notes}
                   onChange={(e) =>
@@ -1157,7 +1185,7 @@ export default function TeacherStudentsPage() {
               </div>
             </div>
 
-            <DialogFooter className="mt-6">
+            <DialogFooter className="mt-6 pb-2">
               <Button
                 type="button"
                 variant="outline"
@@ -1170,10 +1198,11 @@ export default function TeacherStudentsPage() {
                     notes: '',
                   });
                 }}
+                className="border-gray-300 hover:bg-white/50"
               >
                 {t('students.cancel')}
               </Button>
-              <Button type="submit">{t('students.bookSession')}</Button>
+              <Button type="submit" className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white">{t('students.bookSession')}</Button>
             </DialogFooter>
           </form>
         </DialogContent>

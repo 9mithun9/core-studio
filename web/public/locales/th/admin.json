@@ -233,7 +233,7 @@
   },
   "teachers": {
     "title": "การจัดการครู",
-    "createTeacher": "+ สร้างครู",
+    "createTeacher": "สร้างครู",
     "sessionsOverTime": "คลาสของครูเมื่อเวลาผ่านไป",
     "completedByMonth": "คลาสที่เสร็จแล้วโดยครูต่อเดือน",
     "last6Months": "6 เดือนที่ผ่านมา",

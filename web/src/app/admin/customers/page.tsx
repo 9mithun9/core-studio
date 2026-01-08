@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -205,27 +206,34 @@ export default function AdminCustomersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-green-50 pb-12">
-      <div className="container mx-auto px-4 py-8">
-        {/* Gradient Hero Header */}
-        <div className="relative bg-gradient-to-r from-green-600 to-green-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
-          <div className="relative z-10">
-            <h1 className="text-4xl font-bold mb-2">{t('customers.title')}</h1>
-            <p className="text-green-100 text-lg">View and manage customer profiles and analytics</p>
-          </div>
-        </div>
-
+    <div className="pb-12">
+      <div>
       {/* Customers List */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
         {/* Left: Customer List */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base md:text-lg">{t('customers.allCustomers')} ({customers.length})</CardTitle>
-            <CardDescription className="text-xs md:text-sm">{t('customers.clickToView')}</CardDescription>
-          </CardHeader>
-          <CardContent>
+        <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+          <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xl font-bold text-white">{t('customers.allCustomers')} ({customers.length})</h3>
+                <p className="text-orange-100 text-sm">{t('customers.clickToView')}</p>
+              </div>
+              <Button
+                onClick={() => {
+                  fetchCustomers();
+                }}
+                size="sm"
+                variant="outline"
+                className="flex items-center gap-2 bg-white/20 border-white/30 text-white hover:bg-white/30 hover:text-white"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span className="text-xs">Refresh</span>
+              </Button>
+            </div>
+          </div>
+          <div className="p-6">
             {/* Search and Filter */}
             <div className="mb-3 md:mb-4 space-y-3">
               <div className="flex flex-col sm:flex-row gap-2">
@@ -234,7 +242,7 @@ export default function AdminCustomersPage() {
                   placeholder={t('customers.searchPlaceholder')}
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-600"
+                  className="flex-1 px-3 md:px-4 py-1.5 md:py-2 text-xs md:text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                 />
 
                 <Select value={filterType} onValueChange={setFilterType}>
@@ -258,7 +266,7 @@ export default function AdminCustomersPage() {
               )}
             </div>
 
-            <div className="space-y-2 md:space-y-3 max-h-[400px] md:max-h-[600px] overflow-y-auto">
+            <div className="space-y-2 md:space-y-3 max-h-[400px] md:max-h-[600px] overflow-y-auto scrollbar-hide">
               {filteredCustomers.length === 0 ? (
                 <p className="text-xs md:text-sm text-gray-500 text-center py-6 md:py-8">
                   {searchQuery || filterType !== 'all'
@@ -274,10 +282,10 @@ export default function AdminCustomersPage() {
                     <div
                       key={customer._id}
                       onClick={() => setSelectedCustomer(customer)}
-                      className={`border rounded-lg p-3 md:p-4 cursor-pointer transition ${
+                      className={`border rounded-xl p-3 md:p-4 cursor-pointer transition backdrop-blur-sm ${
                         selectedCustomer?._id === customer._id
-                          ? 'border-primary-600 bg-primary-50'
-                          : 'hover:border-primary-300 hover:bg-gray-50'
+                          ? 'border-orange-400 bg-orange-50/50 shadow-md'
+                          : 'border-white/60 bg-white/40 hover:border-orange-300 hover:bg-white/60 hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-center justify-between gap-3">
@@ -314,26 +322,26 @@ export default function AdminCustomersPage() {
                 })
               )}
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
 
         {/* Right: Customer Details */}
         <div>
           {selectedCustomer ? (
-            <Card>
+            <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
               {/* Header with Profile Photo and Quick Stats */}
-              <CardHeader>
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
                 <div className="flex flex-col sm:flex-row items-start gap-4 md:gap-6 mb-3 md:mb-4">
                   <div className="flex-1 w-full">
-                    <CardTitle className="text-lg md:text-xl lg:text-2xl mb-1 md:mb-2">{selectedCustomer.userId.name}</CardTitle>
+                    <h3 className="text-lg md:text-xl lg:text-2xl font-bold text-white mb-1 md:mb-2">{selectedCustomer.userId.name}</h3>
                     <div className="space-y-0.5 md:space-y-1 mt-1 md:mt-2">
-                      <p className="text-xs md:text-sm text-muted-foreground break-all">{selectedCustomer.userId.email}</p>
+                      <p className="text-xs md:text-sm text-orange-100 break-all">{selectedCustomer.userId.email}</p>
                       {selectedCustomer.userId.phone && (
                         <a
                           href={`https://line.me/ti/p/~${selectedCustomer.userId.phone.replace(/[^0-9]/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 text-green-600 hover:text-green-700 hover:underline transition-colors text-xs md:text-sm"
+                          className="flex items-center gap-2 text-white hover:text-orange-100 hover:underline transition-colors text-xs md:text-sm"
                         >
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
@@ -342,7 +350,7 @@ export default function AdminCustomersPage() {
                         </a>
                       )}
                       {selectedCustomer.profession && (
-                        <p className="text-xs md:text-sm text-gray-600">{t('customers.profile.profession')} {selectedCustomer.profession}</p>
+                        <p className="text-xs md:text-sm text-orange-100">{t('customers.profile.profession')} {selectedCustomer.profession}</p>
                       )}
                     </div>
                   </div>
@@ -359,52 +367,73 @@ export default function AdminCustomersPage() {
                               })()
                         }
                         alt="Profile"
-                        className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 md:border-4 border-primary-100 shadow-md"
+                        className="w-20 h-20 md:w-24 md:h-24 rounded-full object-cover border-2 md:border-4 border-white/40 ring-2 ring-white/20"
                       />
                     ) : (
-                      <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-gray-200 flex items-center justify-center text-2xl md:text-3xl font-bold text-gray-500 border-2 md:border-4 border-gray-300">
+                      <div className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-white/30 backdrop-blur-sm border-2 md:border-4 border-white/40 flex items-center justify-center text-2xl md:text-3xl font-bold text-white shadow-lg">
                         {selectedCustomer.userId.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                   </div>
                 </div>
+              </div>
 
-                {/* Quick Stats Grid */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 pt-3 md:pt-4 border-t">
-                  <div className="text-center">
-                    <p className="text-xl md:text-2xl font-bold text-gray-800">
+              {/* Quick Stats Grid */}
+              <div className="p-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-6">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
+                    <p className="text-xl md:text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                       {getTotalSessionsPurchased(selectedCustomer)}
                     </p>
-                    <p className="text-xs text-gray-500">{t('customers.totalSessions')}</p>
+                    <p className="text-xs text-gray-600">{t('customers.totalSessions')}</p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
                     <p className="text-xl md:text-2xl font-bold text-green-600">
                       {selectedCustomer.completedSessions}
                     </p>
-                    <p className="text-xs text-gray-500">{t('customers.completed')}</p>
+                    <p className="text-xs text-gray-600">{t('customers.completed')}</p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
                     <p className="text-xl md:text-2xl font-bold text-blue-600">
                       {getRemainingSessionsTotal(selectedCustomer)}
                     </p>
-                    <p className="text-xs text-gray-500">{t('customers.remaining')}</p>
+                    <p className="text-xs text-gray-600">{t('customers.remaining')}</p>
                   </div>
-                  <div className="text-center">
+                  <div className="text-center p-2 md:p-3 bg-white/40 backdrop-blur-sm rounded-xl border border-white/60">
                     <p className="text-xl md:text-2xl font-bold text-red-600">
                       {selectedCustomer.sessions.filter((s: any) => s.status === 'cancelled').length}
                     </p>
-                    <p className="text-xs text-gray-500">{t('customers.cancellations')}</p>
+                    <p className="text-xs text-gray-600">{t('customers.cancellations')}</p>
                   </div>
                 </div>
-              </CardHeader>
 
-              <CardContent>
+                <div>
                 <Tabs defaultValue="session-status" className="w-full">
-                  <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
-                    <TabsTrigger value="session-status" className="text-xs md:text-sm">{t('customers.tabs.sessionStatus')}</TabsTrigger>
-                    <TabsTrigger value="packages" className="text-xs md:text-sm">{t('customers.tabs.packages')}</TabsTrigger>
-                    <TabsTrigger value="profile" className="text-xs md:text-sm">{t('customers.tabs.profile')}</TabsTrigger>
-                    <TabsTrigger value="analytics" className="text-xs md:text-sm">{t('customers.tabs.analytics')}</TabsTrigger>
+                  <TabsList className="flex w-full gap-2 bg-transparent h-auto p-0">
+                    <TabsTrigger
+                      value="session-status"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('customers.tabs.sessionStatus')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="packages"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('customers.tabs.packages')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="profile"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('customers.tabs.profile')}
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="analytics"
+                      className="flex-1 text-xs md:text-sm rounded-none data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-500 data-[state=active]:text-white data-[state=inactive]:bg-white/60 data-[state=inactive]:backdrop-blur-sm data-[state=inactive]:text-gray-700"
+                    >
+                      {t('customers.tabs.analytics')}
+                    </TabsTrigger>
                   </TabsList>
 
                   {/* Session Status Tab */}
@@ -529,7 +558,7 @@ export default function AdminCustomersPage() {
                       {selectedCustomer.packages.length === 0 ? (
                         <p className="text-gray-500 text-center py-4">{t('customers.packagesTab.noPackages')}</p>
                       ) : (
-                        <div className="space-y-2 max-h-[300px] overflow-y-auto">
+                        <div className="space-y-2 max-h-[300px] overflow-y-auto scrollbar-hide">
                           {selectedCustomer.packages.map((pkg) => {
                             const completedForPackage = getCompletedSessionsForPackage(selectedCustomer, pkg._id);
                             const isSelected = selectedPackageId === pkg._id;
@@ -540,8 +569,8 @@ export default function AdminCustomersPage() {
                                 onClick={() => setSelectedPackageId(isSelected ? null : pkg._id)}
                                 className={`border rounded-lg p-3 cursor-pointer transition-all ${
                                   isSelected
-                                    ? 'border-blue-500 bg-blue-50'
-                                    : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                                    ? 'border-orange-400 bg-gradient-to-br from-orange-400/20 to-pink-400/20 backdrop-blur-md shadow-lg'
+                                    : 'border-gray-200 hover:border-orange-300 hover:bg-gray-50'
                                 }`}
                               >
                                 <div className="flex items-center justify-between">
@@ -654,7 +683,7 @@ export default function AdminCustomersPage() {
                                 }
                               </p>
                             ) : (
-                              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                              <div className="space-y-3 max-h-[400px] overflow-y-auto scrollbar-hide">
                                 {filteredSessions.map((session) => {
                                   const isUpcoming = new Date(session.startTime) > new Date();
                                   const isPast = new Date(session.endTime) < new Date();
@@ -730,21 +759,21 @@ export default function AdminCustomersPage() {
                   <TabsContent value="profile" className="space-y-4">
                     <div className="space-y-3">
                       {selectedCustomer.dateOfBirth && (
-                        <div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-200">
                           <p className="text-sm font-medium text-gray-600">{t('customers.profile.dateOfBirth')}</p>
-                          <p className="text-sm">{formatStudioTime(selectedCustomer.dateOfBirth, 'PPP')}</p>
+                          <p className="text-sm text-gray-900">{formatStudioTime(selectedCustomer.dateOfBirth, 'PPP')}</p>
                         </div>
                       )}
                       {selectedCustomer.height && (
-                        <div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-200">
                           <p className="text-sm font-medium text-gray-600">{t('customers.profile.height')}</p>
-                          <p className="text-sm">{selectedCustomer.height} {t('customers.profile.cm')}</p>
+                          <p className="text-sm text-gray-900">{selectedCustomer.height} {t('customers.profile.cm')}</p>
                         </div>
                       )}
                       {selectedCustomer.weight && (
-                        <div>
+                        <div className="flex justify-between items-center py-2 border-b border-gray-200">
                           <p className="text-sm font-medium text-gray-600">{t('customers.profile.weight')}</p>
-                          <p className="text-sm">{selectedCustomer.weight} {t('customers.profile.kg')}</p>
+                          <p className="text-sm text-gray-900">{selectedCustomer.weight} {t('customers.profile.kg')}</p>
                         </div>
                       )}
                       {selectedCustomer.medicalNotes && (
@@ -800,43 +829,37 @@ export default function AdminCustomersPage() {
                     ) : (
                       <div className="space-y-6">
                         {/* Spending Metrics */}
-                        <div>
-                          <h3 className="text-lg font-semibold mb-3">{t('customers.analytics.spendingMetrics')}</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="border rounded-lg p-4 text-center">
-                              <p className="text-3xl font-bold text-primary-600">
-                                {selectedCustomer.analytics.totalPackagesPurchased}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.packagesPurchased')}</p>
-                            </div>
-                            <div className="border rounded-lg p-4 text-center">
-                              <p className="text-3xl font-bold text-green-600">
-                                {selectedCustomer.analytics.totalMoneySpent.toLocaleString()}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.bahtSpent')}</p>
-                            </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="border rounded-lg p-4 text-center">
+                            <p className="text-3xl font-bold text-primary-600">
+                              {selectedCustomer.analytics.totalPackagesPurchased}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.packagesPurchased')}</p>
+                          </div>
+                          <div className="border rounded-lg p-4 text-center">
+                            <p className="text-3xl font-bold text-green-600">
+                              {selectedCustomer.analytics.totalMoneySpent.toLocaleString()}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.bahtSpent')}</p>
                           </div>
                         </div>
 
                         {/* Activity Metrics */}
-                        <div>
-                          <h3 className="text-lg font-semibold mb-3">{t('customers.analytics.activityMetrics')}</h3>
-                          <div className="grid grid-cols-2 gap-4">
-                            <div className="border rounded-lg p-4 text-center">
-                              <p className="text-3xl font-bold text-blue-600">
-                                {selectedCustomer.analytics.avgDaysBetweenSessions.toFixed(1)}
-                              </p>
-                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.avgDaysBetweenSessions')}</p>
-                            </div>
-                            {selectedCustomer.analytics.totalPackagesPurchased > 1 && (
-                              <div className="border rounded-lg p-4 text-center">
-                                <p className="text-3xl font-bold text-purple-600">
-                                  {selectedCustomer.analytics.avgDaysBetweenPackages.toFixed(1)}
-                                </p>
-                                <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.avgDaysBetweenPackages')}</p>
-                              </div>
-                            )}
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="border rounded-lg p-4 text-center">
+                            <p className="text-3xl font-bold text-blue-600">
+                              {selectedCustomer.analytics.avgDaysBetweenSessions.toFixed(1)}
+                            </p>
+                            <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.avgDaysBetweenSessions')}</p>
                           </div>
+                          {selectedCustomer.analytics.totalPackagesPurchased > 1 && (
+                            <div className="border rounded-lg p-4 text-center">
+                              <p className="text-3xl font-bold text-purple-600">
+                                {selectedCustomer.analytics.avgDaysBetweenPackages.toFixed(1)}
+                              </p>
+                              <p className="text-sm text-gray-600 mt-1">{t('customers.analytics.avgDaysBetweenPackages')}</p>
+                            </div>
+                          )}
                         </div>
 
                         {/* Popular Package Types */}
@@ -1027,14 +1050,13 @@ export default function AdminCustomersPage() {
                     )}
                   </TabsContent>
                 </Tabs>
-              </CardContent>
-            </Card>
+                </div>
+              </div>
+            </div>
           ) : (
-            <Card>
-              <CardContent className="py-12 text-center">
-                <p className="text-gray-500">{t('customers.hoverToView')}</p>
-              </CardContent>
-            </Card>
+            <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 p-12 text-center">
+              <p className="text-gray-600">{t('customers.hoverToView')}</p>
+            </div>
           )}
         </div>
       </div>

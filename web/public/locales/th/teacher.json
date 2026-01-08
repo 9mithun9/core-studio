@@ -23,7 +23,9 @@
   "stats": {
     "totalCompleted": "เสร็จสมบูรณ์ทั้งหมด",
     "thisWeek": "สัปดาห์นี้",
-    "thisMonth": "เดือนนี้"
+    "thisMonth": "เดือนนี้",
+    "allTime": "ตลอดเวลา",
+    "sessions": "คลาส"
   },
   "nextSession": {
     "title": "คลาสถัดไป",
@@ -189,6 +191,9 @@
     "packages": "แพ็คเกจ",
     "noPackages": "ไม่มีแพ็คเกจ",
     "remaining": "เหลืออยู่",
+    "profile": "ข้อมูลส่วนตัว",
+    "sessionsForPackage": "คลาสสำหรับแพ็คเกจที่เลือก",
+    "noSessionsForPackage": "ไม่มีคลาสสำหรับแพ็คเกจนี้",
     "sessionHistory": "ประวัติคลาส",
     "sessionHistoryDesc": "คลาสทั้งหมดกับนักเรียนคนนี้",
     "loadingSessions": "กำลังโหลดคลาส...",

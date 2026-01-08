@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import '@/lib/i18n';
 
 export default function CustomerLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const { t } = useTranslation(['customer', 'common']);
   const [user, setUser] = useState<any>(null);
   const [customerProfile, setCustomerProfile] = useState<any>(null);
@@ -77,8 +78,6 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             priority
             quality={100}
           />
-          {/* Overlay for better text readability */}
-          <div className="absolute inset-0 bg-white/30"></div>
         </div>
         {/* Falling snowflakes - actual snowflake shapes */}
         <svg className="absolute top-0 left-[5%] w-8 h-8 text-purple-400/70 animate-fall-1" viewBox="0 0 24 24" fill="currentColor">
@@ -209,14 +208,14 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
         <div className="absolute top-1/2 left-1/2 w-36 h-36 bg-pink-200/15 rounded-full blur-3xl"></div>
       </div>
       {/* Floating Header */}
-      <header className="relative" style={{ zIndex: 9 }}>
+      <header className="relative z-50">
         <div className="container mx-auto px-4 pt-6">
           <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 px-4 py-3">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link href="/customer/dashboard" className="flex items-center hover:opacity-90 transition-opacity">
               <Image
-                src="/logo.png"
+                src="/logo-2.png"
                 alt="Core Studio Pilates"
                 width={96}
                 height={96}
@@ -228,21 +227,43 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <nav className="hidden lg:flex items-center gap-2">
               <Link
                 href="/customer/dashboard"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/dashboard'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/customer/packages"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/packages'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 {t('nav.packages')}
               </Link>
               <Link
                 href="/customer/teachers"
-                className="px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/teachers'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
               >
                 {t('nav.teachers')}
+              </Link>
+              <Link
+                href="/customer/contact"
+                className={`px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/contact'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
+              >
+                Contact Us
               </Link>
             </nav>
 
@@ -324,24 +345,47 @@ export default function CustomerLayout({ children }: { children: React.ReactNode
             <nav className="lg:hidden mt-5 pb-4 border-t border-gray-200 pt-5 space-y-2">
               <Link
                 href="/customer/dashboard"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/dashboard'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.dashboard')}
               </Link>
               <Link
                 href="/customer/packages"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/packages'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.packages')}
               </Link>
               <Link
                 href="/customer/teachers"
-                className="block px-4 py-2.5 text-sm font-medium text-gray-700 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-all"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/teachers'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {t('nav.teachers')}
+              </Link>
+              <Link
+                href="/customer/contact"
+                className={`block px-4 py-2.5 text-sm font-medium rounded-lg transition-all ${
+                  pathname === '/customer/contact'
+                    ? 'text-orange-600'
+                    : 'text-gray-700 hover:text-orange-600'
+                }`}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                Contact Us
               </Link>
               <Link
                 href="/customer/profile"

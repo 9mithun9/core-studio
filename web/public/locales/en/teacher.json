@@ -23,7 +23,9 @@
   "stats": {
     "totalCompleted": "Total Completed",
     "thisWeek": "This Week",
-    "thisMonth": "This Month"
+    "thisMonth": "This Month",
+    "allTime": "All Time",
+    "sessions": "Sessions"
   },
   "nextSession": {
     "title": "Next Session",
@@ -189,6 +191,9 @@
     "packages": "Packages",
     "noPackages": "No packages",
     "remaining": "remaining",
+    "profile": "Profile",
+    "sessionsForPackage": "Sessions for Selected Package",
+    "noSessionsForPackage": "No sessions for this package",
     "sessionHistory": "Session History",
     "sessionHistoryDesc": "All sessions with this student",
     "loadingSessions": "Loading sessions...",

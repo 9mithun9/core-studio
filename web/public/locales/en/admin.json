@@ -233,7 +233,7 @@
   },
   "teachers": {
     "title": "Teacher Management",
-    "createTeacher": "+ Create Teacher",
+    "createTeacher": "Create Teacher",
     "sessionsOverTime": "Teacher Sessions Over Time",
     "completedByMonth": "Completed sessions by teacher per month",
     "last6Months": "Last 6 Months",
