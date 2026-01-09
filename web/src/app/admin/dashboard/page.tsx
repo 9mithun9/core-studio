@@ -64,13 +64,13 @@ interface RetentionInsights {
   purchaseTimeDistribution: Array<{ range: string; count: number }>;
 }
 
-// Color palettes for charts
-const AGE_COLORS = ['#3b82f6', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#14b8a6', '#6366f1'];
+// Color palettes for charts - Vibrant colors
+const AGE_COLORS = ['#f59e0b', '#8b5cf6', '#ec4899', '#3b82f6', '#10b981', '#14b8a6', '#f97316'];
 const GENDER_COLORS = {
-  male: '#3b82f6',
-  female: '#ec4899',
-  other: '#8b5cf6',
-  unknown: '#9ca3af',
+  male: '#3b82f6',    // Vibrant blue
+  female: '#ec4899',  // Vibrant pink
+  other: '#8b5cf6',   // Vibrant purple
+  unknown: '#94a3b8', // Slate gray
 };
 
 export default function AdminDashboard() {
@@ -671,27 +671,62 @@ export default function AdminDashboard() {
                 </div>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
                       data={genderDemographic || customerIntel.genderDistribution}
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={(props: any) => props.count > 0 ? `${props.gender}: ${props.count}` : ''}
-                      outerRadius={80}
+                      label={(props: any) => {
+                        if (props.count > 0) {
+                          const percent = ((props.count / (genderDemographic || customerIntel.genderDistribution).reduce((sum: number, item: any) => sum + item.count, 0)) * 100).toFixed(0);
+                          return `${props.gender}: ${percent}%`;
+                        }
+                        return '';
+                      }}
+                      outerRadius={90}
+                      innerRadius={40}
                       fill="#8884d8"
                       dataKey="count"
                       nameKey="gender"
+                      paddingAngle={3}
                     >
                       {(genderDemographic || customerIntel.genderDistribution).map((entry, index) => (
                         <Cell
                           key={`cell-${index}`}
-                          fill={GENDER_COLORS[entry.gender as keyof typeof GENDER_COLORS] || '#9ca3af'}
+                          fill={GENDER_COLORS[entry.gender as keyof typeof GENDER_COLORS] || '#94a3b8'}
+                          stroke="#fff"
+                          strokeWidth={3}
                         />
                       ))}
                     </Pie>
-                    <Tooltip />
+                    <Tooltip
+                      content={({ active, payload }: any) => {
+                        if (active && payload && payload.length) {
+                          const data = payload[0];
+                          const total = (genderDemographic || customerIntel.genderDistribution).reduce((sum: number, item: any) => sum + item.count, 0);
+                          const percent = ((data.value / total) * 100).toFixed(1);
+                          return (
+                            <div className="bg-white/90 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                              <p className="font-semibold text-gray-900 mb-2 text-sm capitalize">{data.name}</p>
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: data.payload.fill }} />
+                                  <span className="text-sm text-gray-700">
+                                    Count: <span className="font-semibold text-gray-900">{data.value}</span>
+                                  </span>
+                                </div>
+                                <div className="text-sm text-gray-700">
+                                  Percentage: <span className="font-semibold text-gray-900">{percent}%</span>
+                                </div>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -1009,36 +1044,82 @@ export default function AdminDashboard() {
             <p className="text-sm md:text-base text-gray-600 mt-1">{t('dashboard.sessionBookingPatterns')}</p>
           </div>
 
-          {/* Peak Usage Heatmap and Summary */}
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr,auto] gap-6 md:gap-8 mb-6 md:mb-8">
-            {/* Peak Usage Heatmap */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-base md:text-lg">{t('dashboard.peakUsageHeatmap')}</CardTitle>
-                <CardDescription className="text-xs md:text-sm">{t('dashboard.sessionsByDayHour')}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <div className="inline-grid gap-1 text-xs" style={{ gridTemplateColumns: 'auto repeat(16, minmax(0, 1fr))' }}>
-                    {/* Header row */}
-                    <div className="p-2"></div>
-                    {Array.from({ length: 16 }, (_, i) => {
-                      const hour = i + 7;
-                      return (
-                        <div key={hour} className="text-center font-semibold text-gray-600 p-2">
+          {/* Peak Usage Analytics Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8 mb-6 md:mb-8">
+            {/* Total Sessions Summary Card - Executive Style */}
+            <div className="relative bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-indigo-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-purple-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <p className="text-sm font-medium opacity-90 mb-3">{t('dashboard.totalSessions')}</p>
+                <p className="text-3xl md:text-4xl font-bold mb-1">
+                  {retentionInsights.peakUsage.reduce((sum, p) => sum + p.sessions, 0).toLocaleString()}
+                </p>
+                <p className="text-xs opacity-75">{t('dashboard.allTimeBookings')}</p>
+              </div>
+            </div>
+
+            {/* Peak Hour Card */}
+            <div className="relative bg-gradient-to-br from-orange-600 via-orange-700 to-amber-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-orange-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-amber-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <p className="text-sm font-medium opacity-90 mb-3">{t('dashboard.peakHour')}</p>
+                <p className="text-3xl md:text-4xl font-bold mb-1">
+                  {(() => {
+                    const maxSession = Math.max(...retentionInsights.peakUsage.map(p => p.sessions));
+                    const peak = retentionInsights.peakUsage.find(p => p.sessions === maxSession);
+                    if (peak) {
+                      const hour = peak.hour === 12 ? '12PM' : peak.hour > 12 ? `${peak.hour - 12}PM` : `${peak.hour}AM`;
+                      return `${peak.day} ${hour}`;
+                    }
+                    return 'N/A';
+                  })()}
+                </p>
+                <p className="text-xs opacity-75">Most Popular Time</p>
+              </div>
+            </div>
+
+            {/* Peak Sessions Card */}
+            <div className="relative bg-gradient-to-br from-pink-600 via-pink-700 to-rose-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+              <div className="absolute -top-10 -right-10 w-32 h-32 bg-pink-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-rose-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+              <div className="relative z-10">
+                <p className="text-sm font-medium opacity-90 mb-3">Peak Sessions</p>
+                <p className="text-3xl md:text-4xl font-bold mb-1">
+                  {Math.max(...retentionInsights.peakUsage.map(p => p.sessions))}
+                </p>
+                <p className="text-xs opacity-75">Maximum in Single Slot</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Peak Usage Heatmap */}
+          <Card className="mb-6 md:mb-8">
+            <CardHeader>
+              <CardTitle className="text-base md:text-lg">{t('dashboard.peakUsageHeatmap')}</CardTitle>
+              <CardDescription className="text-xs md:text-sm">{t('dashboard.sessionsByDayHour')}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="overflow-x-auto">
+                <div className="inline-grid gap-2 text-xs" style={{ gridTemplateColumns: 'auto repeat(7, minmax(0, 1fr))' }}>
+                  {/* Header row - Days */}
+                  <div className="p-2"></div>
+                  {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
+                    <div key={day} className="text-center font-semibold text-gray-700 p-2">
+                      {day}
+                    </div>
+                  ))}
+
+                  {/* Data rows - Hours vertical */}
+                  {Array.from({ length: 16 }, (_, i) => {
+                    const hour = i + 7;
+                    return (
+                      <React.Fragment key={hour}>
+                        <div className="font-semibold text-gray-700 flex items-center justify-end pr-3 text-xs">
                           {hour === 12 ? '12PM' : hour > 12 ? `${hour - 12}PM` : `${hour}AM`}
                         </div>
-                      );
-                    })}
-
-                    {/* Data rows */}
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => (
-                      <React.Fragment key={day}>
-                        <div className="font-semibold text-gray-700 flex items-center justify-end pr-3">
-                          {day}
-                        </div>
-                        {Array.from({ length: 16 }, (_, i) => {
-                          const hour = i + 7;
+                        {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day) => {
                           const dataPoint = retentionInsights.peakUsage.find(
                             p => p.day === day && p.hour === hour
                           );
@@ -1046,83 +1127,53 @@ export default function AdminDashboard() {
                           const maxSessions = Math.max(...retentionInsights.peakUsage.map(p => p.sessions), 1);
                           const intensity = (sessions / maxSessions) * 100;
 
-                          let bgColor = 'bg-gray-50';
-                          let textColor = 'text-gray-400';
+                          let bgColor = 'bg-gray-200';
                           if (intensity > 75) {
-                            bgColor = 'bg-green-600';
-                            textColor = 'text-white';
+                            bgColor = 'bg-gradient-to-br from-orange-500 to-pink-600';
                           } else if (intensity > 50) {
-                            bgColor = 'bg-green-500';
-                            textColor = 'text-white';
+                            bgColor = 'bg-gradient-to-br from-orange-400 to-pink-500';
                           } else if (intensity > 25) {
-                            bgColor = 'bg-green-300';
-                            textColor = 'text-gray-800';
+                            bgColor = 'bg-gradient-to-br from-orange-300 to-pink-400';
                           } else if (intensity > 10) {
-                            bgColor = 'bg-green-100';
-                            textColor = 'text-gray-700';
+                            bgColor = 'bg-gradient-to-br from-orange-200 to-pink-300';
                           }
 
                           return (
                             <div
                               key={`${day}-${hour}`}
-                              className={`${bgColor} h-12 flex items-center justify-center rounded border border-gray-200 cursor-pointer hover:ring-2 hover:ring-primary-400 transition-all`}
+                              className="flex items-center justify-center p-1"
                               title={`${day} ${hour}:00 - ${sessions} session${sessions !== 1 ? 's' : ''}`}
                             >
-                              {sessions > 0 && (
-                                <span className={`text-xs font-semibold ${textColor}`}>
-                                  {sessions}
-                                </span>
-                              )}
+                              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full ${bgColor} flex items-center justify-center cursor-pointer hover:ring-4 hover:ring-orange-300 transition-all shadow-md hover:shadow-xl transform hover:scale-110`}>
+                                {sessions > 0 && (
+                                  <span className="text-xs font-bold text-white drop-shadow-md">
+                                    {sessions}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                           );
                         })}
                       </React.Fragment>
-                    ))}
-                  </div>
-
-                  {/* Legend */}
-                  <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-600">
-                    <span>Less</span>
-                    <div className="flex gap-1">
-                      <div className="w-6 h-6 bg-gray-50 border border-gray-200 rounded"></div>
-                      <div className="w-6 h-6 bg-green-100 border border-gray-200 rounded"></div>
-                      <div className="w-6 h-6 bg-green-300 border border-gray-200 rounded"></div>
-                      <div className="w-6 h-6 bg-green-500 border border-gray-200 rounded"></div>
-                      <div className="w-6 h-6 bg-green-600 border border-gray-200 rounded"></div>
-                    </div>
-                    <span>More</span>
-                  </div>
+                    );
+                  })}
                 </div>
-              </CardContent>
-            </Card>
 
-            {/* Total Sessions Summary Card */}
-            <Card className="bg-gradient-to-br from-indigo-50 to-indigo-100 border-indigo-200">
-              <CardContent className="pt-6 flex flex-col items-center justify-center h-full min-w-[200px]">
-                <p className="text-xs md:text-sm font-medium text-indigo-700 mb-3">{t('dashboard.totalSessions')}</p>
-                <p className="text-4xl md:text-5xl font-bold text-indigo-900 mb-2">
-                  {retentionInsights.peakUsage.reduce((sum, p) => sum + p.sessions, 0).toLocaleString()}
-                </p>
-                <p className="text-xs text-indigo-600 text-center">{t('dashboard.allTimeBookings')}</p>
-                <div className="mt-4 pt-4 border-t border-indigo-200 w-full">
-                  <div className="text-center">
-                    <p className="text-xs text-indigo-600 mb-1">{t('dashboard.peakHour')}</p>
-                    <p className="text-base md:text-lg font-semibold text-indigo-900">
-                      {(() => {
-                        const maxSession = Math.max(...retentionInsights.peakUsage.map(p => p.sessions));
-                        const peak = retentionInsights.peakUsage.find(p => p.sessions === maxSession);
-                        if (peak) {
-                          const hour = peak.hour === 12 ? '12PM' : peak.hour > 12 ? `${peak.hour - 12}PM` : `${peak.hour}AM`;
-                          return `${peak.day} ${hour}`;
-                        }
-                        return 'N/A';
-                      })()}
-                    </p>
+                {/* Legend */}
+                <div className="mt-6 flex items-center justify-center gap-4 text-xs text-gray-600">
+                  <span className="font-medium">Low Activity</span>
+                  <div className="flex gap-2">
+                    <div className="w-8 h-8 bg-gray-200 rounded-full shadow"></div>
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-200 to-pink-300 rounded-full shadow"></div>
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-300 to-pink-400 rounded-full shadow"></div>
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full shadow"></div>
+                    <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-pink-600 rounded-full shadow"></div>
                   </div>
+                  <span className="font-medium">High Activity</span>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </>
       )}
       </div>
