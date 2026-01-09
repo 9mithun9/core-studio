@@ -167,17 +167,17 @@ export default function AdminFinancePage() {
   const totalSessionsSold = financeData?.packages.totalSessionsSold || 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-blue-50 pb-12">
+    <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4 py-8">
         {/* Gradient Hero Header */}
-        <div className="relative bg-gradient-to-r from-primary-600 to-primary-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
+        <div className="relative bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
 
           <div className="relative z-10 flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2">{t('finance.title')}</h1>
-              <p className="text-primary-100 text-lg">
+              <p className="text-white/90 text-lg">
                 {displayPeriod}
               </p>
             </div>
@@ -244,109 +244,151 @@ export default function AdminFinancePage() {
           </Card>
         ) : (
           <div className="space-y-8">
-            {/* Overview Cards - Glass Morphism Style */}
-            <div className="grid md:grid-cols-4 gap-6">
+            {/* Overview Cards - Executive Style */}
+            <div className="grid md:grid-cols-4 gap-6 md:gap-8">
               {/* Packages Sold Card */}
-              <div className="relative bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-400 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-pink-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 <div className="relative z-10">
-                  <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
-                    <p className="text-sm text-purple-100 mb-2 font-medium">{t('finance.packagesSold')}</p>
-                    <p className="text-5xl font-bold">{financeData.packages.total}</p>
-                  </div>
+                  <p className="text-sm font-medium opacity-90 mb-3">{t('finance.packagesSold')}</p>
+                  <p className="text-3xl md:text-4xl font-bold mb-1">{financeData.packages.total}</p>
+                  <p className="text-xs opacity-75">Total Packages</p>
                 </div>
               </div>
 
               {/* Sessions Sold Card */}
-              <div className="relative bg-gradient-to-br from-blue-500 to-blue-700 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-indigo-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 <div className="relative z-10">
-                  <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
-                    <p className="text-sm text-blue-100 mb-2 font-medium">{t('finance.sessionsSold')}</p>
-                    <p className="text-5xl font-bold">{totalSessionsSold}</p>
-                  </div>
+                  <p className="text-sm font-medium opacity-90 mb-3">{t('finance.sessionsSold')}</p>
+                  <p className="text-3xl md:text-4xl font-bold mb-1">{totalSessionsSold}</p>
+                  <p className="text-xs opacity-75">Total Sessions</p>
                 </div>
               </div>
 
               {/* Sessions Taken Card */}
-              <div className="relative bg-gradient-to-br from-teal-500 to-teal-700 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
+              <div className="relative bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
                 <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-400 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-cyan-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 <div className="relative z-10">
-                  <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
-                    <p className="text-sm text-teal-100 mb-2 font-medium">{t('finance.sessionsTaken')}</p>
-                    <p className="text-5xl font-bold">{financeData.sessions.completed}</p>
-                  </div>
+                  <p className="text-sm font-medium opacity-90 mb-3">{t('finance.sessionsTaken')}</p>
+                  <p className="text-3xl md:text-4xl font-bold mb-1">{financeData.sessions.completed}</p>
+                  <p className="text-xs opacity-75">{t('finance.completed')}</p>
                 </div>
               </div>
 
               {/* Total Revenue Card */}
-              <div className="relative bg-gradient-to-br from-emerald-500 to-emerald-700 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-transform duration-300">
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-emerald-400 rounded-full opacity-20 animate-pulse"></div>
+              <div className="relative bg-gradient-to-br from-green-600 via-green-700 to-emerald-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-400 rounded-full opacity-20 animate-pulse"></div>
+                <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-emerald-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 <div className="relative z-10">
-                  <div className="bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-4 border border-white border-opacity-20">
-                    <p className="text-sm text-emerald-100 mb-2 font-medium">{t('finance.totalRevenue')}</p>
-                    <p className="text-5xl font-bold">฿{financeData.revenue.total.toLocaleString()}</p>
-                  </div>
+                  <p className="text-sm font-medium opacity-90 mb-3">{t('finance.totalRevenue')}</p>
+                  <p className="text-3xl md:text-4xl font-bold mb-1">฿{financeData.revenue.total.toLocaleString()}</p>
+                  <p className="text-xs opacity-75">{t('finance.allTime')}</p>
                 </div>
               </div>
             </div>
 
+            {/* Custom Tooltip Component */}
+            {(() => {
+              const CustomTooltip = ({ active, payload, label }: any) => {
+                if (active && payload && payload.length) {
+                  // Calculate growth if we have trend data
+                  const currentIndex = trendsData.findIndex(d => d.monthYear === label);
+                  const previousData = currentIndex > 0 ? trendsData[currentIndex - 1] : null;
+                  const currentRevenue = payload[0]?.value || 0;
+                  const previousRevenue = previousData?.revenue || 0;
+                  const growth = previousRevenue > 0
+                    ? ((currentRevenue - previousRevenue) / previousRevenue * 100).toFixed(1)
+                    : null;
+
+                  return (
+                    <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                      <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                      <div className="space-y-1.5">
+                        {payload.map((entry: any, index: number) => (
+                          <div key={index} className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                            <span className="text-sm text-gray-700">
+                              {entry.name}: <span className="font-semibold text-gray-900">
+                                {graphType === 'revenue' ? `฿${Number(entry.value).toLocaleString()}` : entry.value}
+                              </span>
+                            </span>
+                          </div>
+                        ))}
+                        {growth !== null && graphType === 'revenue' && (
+                          <div className={`mt-2 pt-2 border-t border-gray-200 text-xs font-semibold ${parseFloat(growth) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            {parseFloat(growth) >= 0 ? '↑' : '↓'} {Math.abs(parseFloat(growth))}% vs last month
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              };
+
+              return null;
+            })()}
+
             {/* Graphs Section */}
             <div className="space-y-6">
-              {/* Graph Controls */}
-              <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-bold text-gray-800">{t('finance.trendsOverTime')}</h2>
-                <div className="flex gap-3">
-                  {/* Graph Type Toggle */}
-                  <div className="flex bg-white border-2 border-gray-200 rounded-xl overflow-hidden shadow-sm">
-                    <button
-                      onClick={() => setGraphType('revenue')}
-                      className={`px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                        graphType === 'revenue'
-                          ? 'bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-md'
-                          : 'bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {t('finance.revenue')}
-                    </button>
-                    <button
-                      onClick={() => setGraphType('sessions')}
-                      className={`px-6 py-2.5 text-sm font-semibold transition-all duration-200 ${
-                        graphType === 'sessions'
-                          ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-md'
-                          : 'bg-white text-gray-700 hover:bg-gray-50'
-                      }`}
-                    >
-                      {t('finance.sessions')}
-                    </button>
-                  </div>
-
-                  {/* Period Filter */}
-                  <Select value={trendPeriod} onValueChange={setTrendPeriod}>
-                    <SelectTrigger className="w-[180px] border-2 border-gray-200 bg-white">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="6">{t('finance.last6Months')}</SelectItem>
-                      <SelectItem value="12">{t('finance.last12Months')}</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-
               {/* Single Graph with Toggle */}
-              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-                <div className="bg-gradient-to-r from-gray-50 to-gray-100 px-8 py-6 border-b border-gray-200">
-                  <h3 className="text-2xl font-bold text-gray-800">
-                    {graphType === 'revenue' ? t('finance.revenueOverTime') : t('finance.sessionsAnalysis')}
-                  </h3>
-                  <p className="text-sm text-gray-600 mt-1">
-                    {graphType === 'revenue'
-                      ? t('finance.monthlyRevenueTrends')
-                      : t('finance.sessionsSoldVsTaken')}
-                  </p>
+              <Card className="bg-white/60 backdrop-blur-sm border-white/40 shadow-xl rounded-2xl overflow-hidden">
+                <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-8 py-6 border-b border-white/20">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                      <h3 className="text-2xl font-bold text-white">
+                        {graphType === 'revenue' ? t('finance.revenueOverTime') : t('finance.sessionsAnalysis')}
+                      </h3>
+                      <p className="text-sm text-white/90 mt-1">
+                        {graphType === 'revenue'
+                          ? t('finance.monthlyRevenueTrends')
+                          : t('finance.sessionsSoldVsTaken')}
+                      </p>
+                    </div>
+
+                    <div className="flex gap-3">
+                      {/* Graph Type Toggle */}
+                      <div className="flex bg-white/90 backdrop-blur-sm border-2 border-white/60 rounded-xl overflow-hidden shadow-sm">
+                        <button
+                          onClick={() => setGraphType('revenue')}
+                          className={`px-4 py-2 text-xs md:text-sm font-semibold transition-all duration-200 ${
+                            graphType === 'revenue'
+                              ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-md'
+                              : 'bg-white/50 text-gray-700 hover:bg-white/80'
+                          }`}
+                        >
+                          {t('finance.revenue')}
+                        </button>
+                        <button
+                          onClick={() => setGraphType('sessions')}
+                          className={`px-4 py-2 text-xs md:text-sm font-semibold transition-all duration-200 ${
+                            graphType === 'sessions'
+                              ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-md'
+                              : 'bg-white/50 text-gray-700 hover:bg-white/80'
+                          }`}
+                        >
+                          {t('finance.sessions')}
+                        </button>
+                      </div>
+
+                      {/* Period Filter */}
+                      <Select value={trendPeriod} onValueChange={setTrendPeriod}>
+                        <SelectTrigger className="w-[140px] md:w-[180px] border-2 border-white/60 bg-white/90 backdrop-blur-sm text-xs md:text-sm">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="6">{t('finance.last6Months')}</SelectItem>
+                          <SelectItem value="12">{t('finance.last12Months')}</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
                 </div>
-                <div className="p-8">
+                <CardContent className="p-8">
                   <ResponsiveContainer width="100%" height={350}>
                     {graphType === 'revenue' ? (
                       <LineChart data={trendsData}>
@@ -354,8 +396,39 @@ export default function AdminFinancePage() {
                         <XAxis dataKey="monthYear" stroke="#6b7280" />
                         <YAxis stroke="#6b7280" />
                         <Tooltip
-                          formatter={(value) => `฿${Number(value).toLocaleString()}`}
-                          contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}
+                          content={({ active, payload, label }: any) => {
+                            if (active && payload && payload.length) {
+                              const currentIndex = trendsData.findIndex(d => d.monthYear === label);
+                              const previousData = currentIndex > 0 ? trendsData[currentIndex - 1] : null;
+                              const currentRevenue = payload[0]?.value || 0;
+                              const previousRevenue = previousData?.revenue || 0;
+                              const growth = previousRevenue > 0
+                                ? ((currentRevenue - previousRevenue) / previousRevenue * 100).toFixed(1)
+                                : null;
+
+                              return (
+                                <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                                  <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                                  <div className="space-y-1.5">
+                                    {payload.map((entry: any, index: number) => (
+                                      <div key={index} className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.color }} />
+                                        <span className="text-sm text-gray-700">
+                                          {entry.name}: <span className="font-semibold text-gray-900">฿{Number(entry.value).toLocaleString()}</span>
+                                        </span>
+                                      </div>
+                                    ))}
+                                    {growth !== null && (
+                                      <div className={`mt-2 pt-2 border-t border-gray-200 text-xs font-semibold ${parseFloat(growth) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                        {parseFloat(growth) >= 0 ? '↑' : '↓'} {Math.abs(parseFloat(growth))}% vs last month
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
                         />
                         <Legend />
                         <Line
@@ -384,11 +457,38 @@ export default function AdminFinancePage() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                         <XAxis dataKey="monthYear" stroke="#6b7280" />
                         <YAxis stroke="#6b7280" />
-                        <Tooltip contentStyle={{ backgroundColor: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }} />
-                        <Legend />
+                        <Tooltip
+                          cursor={false}
+                          content={({ active, payload, label }: any) => {
+                            if (active && payload && payload.length) {
+                              return (
+                                <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                                  <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                                  <div className="space-y-1.5">
+                                    {payload.map((entry: any, index: number) => (
+                                      <div key={index} className="flex items-center gap-2">
+                                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                        <span className="text-sm text-gray-700">
+                                          {entry.name}: <span className="font-semibold text-gray-900">{Number(entry.value).toLocaleString()}</span>
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          }}
+                        />
+                        <Legend
+                          iconType="circle"
+                          wrapperStyle={{ paddingTop: '20px' }}
+                        />
                         <Bar
                           dataKey="sessionsSold"
                           name="Sessions Sold"
+                          fill="#f59e0b"
+                          radius={[6, 6, 0, 0]}
                           shape={(props: any) => {
                             const isSelected = props.payload.monthYear === selectedMonthIdentifier;
                             return (
@@ -397,8 +497,10 @@ export default function AdminFinancePage() {
                                 y={props.y}
                                 width={props.width}
                                 height={props.height}
-                                fill="#3b82f6"
-                                stroke={isSelected ? '#f59e0b' : 'none'}
+                                fill="#f59e0b"
+                                rx={6}
+                                ry={6}
+                                stroke={isSelected ? '#dc2626' : 'none'}
                                 strokeWidth={isSelected ? 3 : 0}
                               />
                             );
@@ -407,6 +509,8 @@ export default function AdminFinancePage() {
                         <Bar
                           dataKey="sessionsTaken"
                           name="Sessions Taken"
+                          fill="#8b5cf6"
+                          radius={[6, 6, 0, 0]}
                           shape={(props: any) => {
                             const isSelected = props.payload.monthYear === selectedMonthIdentifier;
                             return (
@@ -415,8 +519,10 @@ export default function AdminFinancePage() {
                                 y={props.y}
                                 width={props.width}
                                 height={props.height}
-                                fill="#10b981"
-                                stroke={isSelected ? '#f59e0b' : 'none'}
+                                fill="#8b5cf6"
+                                rx={6}
+                                ry={6}
+                                stroke={isSelected ? '#dc2626' : 'none'}
                                 strokeWidth={isSelected ? 3 : 0}
                               />
                             );
@@ -425,17 +531,17 @@ export default function AdminFinancePage() {
                       </BarChart>
                     )}
                   </ResponsiveContainer>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Packages Sold - Individual Cards */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-              <div className="bg-gradient-to-r from-purple-50 to-purple-100 px-8 py-6 border-b border-purple-200">
-                <h3 className="text-2xl font-bold text-gray-800">
+            <Card className="bg-white/60 backdrop-blur-sm border-white/40 shadow-xl rounded-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-8 py-6 border-b border-white/20">
+                <h3 className="text-2xl font-bold text-white">
                   {t('finance.packagesSoldPeriod', { period: displayPeriod })}
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-sm text-white/90 mt-1">
                   {t('finance.packageDetails', {
                     count: financeData.packages.total,
                     plural: financeData.packages.total !== 1 ? 's' : '',
@@ -449,12 +555,12 @@ export default function AdminFinancePage() {
                 ) : (
                   <div className="flex gap-6 pb-4" style={{ minWidth: 'max-content' }}>
                     {financeData.packages.details.map((pkg) => (
-                      <div key={pkg._id} className="border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 rounded-xl p-6 space-y-4 hover:shadow-lg transition-shadow duration-200 flex-shrink-0" style={{ width: '380px' }}>
+                      <div key={pkg._id} className="bg-white/60 backdrop-blur-sm border-2 border-white/40 rounded-2xl p-6 space-y-4 hover:shadow-2xl transition-all duration-300 hover:scale-105 flex-shrink-0" style={{ width: '380px' }}>
                         {/* Package Info */}
                         <div className="flex items-start justify-between">
                           <div>
-                            <p className="font-bold text-lg text-purple-700">{pkg.name}</p>
-                            <p className="text-sm text-gray-500 mt-1">
+                            <p className="font-bold text-xl text-orange-600">{pkg.name}</p>
+                            <p className="text-sm text-gray-600 mt-1">
                               {new Date(pkg.createdAt).toLocaleDateString('en-US', {
                                 year: 'numeric',
                                 month: 'short',
@@ -462,29 +568,29 @@ export default function AdminFinancePage() {
                               })}
                             </p>
                           </div>
-                          <div className="text-right">
-                            <p className="text-2xl font-bold text-emerald-600">
+                          <div className="text-right bg-gradient-to-br from-orange-500/10 to-pink-500/10 rounded-xl px-4 py-2">
+                            <p className="text-2xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
                               ฿{pkg.price.toLocaleString()}
                             </p>
-                            <p className="text-xs text-gray-500 font-medium">{pkg.totalSessions} sessions</p>
+                            <p className="text-xs text-gray-600 font-medium mt-1">{pkg.totalSessions} sessions</p>
                           </div>
                         </div>
 
                         {/* Customer Info */}
-                        <div className="border-t border-purple-100 pt-3">
-                          <p className="text-xs text-purple-600 font-semibold mb-2">{t('finance.customer')}</p>
-                          <p className="font-semibold text-sm text-gray-800">{pkg.customerId.userId.name}</p>
-                          <p className="text-xs text-gray-600 mt-0.5">{pkg.customerId.userId.email}</p>
+                        <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                          <p className="text-xs text-orange-600 font-semibold mb-2">{t('finance.customer')}</p>
+                          <p className="font-bold text-sm text-gray-900">{pkg.customerId.userId.name}</p>
+                          <p className="text-xs text-gray-600 mt-1">{pkg.customerId.userId.email}</p>
                           {pkg.customerId.userId.phone && (
-                            <p className="text-xs text-gray-600">{pkg.customerId.userId.phone}</p>
+                            <p className="text-xs text-gray-600 mt-0.5">{pkg.customerId.userId.phone}</p>
                           )}
                         </div>
 
                         {/* Teacher Info */}
-                        <div className="border-t border-purple-100 pt-3">
-                          <p className="text-xs text-purple-600 font-semibold mb-2">{t('finance.primaryTeacher')}</p>
+                        <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                          <p className="text-xs text-orange-600 font-semibold mb-2">{t('finance.primaryTeacher')}</p>
                           {pkg.teacher ? (
-                            <p className="font-semibold text-sm text-gray-800">{pkg.teacher.userId.name}</p>
+                            <p className="font-bold text-sm text-gray-900">{pkg.teacher.userId.name}</p>
                           ) : (
                             <p className="text-xs text-gray-400 italic">{t('finance.noSessionsBooked')}</p>
                           )}
@@ -494,15 +600,15 @@ export default function AdminFinancePage() {
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
 
             {/* Sessions by Teacher */}
-            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
-              <div className="bg-gradient-to-r from-blue-50 to-blue-100 px-8 py-6 border-b border-blue-200">
-                <h3 className="text-2xl font-bold text-gray-800">
+            <Card className="bg-white/60 backdrop-blur-sm border-white/40 shadow-xl rounded-2xl overflow-hidden">
+              <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-8 py-6 border-b border-white/20">
+                <h3 className="text-2xl font-bold text-white">
                   {t('finance.sessionsCompletedPeriod', { period: displayPeriod })}
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">{t('finance.teacherPerformance')}</p>
+                <p className="text-sm text-white/90 mt-1">{t('finance.teacherPerformance')}</p>
               </div>
               <div className="p-8">
                 {financeData.sessions.byTeacher.length === 0 ? (
@@ -579,20 +685,10 @@ export default function AdminFinancePage() {
                         })}
                       </div>
                     </div>
-
-                    {/* Total Sessions Summary */}
-                    <div className="border-t-2 border-gray-200 pt-6">
-                      <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-6 flex items-center justify-between">
-                        <p className="font-bold text-xl text-gray-800">{t('finance.totalSessions')}</p>
-                        <p className="text-5xl font-bold text-primary-600">
-                          {financeData.sessions.completed}
-                        </p>
-                      </div>
-                    </div>
                   </div>
                 )}
               </div>
-            </div>
+            </Card>
           </div>
         )}
       </div>
