@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import '@/lib/i18n';
 import { apiClient } from '@/lib/apiClient';
@@ -210,12 +211,6 @@ export default function AdminPackageRequests() {
                         <p className="text-sm text-gray-600 mt-1">
                           {request.customerId?.userId?.email}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                          </svg>
-                          Click name to view customer profile
-                        </p>
                       </>
                     ) : (
                       <>
@@ -338,173 +333,230 @@ export default function AdminPackageRequests() {
       )}
 
       {/* Approve Package Modal */}
-      {showApproveModal && selectedRequest && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
-          <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Review & Approve Package Request</h2>
+      {showApproveModal && selectedRequest && typeof document !== 'undefined' && createPortal(
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
+          <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 w-full max-w-2xl max-h-[90vh] overflow-hidden flex flex-col">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-white">Review Package Request</h2>
               <button
                 onClick={() => setShowApproveModal(false)}
-                className="text-gray-400 hover:text-gray-600 p-2 hover:bg-white/50 rounded-full transition-all"
+                className="text-white/80 hover:text-white p-1.5 hover:bg-white/20 rounded-lg transition-all"
               >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
-            {/* Customer Info */}
-            <div className="mb-6 p-4 bg-gradient-to-br from-orange-50 to-pink-50 rounded-2xl border-2 border-orange-200">
-              <div className="text-sm text-orange-800 font-semibold mb-2">Customer</div>
-              <div className="text-lg font-bold text-gray-900">{selectedRequest.customerId?.userId?.name}</div>
-              <div className="text-sm text-gray-700">{selectedRequest.customerId?.userId?.email}</div>
-            </div>
-
-            {/* Customer's Request */}
-            <div className="mb-6 p-4 bg-white/50 backdrop-blur-sm rounded-2xl border border-white/60">
-              <div className="text-sm text-gray-700 font-semibold mb-3">Customer Requested:</div>
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div className="bg-white/50 p-3 rounded-xl">
-                  <div className="text-xs text-gray-600 mb-1">Type</div>
-                  <div className="font-bold capitalize text-gray-900">{selectedRequest.packageType}</div>
+            {/* Content */}
+            <div className="p-6 overflow-y-auto flex-1">
+              {/* Customer Info */}
+              <div className="mb-6 p-5 bg-gradient-to-br from-orange-400/10 to-pink-400/10 backdrop-blur-md rounded-xl border border-white/60 shadow-md">
+                <div className="flex items-center gap-3">
+                  <div className="w-14 h-14 rounded-full bg-gradient-to-br from-orange-400 to-pink-400 flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                    {selectedRequest.customerId?.userId?.name?.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1">
+                    <div className="font-bold text-gray-900 text-lg">{selectedRequest.customerId?.userId?.name}</div>
+                    <div className="text-sm text-gray-700">{selectedRequest.customerId?.userId?.email}</div>
+                  </div>
                 </div>
-                <div className="bg-white/50 p-3 rounded-xl">
-                  <div className="text-xs text-gray-600 mb-1">Sessions</div>
-                  <div className="font-bold text-gray-900">{selectedRequest.sessions}</div>
+                {selectedRequest.notes && (
+                  <div className="mt-4 pt-4 border-t border-white/60">
+                    <div className="flex items-start gap-2">
+                      <svg className="w-4 h-4 text-orange-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
+                      </svg>
+                      <div className="flex-1">
+                        <div className="text-xs text-gray-700 font-semibold mb-1">Customer Notes</div>
+                        <div className="text-sm text-gray-800 italic bg-white/40 p-2 rounded-lg">"{selectedRequest.notes}"</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mb-6">
+                {/* Requested Package */}
+                <div className="p-4 bg-white/50 backdrop-blur-md rounded-xl border border-white/60 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                    </svg>
+                    <div className="text-xs text-gray-700 font-semibold">Requested Package</div>
+                  </div>
+                  <div className="font-bold text-gray-900 capitalize text-lg">{selectedRequest.packageType}</div>
+                  <div className="text-sm text-gray-700 mt-1">{selectedRequest.sessions} Sessions</div>
+                </div>
+                {/* Request Date */}
+                <div className="p-4 bg-white/50 backdrop-blur-md rounded-xl border border-white/60 shadow-sm">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-4 h-4 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <div className="text-xs text-gray-700 font-semibold">Requested On</div>
+                  </div>
+                  <div className="text-sm font-semibold text-gray-900">
+                    {formatStudioTime(selectedRequest.requestedAt, 'MMM d, yyyy')}
+                  </div>
+                  <div className="text-xs text-gray-700 mt-1">
+                    {formatStudioTime(selectedRequest.requestedAt, 'h:mm a')}
+                  </div>
                 </div>
               </div>
-              {selectedRequest.notes && (
-                <div className="mt-3 text-sm text-gray-700 bg-white/50 p-3 rounded-xl">
-                  <span className="font-semibold">Notes:</span> <span className="italic">{selectedRequest.notes}</span>
+
+              {/* Package Configuration */}
+              <div className="bg-white/40 backdrop-blur-md rounded-xl p-5 space-y-4 border border-white/60 shadow-sm">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                  </svg>
+                  <h3 className="text-sm font-bold text-gray-900">Package Configuration</h3>
                 </div>
-              )}
-            </div>
 
-            {/* Edit Package Details */}
-            <div className="space-y-4">
-              <div className="text-sm font-bold text-gray-900 mb-3">Edit Package Details:</div>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Package Type */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-2">
+                      Package Type
+                    </label>
+                    <select
+                      value={approvalForm.packageType}
+                      onChange={(e) => {
+                        const newType = e.target.value;
+                        setApprovalForm({
+                          ...approvalForm,
+                          packageType: newType,
+                          price: calculatePrice(newType, approvalForm.sessions)
+                        });
+                      }}
+                      className="w-full px-3 py-2.5 bg-white/60 backdrop-blur-sm border border-white/60 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                    >
+                      <option value="private">Private</option>
+                      <option value="duo">Duo</option>
+                      <option value="group">Group</option>
+                    </select>
+                  </div>
 
-              {/* Package Type */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  {t('registrations.packageType')}
-                </label>
-                <select
-                  value={approvalForm.packageType}
-                  onChange={(e) => {
-                    const newType = e.target.value;
-                    setApprovalForm({
-                      ...approvalForm,
-                      packageType: newType,
-                      price: calculatePrice(newType, approvalForm.sessions)
-                    });
-                  }}
-                  className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                >
-                  <option value="private">{t('registrations.private')}</option>
-                  <option value="duo">{t('registrations.duo')}</option>
-                  <option value="group">{t('registrations.group')}</option>
-                </select>
-              </div>
+                  {/* Number of Sessions */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-2">
+                      Sessions
+                    </label>
+                    <select
+                      value={approvalForm.sessions}
+                      onChange={(e) => {
+                        const newSessions = parseInt(e.target.value);
+                        setApprovalForm({
+                          ...approvalForm,
+                          sessions: newSessions,
+                          price: calculatePrice(approvalForm.packageType, newSessions)
+                        });
+                      }}
+                      className="w-full px-3 py-2.5 bg-white/60 backdrop-blur-sm border border-white/60 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                    >
+                      <option value={1}>1 Session</option>
+                      <option value={5}>5 Sessions</option>
+                      <option value={10}>10 Sessions</option>
+                      <option value={20}>20 Sessions</option>
+                      <option value={30}>30 Sessions</option>
+                    </select>
+                  </div>
+                </div>
 
-              {/* Number of Sessions */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  {t('registrations.sessions')}
-                </label>
-                <select
-                  value={approvalForm.sessions}
-                  onChange={(e) => {
-                    const newSessions = parseInt(e.target.value);
-                    setApprovalForm({
-                      ...approvalForm,
-                      sessions: newSessions,
-                      price: calculatePrice(approvalForm.packageType, newSessions)
-                    });
-                  }}
-                  className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                >
-                  <option value={1}>1 {t('registrations.session')}</option>
-                  <option value={5}>5 {t('registrations.sessions')}</option>
-                  <option value={10}>10 {t('registrations.sessions')}</option>
-                  <option value={20}>20 {t('registrations.sessions')}</option>
-                  <option value={30}>30 {t('registrations.sessions')}</option>
-                </select>
-              </div>
+                <div className="grid grid-cols-2 gap-4">
+                  {/* Price */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-2">
+                      Price (THB)
+                    </label>
+                    <input
+                      type="number"
+                      value={approvalForm.price}
+                      onChange={(e) => setApprovalForm({ ...approvalForm, price: parseInt(e.target.value) || 0 })}
+                      className="w-full px-3 py-2.5 bg-white/60 backdrop-blur-sm border border-white/60 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                      placeholder="0"
+                      min="0"
+                    />
+                  </div>
 
-              {/* Price */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  {t('registrations.priceTHB')}
-                </label>
-                <input
-                  type="number"
-                  value={approvalForm.price}
-                  onChange={(e) => setApprovalForm({ ...approvalForm, price: parseInt(e.target.value) || 0 })}
-                  className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                  placeholder="Enter price"
-                  min="0"
-                />
-              </div>
+                  {/* Activation Date */}
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-2">
+                      Start Date
+                    </label>
+                    <input
+                      type="date"
+                      value={approvalForm.activationDate}
+                      onChange={(e) => setApprovalForm({ ...approvalForm, activationDate: e.target.value })}
+                      className="w-full px-3 py-2.5 bg-white/60 backdrop-blur-sm border border-white/60 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                    />
+                  </div>
+                </div>
 
-              {/* Activation Date */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-900 mb-2">
-                  Activation Date
-                </label>
-                <input
-                  type="date"
-                  value={approvalForm.activationDate}
-                  onChange={(e) => setApprovalForm({ ...approvalForm, activationDate: e.target.value })}
-                  className="w-full px-4 py-3 bg-white/50 backdrop-blur-sm border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
-                />
-                <div className="text-xs text-gray-600 mt-2 flex items-start gap-1">
-                  <svg className="w-3 h-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="text-xs text-gray-500 flex items-start gap-1.5 pt-2">
+                  <svg className="w-4 h-4 mt-0.5 flex-shrink-0 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
-                  Package will be valid for 1 year from this date (defaults to request date)
+                  <span>Package will be valid for 1 year from the start date</span>
                 </div>
               </div>
 
               {/* Summary */}
-              <div className="p-4 bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-green-200">
-                <div className="text-sm text-green-800 font-bold mb-3 flex items-center gap-2">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div className="mt-4 p-5 bg-gradient-to-br from-orange-400/20 to-pink-400/20 backdrop-blur-md rounded-xl border border-orange-300/50 shadow-lg">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                   </svg>
-                  Package Summary:
+                  <span className="text-sm font-bold text-gray-900">Package Summary</span>
                 </div>
-                <div className="text-sm text-gray-900">
-                  <div className="capitalize font-semibold">{approvalForm.packageType} - {approvalForm.sessions} Sessions</div>
-                  <div className="text-2xl font-bold text-green-900 mt-2">฿{approvalForm.price.toLocaleString()}</div>
-                  <div className="text-xs text-green-700 mt-2">Valid for 1 year from approval date</div>
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-800 font-medium capitalize">{approvalForm.packageType} Package</span>
+                    <span className="text-sm font-bold text-gray-900 bg-white/50 px-3 py-1 rounded-full">{approvalForm.sessions} Sessions</span>
+                  </div>
+                  <div className="pt-3 border-t border-white/50">
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-4xl font-bold bg-gradient-to-r from-orange-600 to-pink-600 bg-clip-text text-transparent">
+                        ฿{approvalForm.price.toLocaleString()}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-700 mt-2 flex items-center gap-1">
+                      <svg className="w-3.5 h-3.5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                      Valid for 12 months from start date
+                    </div>
+                  </div>
                 </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-col sm:flex-row gap-3 mt-6">
-                <Button
-                  variant="outline"
-                  onClick={() => setShowApproveModal(false)}
-                  className="flex-1 border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50"
-                >
-                  {t('common.cancel')}
-                </Button>
-                <Button
-                  onClick={handleApprove}
-                  className="flex-1 bg-gradient-to-r from-orange-400 to-pink-400 hover:from-orange-500 hover:to-pink-500 shadow-lg hover:shadow-xl transition-all"
-                >
-                  {t('registrations.approve')} & {t('registrations.createPackage')}
-                </Button>
               </div>
             </div>
+
+            {/* Footer Actions */}
+            <div className="p-6 bg-white/30 backdrop-blur-md border-t border-white/50 flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => setShowApproveModal(false)}
+                className="flex-1 border-2 border-white/70 hover:border-white/90 hover:bg-white/60 backdrop-blur-sm text-gray-700 font-semibold"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={handleApprove}
+                className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all"
+              >
+                Approve & Create
+              </Button>
+            </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Customer Info Modal */}
-      {showCustomerInfo && customerDetails && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[10000] p-4">
+      {showCustomerInfo && customerDetails && typeof document !== 'undefined' && createPortal(
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
           <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 p-6 w-full max-w-4xl max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-2xl font-bold text-gray-900">Customer Profile</h2>
@@ -682,7 +734,8 @@ export default function AdminPackageRequests() {
               </Button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       <Toaster position="top-right" />

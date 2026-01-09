@@ -246,27 +246,8 @@ export default function TeacherMyCalendar() {
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 md:mb-6 gap-4">
-        <div>
-          <h1 className="text-2xl md:text-3xl font-bold">{t('my_calendar.title')}</h1>
-          <p className="text-gray-600 mt-2 text-xs md:text-sm">{t('my_calendar.subtitle')}</p>
-        </div>
-        <div className="flex gap-2">
-          <Button
-            onClick={() => {
-              setSelectedSlot({ date: new Date(), hour: 9 });
-              setShowBlockModal(true);
-            }}
-            size="sm"
-          >
-            <span className="text-xs md:text-sm">{t('my_calendar.block_time')}</span>
-          </Button>
-        </div>
-      </div>
-
-      {/* Teacher Filter */}
-      <div className="mb-4">
-        <label className="block text-xs md:text-sm font-medium mb-2">{t('my_calendar.view_schedule')}:</label>
+      {/* Teacher Filter and Block Time Button */}
+      <div className="flex items-center justify-between mb-4 md:mb-6">
         <select
           value={selectedTeacher}
           onChange={(e) => setSelectedTeacher(e.target.value)}
@@ -275,21 +256,30 @@ export default function TeacherMyCalendar() {
           <option value="me">{t('my_calendar.my_schedule_only')}</option>
           <option value="all">{t('my_calendar.all_teachers')}</option>
         </select>
+
+        <Button
+          onClick={() => {
+            setSelectedSlot({ date: new Date(), hour: 9 });
+            setShowBlockModal(true);
+          }}
+          size="sm"
+          className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white"
+        >
+          <span className="text-xs md:text-sm">{t('my_calendar.block_time')}</span>
+        </Button>
       </div>
 
-      <Card className="mb-4 md:mb-6">
-        <CardContent className="pt-4 md:pt-6">
-          <WeekCalendar
-            events={events}
-            onSlotClick={handleSlotClick}
-            onEventClick={handleEventClick}
-            showTeacherColors={selectedTeacher === 'all'}
-            teacherColorMap={teacherColorMap}
-            selectedDate={selectedDate}
-            onDateChange={setSelectedDate}
-          />
-        </CardContent>
-      </Card>
+      <div className="mb-4 md:mb-6">
+        <WeekCalendar
+          events={events}
+          onSlotClick={handleSlotClick}
+          onEventClick={handleEventClick}
+          showTeacherColors={selectedTeacher === 'all'}
+          teacherColorMap={teacherColorMap}
+          selectedDate={selectedDate}
+          onDateChange={setSelectedDate}
+        />
+      </div>
 
       {/* Teacher Legend - Only show when viewing all teachers */}
       {selectedTeacher === 'all' && teachers.length > 0 && (
@@ -314,26 +304,28 @@ export default function TeacherMyCalendar() {
       {/* Block Time Modal */}
       {showBlockModal && selectedSlot && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg md:text-xl font-bold">{t('my_calendar.block_time_title')}</h2>
-              <button
-                onClick={() => setShowBlockModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          <div className="bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl rounded-3xl w-full max-w-md max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-6 py-4 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-bold text-white">{t('my_calendar.block_time_title')}</h2>
+                <button
+                  onClick={() => setShowBlockModal(false)}
+                  className="text-white hover:text-orange-100 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3 md:space-y-4">
+            <div className="p-4 md:p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-180px)]">
               <div>
-                <label className="block text-xs md:text-sm font-medium mb-2">{t('my_calendar.block_type')}</label>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.block_type')}</label>
                 <select
                   value={blockForm.blockType}
                   onChange={(e) => setBlockForm({ ...blockForm, blockType: e.target.value as 'single' | 'multi-day' | 'recurring' })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs md:text-sm"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 text-sm"
                 >
                   <option value="single">{t('my_calendar.single_slot')}</option>
                   <option value="multi-day">{t('my_calendar.multiple_days')}</option>
@@ -344,21 +336,21 @@ export default function TeacherMyCalendar() {
               {blockForm.blockType === 'single' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.date')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.date')}</label>
                     <input
                       type="date"
                       value={blockForm.startDate}
                       onChange={(e) => setBlockForm({ ...blockForm, startDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_hour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.start_hour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 7).map((hour) => (
                           <option key={hour} value={hour}>
@@ -368,11 +360,11 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.end_hour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.end_hour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 8).map((hour) => (
                           <option key={hour} value={hour}>
@@ -389,31 +381,31 @@ export default function TeacherMyCalendar() {
                 <>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_date')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.start_date')}</label>
                       <input
                         type="date"
                         value={blockForm.startDate}
                         onChange={(e) => setBlockForm({ ...blockForm, startDate: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.end_date')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.end_date')}</label>
                       <input
                         type="date"
                         value={blockForm.endDate}
                         onChange={(e) => setBlockForm({ ...blockForm, endDate: e.target.value })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.daily_start_hour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.daily_start_hour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 7).map((hour) => (
                           <option key={hour} value={hour}>
@@ -423,11 +415,11 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.daily_end_hour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.daily_end_hour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 8).map((hour) => (
                           <option key={hour} value={hour}>
@@ -437,30 +429,32 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                   </div>
-                  <p className="text-xs text-gray-500">
-                    {t('my_calendar.hints.multi_day_block')}
-                  </p>
+                  <div className="p-3 bg-orange-50/80 border border-orange-200 rounded-xl">
+                    <p className="text-xs text-orange-800">
+                      {t('my_calendar.hints.multi_day_block')}
+                    </p>
+                  </div>
                 </>
               )}
 
               {blockForm.blockType === 'recurring' && (
                 <>
                   <div>
-                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_date')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.start_date')}</label>
                     <input
                       type="date"
                       value={blockForm.startDate}
                       onChange={(e) => setBlockForm({ ...blockForm, startDate: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.start_hour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.start_hour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 7).map((hour) => (
                           <option key={hour} value={hour}>
@@ -470,11 +464,11 @@ export default function TeacherMyCalendar() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.end_hour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.end_hour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 8).map((hour) => (
                           <option key={hour} value={hour}>
@@ -485,52 +479,56 @@ export default function TeacherMyCalendar() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.frequency')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.frequency')}</label>
                     <select
                       value={blockForm.frequency}
                       onChange={(e) => setBlockForm({ ...blockForm, frequency: e.target.value as 'daily' | 'weekly' })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     >
                       <option value="daily">{t('my_calendar.frequency.daily')}</option>
                       <option value="weekly">{t('my_calendar.frequency.weekly')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.until_optional')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.until_optional')}</label>
                     <input
                       type="date"
                       value={blockForm.until}
                       onChange={(e) => setBlockForm({ ...blockForm, until: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       min={new Date().toISOString().split('T')[0]}
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      {t('my_calendar.hints.until_default')}
-                    </p>
+                    <div className="mt-2 p-3 bg-blue-50/80 border border-blue-200 rounded-xl">
+                      <p className="text-xs text-blue-800">
+                        {t('my_calendar.hints.until_default')}
+                      </p>
+                    </div>
                   </div>
                 </>
               )}
 
               <div>
-                <label className="block text-sm font-medium mb-2">{t('my_calendar.labels.reason_optional')}</label>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('my_calendar.labels.reason_optional')}</label>
                 <input
                   type="text"
                   value={blockForm.blockReason}
                   onChange={(e) => setBlockForm({ ...blockForm, blockReason: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('my_calendar.placeholders.reason')}
                 />
               </div>
+            </div>
 
-              <div className="flex gap-3 mt-6">
+            <div className="p-4 md:p-6 border-t border-white/20 bg-white/20 backdrop-blur-sm">
+              <div className="flex gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setShowBlockModal(false)}
-                  className="flex-1"
+                  className="flex-1 border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
                 >
                   {t('my_calendar.actions.cancel')}
                 </Button>
-                <Button onClick={handleBlockTime} className="flex-1">
+                <Button onClick={handleBlockTime} className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white">
                   {blockForm.blockType === 'multi-day'
                     ? t('my_calendar.actions.block_multiple_days')
                     : blockForm.blockType === 'recurring'
@@ -545,66 +543,69 @@ export default function TeacherMyCalendar() {
 
       {/* Event Details Modal */}
       {showEventDetails && selectedEvent && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-bold">
-                {selectedEvent.type === 'blocked' ? t('my_calendar.event_details.blocked_time') : t('my_calendar.event_details.session_details')}
-              </h2>
-              <button
-                onClick={() => setShowEventDetails(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl rounded-3xl w-full max-w-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-6 py-4 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {selectedEvent.type === 'blocked' ? t('my_calendar.event_details.blocked_time') : t('my_calendar.event_details.session_details')}
+                </h2>
+                <button
+                  onClick={() => setShowEventDetails(false)}
+                  className="text-white hover:text-orange-100 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <div>
-                <p className="text-sm text-gray-600">{t('my_calendar.event_details.time')}:</p>
-                <p className="font-medium">
+            <div className="p-4 md:p-6 space-y-4">
+              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                <p className="text-xs text-orange-600 font-semibold mb-1">{t('my_calendar.event_details.time')}:</p>
+                <p className="font-bold text-gray-900">
                   {formatStudioTime(selectedEvent.startTime, 'PPP')}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className="text-sm text-gray-700 mt-1">
                   {formatStudioTime(selectedEvent.startTime, 'p')} - {formatStudioTime(selectedEvent.endTime, 'p')}
                 </p>
               </div>
 
               {selectedEvent.type !== 'blocked' && (
                 <>
-                  <div>
-                    <p className="text-sm text-gray-600">{t('my_calendar.event_details.customer')}:</p>
-                    <p className="font-medium">{selectedEvent.customerId?.userId?.name || t('my_calendar.unknown')}</p>
+                  <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                    <p className="text-xs text-orange-600 font-semibold mb-1">{t('my_calendar.event_details.customer')}:</p>
+                    <p className="font-bold text-gray-900">{selectedEvent.customerId?.userId?.name || t('my_calendar.unknown')}</p>
                   </div>
 
-                  <div>
-                    <p className="text-sm text-gray-600">{t('my_calendar.event_details.type')}:</p>
-                    <p className="font-medium capitalize">{selectedEvent.type}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-sm text-gray-600">{t('my_calendar.event_details.status')}:</p>
-                    <span
-                      className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                        selectedEvent.status === 'confirmed'
-                          ? 'bg-green-100 text-green-800'
-                          : selectedEvent.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {selectedEvent.status}
-                    </span>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                      <p className="text-xs text-orange-600 font-semibold mb-1">{t('my_calendar.event_details.type')}:</p>
+                      <p className="font-bold text-gray-900 capitalize">{selectedEvent.type}</p>
+                    </div>
+                    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                      <p className="text-xs text-orange-600 font-semibold mb-1">{t('my_calendar.event_details.status')}:</p>
+                      <span
+                        className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold ${
+                          selectedEvent.status === 'confirmed'
+                            ? 'bg-green-100/80 text-green-800'
+                            : selectedEvent.status === 'pending'
+                            ? 'bg-yellow-100/80 text-yellow-800'
+                            : 'bg-gray-100/80 text-gray-800'
+                        }`}
+                      >
+                        {selectedEvent.status}
+                      </span>
+                    </div>
                   </div>
                 </>
               )}
 
               {selectedEvent.notes && (
-                <div>
-                  <p className="text-sm text-gray-600">{t('my_calendar.event_details.notes')}:</p>
-                  <p className="text-sm">{selectedEvent.notes}</p>
+                <div className="bg-blue-50/80 backdrop-blur-sm rounded-xl p-3 border border-blue-200">
+                  <p className="text-xs text-blue-700 font-semibold mb-1">{t('my_calendar.event_details.notes')}:</p>
+                  <p className="text-sm text-blue-900">{selectedEvent.notes}</p>
                 </div>
               )}
 
@@ -615,7 +616,7 @@ export default function TeacherMyCalendar() {
                   <Button
                     variant="outline"
                     onClick={() => handleUnblock(selectedEvent._id)}
-                    className="w-full border-red-300 text-red-600 hover:bg-red-50"
+                    className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                   >
                     {t('my_calendar.actions.unblock_this_time')}
                   </Button>
@@ -623,8 +624,8 @@ export default function TeacherMyCalendar() {
               )}
             </div>
 
-            <div className="mt-6">
-              <Button variant="outline" onClick={() => setShowEventDetails(false)} className="w-full">
+            <div className="p-4 md:p-6 border-t border-white/20 bg-white/20 backdrop-blur-sm">
+              <Button variant="outline" onClick={() => setShowEventDetails(false)} className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400">
                 {t('my_calendar.actions.close')}
               </Button>
             </div>

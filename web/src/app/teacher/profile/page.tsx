@@ -208,9 +208,9 @@ export default function TeacherProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mb-4"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent mb-4"></div>
           <p className="text-lg text-gray-600">{t('common.loading')}</p>
         </div>
       </div>
@@ -219,8 +219,8 @@ export default function TeacherProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="bg-white rounded-3xl p-16 shadow-xl border border-gray-200 text-center max-w-2xl mx-auto">
+      <div className="flex items-center justify-center py-20">
+        <div className="bg-white/30 backdrop-blur-md rounded-3xl p-16 shadow-xl border border-white/40 text-center max-w-2xl mx-auto">
           <p className="text-lg text-gray-600">{t('profile.not_found')}</p>
         </div>
       </div>
@@ -230,25 +230,24 @@ export default function TeacherProfilePage() {
   return (
     <>
       <Toaster position="top-right" />
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Profile Photo Section */}
-            <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-6">
-                <h2 className="text-2xl font-bold text-white mb-1">{t('profile.photo_title')}</h2>
-                <p className="text-purple-100 text-sm">{t('profile.photo_description')}</p>
-              </div>
-              <div className="p-8">
-                <div className="flex flex-col items-center space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Profile Photo Section */}
+          <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-6">
+              <h2 className="text-2xl font-bold text-white mb-1">{t('profile.photo_title')}</h2>
+              <p className="text-orange-100 text-sm">{t('profile.photo_description')}</p>
+            </div>
+            <div className="p-8">
+              <div className="flex flex-col items-center space-y-6">
                   {previewUrl ? (
                     <div className="relative">
                       <img
                         src={previewUrl}
                         alt="Profile"
-                        className="w-48 h-48 rounded-full object-cover ring-4 ring-purple-100 shadow-xl"
+                        className="w-48 h-48 rounded-full object-cover ring-4 ring-orange-100 shadow-xl"
                       />
-                      <div className="absolute bottom-2 right-2 w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                      <div className="absolute bottom-2 right-2 w-12 h-12 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
                         <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -257,7 +256,7 @@ export default function TeacherProfilePage() {
                     </div>
                   ) : (
                     <div className="relative">
-                      <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center text-6xl font-bold text-white shadow-xl ring-4 ring-purple-100">
+                      <div className="w-48 h-48 rounded-full bg-gradient-to-br from-orange-400 to-pink-600 flex items-center justify-center text-6xl font-bold text-white shadow-xl ring-4 ring-orange-100">
                         {profile.userId.name.charAt(0).toUpperCase()}
                       </div>
                     </div>
@@ -283,11 +282,11 @@ export default function TeacherProfilePage() {
 
                     {selectedFile && (
                       <div className="space-y-3">
-                        <div className="p-3 bg-purple-50 rounded-xl border border-purple-200">
-                          <p className="text-xs text-purple-900 font-medium">
+                        <div className="p-3 bg-orange-50 rounded-xl border border-orange-200">
+                          <p className="text-xs text-orange-900 font-medium">
                             {selectedFile.name}
                           </p>
-                          <p className="text-xs text-purple-600 mt-1">
+                          <p className="text-xs text-orange-600 mt-1">
                             {(selectedFile.size / 1024).toFixed(2)} KB
                           </p>
                         </div>
@@ -295,7 +294,7 @@ export default function TeacherProfilePage() {
                           type="button"
                           onClick={handlePhotoUpload}
                           disabled={uploading}
-                          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl py-3 shadow-md hover:shadow-lg transition-all"
+                          className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-xl py-3 shadow-md hover:shadow-lg transition-all"
                         >
                           {uploading ? t('profile.uploading') : t('profile.upload_photo')}
                         </Button>
@@ -324,7 +323,7 @@ export default function TeacherProfilePage() {
                     {profile.yearsOfExperience !== undefined && profile.yearsOfExperience > 0 && (
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-600 font-medium">{t('profile.experience')}</span>
-                        <span className="text-sm font-bold text-purple-600">
+                        <span className="text-sm font-bold text-orange-600">
                           {profile.yearsOfExperience} {profile.yearsOfExperience === 1 ? t('profile.year') : t('profile.years')}
                         </span>
                       </div>
@@ -334,12 +333,12 @@ export default function TeacherProfilePage() {
               </div>
             </div>
 
-            {/* Profile Information Form */}
-            <div className="lg:col-span-2">
-              <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+          {/* Profile Information Form */}
+          <div className="lg:col-span-2">
+              <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+                <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-6">
                   <h2 className="text-2xl font-bold text-white mb-1">{t('profile.edit_profile_title')}</h2>
-                  <p className="text-purple-100 text-sm">{t('profile.edit_profile_description')}</p>
+                  <p className="text-orange-100 text-sm">{t('profile.edit_profile_description')}</p>
                 </div>
                 <div className="p-8">
                   <form onSubmit={handleSubmit} className="space-y-6">
@@ -376,7 +375,7 @@ export default function TeacherProfilePage() {
                           name="phone"
                           value={formData.phone}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                           placeholder={t('profile.phone_placeholder')}
                         />
                       </div>
@@ -389,7 +388,7 @@ export default function TeacherProfilePage() {
                           value={formData.yearsOfExperience}
                           onChange={handleChange}
                           min="0"
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all"
                           placeholder={t('profile.experience_placeholder')}
                         />
                       </div>
@@ -402,7 +401,7 @@ export default function TeacherProfilePage() {
                         value={formData.bio}
                         onChange={handleChange}
                         rows={4}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all resize-none"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all resize-none"
                         placeholder={t('profile.bio_placeholder')}
                       />
                       <p className="text-xs text-gray-500 mt-1.5">
@@ -420,7 +419,7 @@ export default function TeacherProfilePage() {
                             onClick={() => toggleSpecialty(specialty)}
                             className={`px-4 py-3 rounded-xl text-sm font-medium transition-all ${
                               formData.specialties.includes(specialty)
-                                ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md hover:shadow-lg'
+                                ? 'bg-gradient-to-r from-orange-500 to-pink-500 text-white shadow-md hover:shadow-lg'
                                 : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border-2 border-gray-200'
                             }`}
                           >
@@ -434,13 +433,13 @@ export default function TeacherProfilePage() {
                     </div>
 
                     {formData.specialties.length > 0 && (
-                      <div className="p-6 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl border-2 border-purple-200">
-                        <label className="block text-sm font-semibold text-purple-900 mb-3">{t('profile.selected_specialties')}</label>
+                      <div className="p-6 bg-gradient-to-r from-orange-50 to-pink-50 rounded-2xl border-2 border-orange-200">
+                        <label className="block text-sm font-semibold text-orange-900 mb-3">{t('profile.selected_specialties')}</label>
                         <div className="flex flex-wrap gap-2">
                           {formData.specialties.map((specialty, index) => (
                             <span
                               key={index}
-                              className="px-4 py-2 bg-white text-purple-700 rounded-full text-sm font-semibold shadow-sm ring-2 ring-purple-200"
+                              className="px-4 py-2 bg-white text-orange-700 rounded-full text-sm font-semibold shadow-sm ring-2 ring-orange-200"
                             >
                               {specialty}
                             </span>
@@ -453,7 +452,7 @@ export default function TeacherProfilePage() {
                       <Button
                         type="submit"
                         disabled={saving}
-                        className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all"
+                        className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 px-8 py-3 rounded-xl shadow-md hover:shadow-lg transition-all"
                       >
                         {saving ? t('profile.saving') : t('profile.save_changes')}
                       </Button>
@@ -461,7 +460,7 @@ export default function TeacherProfilePage() {
                         type="button"
                         variant="outline"
                         onClick={fetchProfile}
-                        className="px-8 py-3 rounded-xl border-2 border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50 transition-all"
+                        className="px-8 py-3 rounded-xl border-2 border-orange-300 hover:border-orange-400 hover:text-orange-600 hover:bg-orange-50 transition-all"
                       >
                         {t('profile.cancel')}
                       </Button>
@@ -472,7 +471,6 @@ export default function TeacherProfilePage() {
             </div>
           </div>
         </div>
-      </div>
     </>
   );
 }

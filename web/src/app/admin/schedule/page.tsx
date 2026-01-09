@@ -273,16 +273,16 @@ export default function AdminSchedule() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-orange-50 pb-12">
+    <div className="min-h-screen pb-12">
       <div className="container mx-auto px-4 py-8">
         {/* Gradient Hero Header */}
-        <div className="relative bg-gradient-to-r from-orange-600 to-orange-700 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
+        <div className="relative bg-gradient-to-r from-orange-500 to-pink-500 rounded-2xl p-8 text-white overflow-hidden mb-8 shadow-xl">
           <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white opacity-5 rounded-full -ml-24 -mb-24"></div>
           <div className="relative z-10 flex items-center justify-between">
             <div>
               <h1 className="text-4xl font-bold mb-2">{t('schedule.title')}</h1>
-              <p className="text-orange-100 text-lg">{t('schedule.subtitle')}</p>
+              <p className="text-white/90 text-lg">{t('schedule.subtitle')}</p>
             </div>
             <div className="hidden md:flex gap-3">
               <select
@@ -302,7 +302,7 @@ export default function AdminSchedule() {
                   setSelectedSlot({ date: new Date(), hour: 9 });
                   setShowBlockModal(true);
                 }}
-                className="bg-white text-orange-700 hover:bg-gray-100"
+                className="bg-white text-orange-600 hover:bg-white/90 hover:text-pink-600"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -340,7 +340,7 @@ export default function AdminSchedule() {
         </div>
 
       {selectedTeacher === 'all' && teachers.length > 0 && (
-        <Card className="mb-3 md:mb-4">
+        <Card className="mb-3 md:mb-4 bg-white/30 backdrop-blur-md border-white/40">
           <CardContent className="pt-3 md:pt-4">
             <div className="flex flex-wrap gap-3 md:gap-4">
               <h3 className="w-full text-xs md:text-sm font-semibold text-gray-700">{t('schedule.teacherLegend')}</h3>
@@ -358,7 +358,7 @@ export default function AdminSchedule() {
         </Card>
       )}
 
-      <Card className="mb-4 md:mb-6">
+      <Card className="mb-4 md:mb-6 bg-white/30 backdrop-blur-md border-white/40">
         <CardContent className="pt-4 md:pt-6">
           <WeekCalendar
             events={events}
@@ -375,26 +375,28 @@ export default function AdminSchedule() {
       {/* Block Time Modal */}
       {showBlockModal && selectedSlot && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-3 md:mb-4">
-              <h2 className="text-lg md:text-xl font-bold">{t('schedule.blockTimeModal.title')}</h2>
-              <button
-                onClick={() => setShowBlockModal(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          <div className="bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl rounded-3xl w-full max-w-md max-h-[90vh] overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-6 py-4 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-bold text-white">{t('schedule.blockTimeModal.title')}</h2>
+                <button
+                  onClick={() => setShowBlockModal(false)}
+                  className="text-white hover:text-orange-100 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-3 md:space-y-4">
+            <div className="p-4 md:p-6 space-y-4 overflow-y-auto max-h-[calc(90vh-180px)]">
               <div>
-                <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.teacher')} *</label>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.teacher')} *</label>
                 <select
                   value={blockForm.teacherId}
                   onChange={(e) => setBlockForm({ ...blockForm, teacherId: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   required
                 >
                   <option value="">{t('schedule.blockTimeModal.selectTeacher')}</option>
@@ -408,11 +410,11 @@ export default function AdminSchedule() {
               </div>
 
               <div>
-                <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.blockType')}</label>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.blockType')}</label>
                 <select
                   value={blockForm.blockType}
                   onChange={(e) => setBlockForm({ ...blockForm, blockType: e.target.value as 'single' | 'multi-day' | 'recurring' })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                 >
                   <option value="single">{t('schedule.blockTimeModal.singleTimeSlot')}</option>
                   <option value="multi-day">{t('schedule.blockTimeModal.multipleDays')}</option>
@@ -423,21 +425,21 @@ export default function AdminSchedule() {
               {blockForm.blockType === 'single' && (
                 <>
                   <div>
-                    <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.date')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.date')}</label>
                     <input
                       type="date"
                       value={blockForm.startDate}
                       onChange={(e) => setBlockForm({ ...blockForm, startDate: e.target.value })}
-                      className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2 md:gap-3">
                     <div>
-                      <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.startHour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.startHour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 7).map((hour) => (
                           <option key={hour} value={hour}>
@@ -447,11 +449,11 @@ export default function AdminSchedule() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.endHour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.endHour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 8).map((hour) => (
                           <option key={hour} value={hour}>
@@ -468,26 +470,26 @@ export default function AdminSchedule() {
                 <>
                   <div className="grid grid-cols-2 gap-2 md:gap-3">
                     <div>
-                      <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.startDate')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.startDate')}</label>
                       <input
                         type="date"
                         value={blockForm.startDate}
                         onChange={(e) => setBlockForm({ ...blockForm, startDate: e.target.value })}
-                        className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
                     <div>
-                      <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.endDate')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.endDate')}</label>
                       <input
                         type="date"
                         value={blockForm.endDate}
                         onChange={(e) => setBlockForm({ ...blockForm, endDate: e.target.value })}
-                        className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       />
                     </div>
                   </div>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-2 md:p-3">
-                    <p className="text-xs md:text-sm text-blue-800">
+                  <div className="p-3 bg-orange-50/80 border border-orange-200 rounded-xl">
+                    <p className="text-xs text-orange-800">
                       {t('schedule.blockTimeModal.noteMultiDay')}
                     </p>
                   </div>
@@ -497,21 +499,21 @@ export default function AdminSchedule() {
               {blockForm.blockType === 'recurring' && (
                 <>
                   <div>
-                    <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.startDate')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.startDate')}</label>
                     <input
                       type="date"
                       value={blockForm.startDate}
                       onChange={(e) => setBlockForm({ ...blockForm, startDate: e.target.value })}
-                      className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-2 md:gap-3">
                     <div>
-                      <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.startHour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.startHour')}</label>
                       <select
                         value={blockForm.startHour}
                         onChange={(e) => setBlockForm({ ...blockForm, startHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 7).map((hour) => (
                           <option key={hour} value={hour}>
@@ -521,11 +523,11 @@ export default function AdminSchedule() {
                       </select>
                     </div>
                     <div>
-                      <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.endHour')}</label>
+                      <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.endHour')}</label>
                       <select
                         value={blockForm.endHour}
                         onChange={(e) => setBlockForm({ ...blockForm, endHour: parseInt(e.target.value) })}
-                        className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                        className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       >
                         {Array.from({ length: 16 }, (_, i) => i + 8).map((hour) => (
                           <option key={hour} value={hour}>
@@ -536,23 +538,23 @@ export default function AdminSchedule() {
                     </div>
                   </div>
                   <div>
-                    <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.frequency')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.frequency')}</label>
                     <select
                       value={blockForm.frequency}
                       onChange={(e) => setBlockForm({ ...blockForm, frequency: e.target.value as 'daily' | 'weekly' })}
-                      className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                     >
                       <option value="daily">{t('schedule.blockTimeModal.daily')}</option>
                       <option value="weekly">{t('schedule.blockTimeModal.weekly')}</option>
                     </select>
                   </div>
                   <div>
-                    <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.until')}</label>
+                    <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.until')}</label>
                     <input
                       type="date"
                       value={blockForm.until}
                       onChange={(e) => setBlockForm({ ...blockForm, until: e.target.value })}
-                      className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                      className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                       min={new Date().toISOString().split('T')[0]}
                     />
                     <p className="text-xs text-gray-500 mt-1">
@@ -563,25 +565,27 @@ export default function AdminSchedule() {
               )}
 
               <div>
-                <label className="block text-xs md:text-sm font-medium mb-2">{t('schedule.blockTimeModal.reason')}</label>
+                <label className="block text-sm font-semibold text-gray-900 mb-2">{t('schedule.blockTimeModal.reason')}</label>
                 <input
                   type="text"
                   value={blockForm.blockReason}
                   onChange={(e) => setBlockForm({ ...blockForm, blockReason: e.target.value })}
-                  className="w-full px-3 py-2 text-xs md:text-sm border border-gray-300 rounded-lg"
+                  className="w-full px-3 py-2 text-xs md:text-sm border border-white/60 bg-white/40 backdrop-blur-sm rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
                   placeholder={t('schedule.blockTimeModal.reasonPlaceholder')}
                 />
               </div>
+            </div>
 
-              <div className="flex flex-col sm:flex-row gap-2 md:gap-3 mt-4 md:mt-6">
+            <div className="p-4 md:p-6 border-t border-white/20 bg-white/20 backdrop-blur-sm">
+              <div className="flex gap-3">
                 <Button
                   variant="outline"
                   onClick={() => setShowBlockModal(false)}
-                  className="flex-1 text-xs md:text-sm"
+                  className="flex-1 border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
                 >
                   {t('common.cancel')}
                 </Button>
-                <Button onClick={handleBlockTime} className="flex-1 text-xs md:text-sm">
+                <Button onClick={handleBlockTime} className="flex-1 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white">
                   {blockForm.blockType === 'multi-day'
                     ? t('schedule.blockTimeModal.blockMultipleDays')
                     : blockForm.blockType === 'recurring'
@@ -597,79 +601,82 @@ export default function AdminSchedule() {
       {/* Event Details Modal */}
       {showEventDetails && selectedEvent && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-4 md:p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between mb-3 md:mb-4">
-              <h2 className="text-lg md:text-xl font-bold">
-                {selectedEvent.type === 'blocked' ? t('schedule.eventDetails.blockedTime') : t('schedule.eventDetails.sessionDetails')}
-              </h2>
-              <button
-                onClick={() => setShowEventDetails(false)}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
+          <div className="bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl rounded-3xl w-full max-w-md overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm px-6 py-4 border-b border-white/20">
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl md:text-2xl font-bold text-white">
+                  {selectedEvent.type === 'blocked' ? t('schedule.eventDetails.blockedTime') : t('schedule.eventDetails.sessionDetails')}
+                </h2>
+                <button
+                  onClick={() => setShowEventDetails(false)}
+                  className="text-white hover:text-orange-100 transition-colors"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div className="space-y-2 md:space-y-3">
-              <div>
-                <p className="text-xs md:text-sm text-gray-600">{t('schedule.eventDetails.teacher')}</p>
-                <p className="text-sm md:text-base font-medium">{selectedEvent.teacherId?.userId?.name || 'Unknown'}</p>
+            <div className="p-4 md:p-6 space-y-4">
+              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                <p className="text-xs text-orange-600 font-semibold mb-1">{t('schedule.eventDetails.teacher')}:</p>
+                <p className="font-bold text-gray-900">{selectedEvent.teacherId?.userId?.name || 'Unknown'}</p>
               </div>
 
-              <div>
-                <p className="text-xs md:text-sm text-gray-600">{t('schedule.eventDetails.time')}</p>
-                <p className="text-sm md:text-base font-medium">
+              <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                <p className="text-xs text-orange-600 font-semibold mb-1">{t('schedule.eventDetails.time')}:</p>
+                <p className="font-bold text-gray-900">
                   {formatStudioTime(selectedEvent.startTime, 'PPP')}
                 </p>
-                <p className="text-xs md:text-sm text-gray-600">
+                <p className="text-sm text-gray-700 mt-1">
                   {formatStudioTime(selectedEvent.startTime, 'p')} - {formatStudioTime(selectedEvent.endTime, 'p')}
                 </p>
               </div>
 
               {selectedEvent.type !== 'blocked' && (
                 <>
-                  <div>
-                    <p className="text-xs md:text-sm text-gray-600">{t('schedule.eventDetails.customer')}</p>
-                    <p className="text-sm md:text-base font-medium">{selectedEvent.customerId?.userId?.name || 'Unknown'}</p>
+                  <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                    <p className="text-xs text-orange-600 font-semibold mb-1">{t('schedule.eventDetails.customer')}:</p>
+                    <p className="font-bold text-gray-900">{selectedEvent.customerId?.userId?.name || 'Unknown'}</p>
                   </div>
 
-                  <div>
-                    <p className="text-xs md:text-sm text-gray-600">{t('schedule.eventDetails.type')}</p>
-                    <p className="text-sm md:text-base font-medium capitalize">{selectedEvent.type}</p>
-                  </div>
-
-                  <div>
-                    <p className="text-xs md:text-sm text-gray-600">{t('schedule.eventDetails.status')}</p>
-                    <span
-                      className={`inline-block px-2 py-1 rounded text-xs font-medium ${
-                        selectedEvent.status === 'confirmed'
-                          ? 'bg-green-100 text-green-800'
-                          : selectedEvent.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-gray-100 text-gray-800'
-                      }`}
-                    >
-                      {selectedEvent.status}
-                    </span>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                      <p className="text-xs text-orange-600 font-semibold mb-1">{t('schedule.eventDetails.type')}:</p>
+                      <p className="font-bold text-gray-900 capitalize">{selectedEvent.type}</p>
+                    </div>
+                    <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 border border-orange-200/50">
+                      <p className="text-xs text-orange-600 font-semibold mb-1">{t('schedule.eventDetails.status')}:</p>
+                      <span
+                        className={`inline-block px-2 py-1 rounded-lg text-xs font-semibold ${
+                          selectedEvent.status === 'confirmed'
+                            ? 'bg-green-100/80 text-green-800'
+                            : selectedEvent.status === 'pending'
+                            ? 'bg-yellow-100/80 text-yellow-800'
+                            : 'bg-gray-100/80 text-gray-800'
+                        }`}
+                      >
+                        {selectedEvent.status}
+                      </span>
+                    </div>
                   </div>
                 </>
               )}
 
               {selectedEvent.notes && (
-                <div>
-                  <p className="text-xs md:text-sm text-gray-600">{t('schedule.eventDetails.notes')}</p>
-                  <p className="text-xs md:text-sm">{selectedEvent.notes}</p>
+                <div className="bg-blue-50/80 backdrop-blur-sm rounded-xl p-3 border border-blue-200">
+                  <p className="text-xs text-blue-700 font-semibold mb-1">{t('schedule.eventDetails.notes')}:</p>
+                  <p className="text-sm text-blue-900">{selectedEvent.notes}</p>
                 </div>
               )}
 
               {selectedEvent.type === 'blocked' && (
-                <div className="mt-3 md:mt-4">
+                <div className="mt-4">
                   <Button
                     variant="outline"
                     onClick={() => handleUnblock(selectedEvent._id)}
-                    className="w-full border-red-300 text-red-600 hover:bg-red-50 text-xs md:text-sm"
+                    className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
                   >
                     {t('schedule.eventDetails.unblockThisTime')}
                   </Button>
@@ -677,8 +684,8 @@ export default function AdminSchedule() {
               )}
             </div>
 
-            <div className="mt-4 md:mt-6">
-              <Button variant="outline" onClick={() => setShowEventDetails(false)} className="w-full text-xs md:text-sm">
+            <div className="p-4 md:p-6 border-t border-white/20 bg-white/20 backdrop-blur-sm">
+              <Button variant="outline" onClick={() => setShowEventDetails(false)} className="w-full border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400">
                 {t('common.close')}
               </Button>
             </div>

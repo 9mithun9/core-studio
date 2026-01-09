@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import { apiClient } from '@/lib/apiClient';
@@ -315,11 +316,13 @@ export default function CustomerDashboard() {
             // Show countdown to next session
             const nextBooking = overview.upcomingBookings[0];
             return (
-              <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl">
+              <div className="relative bg-white/20 backdrop-blur-xl rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl border border-white/30">
+                {/* Gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-pink-500 to-orange-600 opacity-90"></div>
                 {/* Animated background elements */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
-                  <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full opacity-20 animate-pulse"></div>
+                  <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-white rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 </div>
 
                 <div className="relative z-10">
@@ -343,7 +346,7 @@ export default function CustomerDashboard() {
                     {/* Session Details */}
                     <div className="flex-1 space-y-2.5">
                       <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-white/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
                         <span className="text-sm md:text-base font-semibold">
@@ -351,15 +354,15 @@ export default function CustomerDashboard() {
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-white/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
-                        <span className="text-sm md:text-base text-blue-100">
+                        <span className="text-sm md:text-base text-white/90">
                           {formatStudioTime(nextBooking.startTime, 'p')}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <svg className="w-4 h-4 text-blue-200 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4 text-white/80 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                         </svg>
                         <span className="text-sm md:text-base">
@@ -373,17 +376,17 @@ export default function CustomerDashboard() {
                       <div className="flex gap-3 md:gap-2 justify-center md:justify-end items-center">
                         <div className="flex flex-col items-center">
                           <div className="text-2xl md:text-3xl font-bold">{timeRemaining.days}</div>
-                          <div className="text-xs text-blue-200 uppercase mt-0.5">Days</div>
+                          <div className="text-xs text-white/80 uppercase mt-0.5">Days</div>
                         </div>
                         <div className="text-2xl md:text-3xl font-bold opacity-50">:</div>
                         <div className="flex flex-col items-center">
                           <div className="text-2xl md:text-3xl font-bold">{String(timeRemaining.hours).padStart(2, '0')}</div>
-                          <div className="text-xs text-blue-200 uppercase mt-0.5">Hours</div>
+                          <div className="text-xs text-white/80 uppercase mt-0.5">Hours</div>
                         </div>
                         <div className="text-2xl md:text-3xl font-bold opacity-50">:</div>
                         <div className="flex flex-col items-center">
                           <div className="text-2xl md:text-3xl font-bold">{String(timeRemaining.minutes).padStart(2, '0')}</div>
-                          <div className="text-xs text-blue-200 uppercase mt-0.5">Mins</div>
+                          <div className="text-xs text-white/80 uppercase mt-0.5">Mins</div>
                         </div>
                       </div>
                     )}
@@ -394,18 +397,20 @@ export default function CustomerDashboard() {
           } else if (!shouldShowWeMissYou) {
             // Show "No upcoming sessions" only if we're NOT showing the "We Miss You" banner
             return (
-              <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl">
+              <div className="relative bg-white/20 backdrop-blur-xl rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl border border-white/30">
+                {/* Gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-500 via-pink-500 to-orange-600 opacity-90"></div>
                 {/* Animated background elements */}
                 <div className="absolute top-0 left-0 w-full h-full overflow-hidden">
-                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-purple-400 rounded-full opacity-20 animate-pulse"></div>
-                  <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-indigo-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+                  <div className="absolute -top-10 -right-10 w-40 h-40 bg-white rounded-full opacity-20 animate-pulse"></div>
+                  <div className="absolute -bottom-10 -left-10 w-60 h-60 bg-white rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
                 </div>
 
                 <div className="relative z-10">
                   <h3 className="text-2xl md:text-3xl font-bold mb-2">{t('dashboard.noSessions')}</h3>
-                  <p className="text-purple-100 mb-6 text-base md:text-lg">{t('dashboard.subtitle')}</p>
+                  <p className="text-white/90 mb-6 text-base md:text-lg">{t('dashboard.subtitle')}</p>
                   <Link href="/customer/calendar">
-                    <Button size="lg" className="bg-white text-purple-700 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all">
+                    <Button size="lg" className="bg-white text-orange-600 hover:bg-white/90 shadow-lg hover:shadow-xl transition-all">
                       <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                       </svg>
@@ -429,7 +434,7 @@ export default function CustomerDashboard() {
         // Show banner only if: 15+ days since last session AND no upcoming sessions
         if (daysSinceLastSession !== null && daysSinceLastSession >= 15 && !hasUpcomingSessions) {
           return (
-            <div className="relative bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl border-4 border-white">
+            <div className="relative bg-gradient-to-r from-pink-500 via-rose-500 to-orange-500 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-2xl">
               {/* Static background effects */}
               <div className="absolute inset-0 overflow-hidden">
                 <div className="absolute -top-20 -left-20 w-40 h-40 bg-yellow-300 rounded-full opacity-30"></div>
@@ -462,10 +467,10 @@ export default function CustomerDashboard() {
                     </p>
                     <div className="flex justify-center md:justify-start">
                       <Link href="/customer/calendar">
-                        <Button size="lg" className="bg-white text-rose-600 hover:bg-yellow-100 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all">
-                          <span className="mr-2 text-xl">🔥</span>
-                          {t('dashboard.weMissYou.bookComebackSession')}
-                          <span className="ml-2 text-xl">💃</span>
+                        <Button size="lg" className="bg-white text-rose-600 hover:bg-yellow-100 font-bold shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all text-sm md:text-base px-4 md:px-6">
+                          <span className="mr-1 md:mr-2 text-lg md:text-xl">🔥</span>
+                          <span className="whitespace-nowrap">{t('dashboard.weMissYou.bookComebackSession')}</span>
+                          <span className="ml-1 md:ml-2 text-lg md:text-xl">💃</span>
                         </Button>
                       </Link>
                     </div>
@@ -565,13 +570,9 @@ export default function CustomerDashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Package List */}
         <div className="lg:col-span-1">
-          <div className="relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 overflow-hidden">
-            {/* Background decorations */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48"></div>
-
-            {/* Header */}
-            <div className="relative z-10 mb-4">
+          <div className="relative bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+            {/* Header with Gradient */}
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
               <div className="flex items-center justify-between mb-2">
                 <h2 className="text-xl font-bold text-white">{t('dashboard.myPackages.title')}</h2>
                 {(() => {
@@ -581,7 +582,7 @@ export default function CustomerDashboard() {
                     <Button
                       size="sm"
                       onClick={() => setShowRequestModal(true)}
-                      className="bg-white text-purple-600 hover:bg-purple-50"
+                      className="bg-white/90 text-orange-600 hover:bg-white shadow-md"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -590,12 +591,12 @@ export default function CustomerDashboard() {
                   );
                 })()}
               </div>
-              <p className="text-purple-100 text-sm">{t('dashboard.myPackages.description')}</p>
+              <p className="text-white/90 text-sm">{t('dashboard.myPackages.description')}</p>
             </div>
 
             {/* Package Cards */}
             {allPackages.length > 0 ? (
-              <div className="relative z-10 space-y-3 max-h-[400px] overflow-y-auto pr-1 scrollbar-thin">
+              <div className="px-6 py-6 space-y-3 max-h-[400px] overflow-y-auto scrollbar-thin">
               {allPackages.map((pkg) => {
                 const remaining = pkg.remainingUnbooked ?? pkg.availableForBooking ?? pkg.remainingSessions;
                 const total = pkg.totalSessions;
@@ -609,8 +610,8 @@ export default function CustomerDashboard() {
                     onClick={() => selectPackage(pkg)}
                     className={`w-full text-left rounded-xl p-4 transition-all duration-200 ${
                       selectedPackage?._id === pkg._id
-                        ? 'bg-purple-50 ring-2 ring-purple-400 shadow-lg border-2 border-purple-400'
-                        : 'bg-white hover:shadow-md border border-gray-100'
+                        ? 'bg-gradient-to-br from-orange-400/20 to-pink-400/20 backdrop-blur-md shadow-lg border border-white/60'
+                        : 'bg-white/50 backdrop-blur-md hover:shadow-md border border-white/60 hover:border-orange-300'
                     }`}
                   >
                     {/* Package Header */}
@@ -681,17 +682,17 @@ export default function CustomerDashboard() {
               })}
               </div>
             ) : (
-              <div className="relative z-10 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl p-8 text-center border border-white border-opacity-20">
-                <div className="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center shadow-lg">
                   <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
                   </svg>
                 </div>
-                <p className="text-base font-bold text-white mb-2">{t('dashboard.myPackages.noPackages')}</p>
-                <p className="text-sm text-purple-100 mb-4">{t('dashboard.myPackages.noPackagesMessage')}</p>
+                <p className="text-base font-bold text-gray-900 mb-2">{t('dashboard.myPackages.noPackages')}</p>
+                <p className="text-sm text-gray-700 mb-4">{t('dashboard.myPackages.noPackagesMessage')}</p>
                 <Button
                   onClick={() => setShowRequestModal(true)}
-                  className="bg-white text-purple-600 hover:bg-purple-50"
+                  className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all"
                 >
                   {t('dashboard.myPackages.requestFirst')}
                 </Button>
@@ -703,68 +704,64 @@ export default function CustomerDashboard() {
         {/* Right: Package Details and Session History */}
         <div className="lg:col-span-2">
           {selectedPackage ? (
-            <div className="relative bg-gradient-to-br from-purple-600 to-purple-700 rounded-2xl p-6 overflow-hidden">
-              {/* Background decorations */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mr-32 -mt-32"></div>
-              <div className="absolute bottom-0 left-0 w-96 h-96 bg-white opacity-5 rounded-full -ml-48 -mb-48"></div>
-
-              {/* Header */}
-              <div className="relative z-10 mb-6">
+            <div className="relative bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+              {/* Header with Gradient */}
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
                 <h2 className="text-xl font-bold text-white mb-1">{t('dashboard.packageDetails.title')}</h2>
-                <p className="text-purple-100 text-sm">{selectedPackage.name}</p>
+                <p className="text-white/90 text-sm">{selectedPackage.name}</p>
               </div>
 
-              <div className="relative z-10 space-y-6">
+              <div className="p-6 space-y-6">
                 {/* Package Stats */}
-                <div className="grid grid-cols-4 gap-2 md:gap-4 p-3 md:p-4 bg-white bg-opacity-10 backdrop-blur-sm rounded-xl border border-white border-opacity-20">
+                <div className="grid grid-cols-4 gap-2 md:gap-4">
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl font-bold text-white">
+                    <div className="text-3xl md:text-4xl font-bold text-gray-900">
                       {selectedPackage.totalSessions}
                     </div>
-                    <div className="text-xs text-purple-100 mt-1">{t('dashboard.packageDetails.total')}</div>
+                    <div className="text-xs text-gray-700 mt-1 font-medium">{t('dashboard.packageDetails.total')}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl font-bold text-green-300">
+                    <div className="text-3xl md:text-4xl font-bold text-green-600">
                       {selectedPackage.completedCount || 0}
                     </div>
-                    <div className="text-xs text-purple-100 mt-1">{t('dashboard.packageDetails.completed')}</div>
+                    <div className="text-xs text-gray-700 mt-1 font-medium">{t('dashboard.packageDetails.completed')}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl font-bold text-blue-300">
+                    <div className="text-3xl md:text-4xl font-bold text-blue-600">
                       {selectedPackage.upcomingCount || 0}
                     </div>
-                    <div className="text-xs text-purple-100 mt-1">{t('dashboard.packageDetails.upcoming')}</div>
+                    <div className="text-xs text-gray-700 mt-1 font-medium">{t('dashboard.packageDetails.upcoming')}</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl md:text-3xl font-bold text-orange-300">
+                    <div className="text-3xl md:text-4xl font-bold text-orange-600">
                       {selectedPackage.remainingUnbooked ?? selectedPackage.availableForBooking ?? 0}
                     </div>
-                    <div className="text-xs text-purple-100 mt-1">{t('dashboard.myPackages.remaining')}</div>
+                    <div className="text-xs text-gray-700 mt-1 font-medium">{t('dashboard.myPackages.remaining')}</div>
                   </div>
                 </div>
 
                 {/* Package Info */}
                 <div className="space-y-2 text-sm">
-                  <div className="flex justify-between py-2 border-b border-white border-opacity-20">
-                    <span className="text-purple-100">{t('dashboard.packageDetails.type')}</span>
-                    <span className="font-medium text-white capitalize">{selectedPackage.type}</span>
+                  <div className="flex justify-between py-2 border-b border-white/60">
+                    <span className="text-gray-700 font-medium">{t('dashboard.packageDetails.type')}</span>
+                    <span className="font-semibold text-gray-900 capitalize">{selectedPackage.type}</span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-white border-opacity-20">
-                    <span className="text-purple-100">{t('dashboard.packageDetails.validFrom')}</span>
-                    <span className="font-medium text-white">
+                  <div className="flex justify-between py-2 border-b border-white/60">
+                    <span className="text-gray-700 font-medium">{t('dashboard.packageDetails.validFrom')}</span>
+                    <span className="font-semibold text-gray-900">
                       {formatStudioTime(selectedPackage.validFrom, 'PPP')}
                     </span>
                   </div>
-                  <div className="flex justify-between py-2 border-b border-white border-opacity-20">
-                    <span className="text-purple-100">{t('dashboard.packageDetails.validUntil')}</span>
-                    <span className="font-medium text-white">
+                  <div className="flex justify-between py-2 border-b border-white/60">
+                    <span className="text-gray-700 font-medium">{t('dashboard.packageDetails.validUntil')}</span>
+                    <span className="font-semibold text-gray-900">
                       {formatStudioTime(selectedPackage.validTo, 'PPP')}
                     </span>
                   </div>
                   <div className="flex justify-between py-2">
-                    <span className="text-purple-100">{t('dashboard.packageDetails.status')}</span>
+                    <span className="text-gray-700 font-medium">{t('dashboard.packageDetails.status')}</span>
                     <span
-                      className={`inline-flex px-3 py-1 rounded-full text-xs font-medium capitalize ${
+                      className={`inline-flex px-3 py-1 rounded-full text-xs font-semibold capitalize ${
                         selectedPackage.status === 'active'
                           ? 'bg-green-100 text-green-800'
                           : selectedPackage.status === 'expired'
@@ -779,7 +776,12 @@ export default function CustomerDashboard() {
 
                 {/* Session History */}
                 <div>
-                  <h3 className="font-semibold text-base md:text-lg mb-3 text-white">{t('dashboard.packageDetails.sessionHistory')}</h3>
+                  <div className="flex items-center gap-2 mb-4">
+                    <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <h3 className="font-bold text-base md:text-lg text-gray-900">{t('dashboard.packageDetails.sessionHistory')}</h3>
+                  </div>
                 {packageSessions.length > 0 ? (
                   <div className="space-y-3 max-h-96 overflow-y-auto pr-1 scrollbar-thin">
                       {packageSessions
@@ -787,7 +789,7 @@ export default function CustomerDashboard() {
                         .map((session: any) => (
                           <div
                             key={session._id}
-                            className="group relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-l-4 bg-gradient-to-r from-gray-50 to-white rounded-lg hover:shadow-md transition-all gap-3 border border-gray-100"
+                            className="group relative flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 border-l-4 bg-white/50 backdrop-blur-md rounded-xl hover:shadow-lg transition-all gap-3 border border-white/60"
                             style={{
                               borderLeftColor:
                                 session.status === 'completed' || (session.status === 'confirmed' && new Date(session.endTime) < new Date())
@@ -800,8 +802,8 @@ export default function CustomerDashboard() {
                             }}
                           >
                             <div className="flex-1 flex items-start gap-3">
-                              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center flex-shrink-0">
-                                <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <div className="w-12 h-12 rounded-lg bg-gradient-to-br from-orange-100 to-pink-100 flex items-center justify-center flex-shrink-0">
+                                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                 </svg>
                               </div>
@@ -872,7 +874,7 @@ export default function CustomerDashboard() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  className="text-xs w-full sm:w-auto"
+                                  className="text-xs w-full sm:w-auto border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
                                   onClick={async () => {
                                     if (!confirm('Are you sure you want to cancel this booking request?')) {
                                       return;
@@ -924,7 +926,7 @@ export default function CustomerDashboard() {
                                   <Button
                                     variant="outline"
                                     size="sm"
-                                    className="text-xs w-full sm:w-auto"
+                                    className="text-xs w-full sm:w-auto border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
                                     onClick={async () => {
                                       const reason = prompt(t('dashboard.cancellation.reasonPrompt'));
                                       if (reason !== null) {
@@ -955,16 +957,16 @@ export default function CustomerDashboard() {
                         ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12">
-                    <div className="w-16 h-16 mx-auto mb-4 bg-white bg-opacity-20 rounded-full flex items-center justify-center">
+                  <div className="text-center py-12 bg-white/40 backdrop-blur-md rounded-xl border border-white/60">
+                    <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-orange-400 to-pink-400 rounded-full flex items-center justify-center">
                       <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
                     </div>
-                    <p className="text-sm text-white mb-4">{t('dashboard.packageDetails.noSessions')}</p>
+                    <p className="text-sm text-gray-700 font-medium mb-4">{t('dashboard.packageDetails.noSessions')}</p>
                     {selectedPackage.status === 'active' && (
                       <Link href="/customer/calendar">
-                        <Button size="lg" className="bg-white text-purple-700 hover:bg-gray-100 shadow-lg hover:shadow-xl transition-all">
+                        <Button size="lg" className="bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 text-white shadow-lg hover:shadow-xl transition-all">
                           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                           </svg>
@@ -988,11 +990,11 @@ export default function CustomerDashboard() {
       </div>
 
       {/* Package Request Modal */}
-      {showRequestModal && (
-        <div className="fixed bg-black bg-opacity-60 flex items-center justify-center p-4 backdrop-blur-sm" style={{ zIndex: 9999, top: '-100px', left: 0, right: 0, bottom: 0 }}>
-          <div className="bg-white rounded-3xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+      {showRequestModal && typeof document !== 'undefined' && createPortal(
+        <div className="fixed top-0 left-0 right-0 bottom-0 bg-black/50 backdrop-blur-md flex items-center justify-center p-4" style={{ zIndex: 99999 }}>
+          <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/30 w-full max-w-lg overflow-hidden transform transition-all">
             {/* Header with Gradient */}
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 md:px-8 py-6 md:py-8 relative overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 md:px-8 py-6 md:py-8 relative overflow-hidden">
               {/* Background Pattern */}
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-white rounded-full -mr-16 -mt-16"></div>
@@ -1002,11 +1004,11 @@ export default function CustomerDashboard() {
               <div className="flex items-center justify-between relative z-10">
                 <div>
                   <h2 className="text-2xl md:text-3xl font-bold text-white mb-1">{t('dashboard.requestModal.title')}</h2>
-                  <p className="text-purple-100 text-sm">Choose your perfect package</p>
+                  <p className="text-white/90 text-sm">Choose your perfect package</p>
                 </div>
                 <button
                   onClick={() => setShowRequestModal(false)}
-                  className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all"
+                  className="text-white/80 hover:text-white hover:bg-white/20 rounded-full p-2 transition-all"
                 >
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -1016,10 +1018,10 @@ export default function CustomerDashboard() {
             </div>
 
             {/* Content */}
-            <div className="px-6 md:px-8 py-6 md:py-8 space-y-6">
+            <div className="px-6 md:px-8 py-6 md:py-8 space-y-6 bg-white/10 backdrop-blur-md">
               {/* Package Type Selection */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-white mb-3">
                   {t('dashboard.requestModal.packageType')}
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -1030,8 +1032,8 @@ export default function CustomerDashboard() {
                       onClick={() => setRequestForm({ ...requestForm, packageType: type })}
                       className={`px-4 py-3 rounded-xl border-2 font-medium text-sm transition-all ${
                         requestForm.packageType === type
-                          ? 'border-purple-600 bg-gradient-to-br from-purple-50 to-indigo-50 text-purple-700 shadow-md'
-                          : 'border-gray-200 hover:border-purple-300 text-gray-700 hover:bg-gray-50'
+                          ? 'border-orange-400 bg-gradient-to-br from-orange-400/30 to-pink-400/30 backdrop-blur-md text-white shadow-lg ring-2 ring-orange-400'
+                          : 'border-white/40 bg-white/20 backdrop-blur-sm hover:border-orange-300 text-white/90 hover:bg-white/30'
                       }`}
                     >
                       <div className="capitalize">{t(`packages.${type}`)}</div>
@@ -1042,7 +1044,7 @@ export default function CustomerDashboard() {
 
               {/* Number of Sessions */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-white mb-3">
                   {t('dashboard.requestModal.sessions')}
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -1053,14 +1055,14 @@ export default function CustomerDashboard() {
                       onClick={() => setRequestForm({ ...requestForm, sessions: count })}
                       className={`px-4 py-4 rounded-xl border-2 font-medium transition-all ${
                         requestForm.sessions === count
-                          ? 'border-purple-600 bg-gradient-to-br from-purple-50 to-indigo-50 shadow-md'
-                          : 'border-gray-200 hover:border-purple-300 hover:bg-gray-50'
+                          ? 'border-orange-400 bg-gradient-to-br from-orange-400/30 to-pink-400/30 backdrop-blur-md shadow-lg ring-2 ring-orange-400'
+                          : 'border-white/40 bg-white/20 backdrop-blur-sm hover:border-orange-300 hover:bg-white/30'
                       }`}
                     >
-                      <div className={`text-2xl font-bold mb-1 ${requestForm.sessions === count ? 'text-purple-700' : 'text-gray-900'}`}>
+                      <div className={`text-2xl font-bold mb-1 ${requestForm.sessions === count ? 'text-white' : 'text-white/90'}`}>
                         {count}
                       </div>
-                      <div className={`text-xs ${requestForm.sessions === count ? 'text-purple-600' : 'text-gray-500'}`}>
+                      <div className={`text-xs ${requestForm.sessions === count ? 'text-white' : 'text-white/80'}`}>
                         {count === 1 ? 'session' : 'sessions'}
                       </div>
                     </button>
@@ -1070,7 +1072,7 @@ export default function CustomerDashboard() {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-3">
+                <label className="block text-sm font-semibold text-white mb-3">
                   {t('dashboard.requestModal.notes')}
                 </label>
                 <textarea
@@ -1078,7 +1080,7 @@ export default function CustomerDashboard() {
                   onChange={(e) => setRequestForm({ ...requestForm, notes: e.target.value })}
                   placeholder={t('dashboard.requestModal.notesPlaceholder')}
                   rows={3}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none text-base"
+                  className="w-full px-4 py-3 border-2 border-white/40 bg-white/20 backdrop-blur-sm rounded-xl focus:ring-2 focus:ring-orange-400 focus:border-orange-400 transition-all resize-none text-base text-white placeholder-white/60"
                 />
               </div>
 
@@ -1087,20 +1089,21 @@ export default function CustomerDashboard() {
                 <Button
                   variant="outline"
                   onClick={() => setShowRequestModal(false)}
-                  className="flex-1 py-6 text-base font-semibold border-2 border-gray-300 hover:border-purple-400 hover:text-purple-600 hover:bg-purple-50 rounded-xl"
+                  className="flex-1 py-6 text-base font-semibold border-2 border-white/50 bg-white/20 backdrop-blur-sm hover:border-white/70 hover:bg-white/30 text-white rounded-xl"
                 >
                   {t('dashboard.requestModal.cancel')}
                 </Button>
                 <Button
                   onClick={handleRequestPackage}
-                  className="flex-1 py-6 text-base font-semibold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  className="flex-1 py-6 text-base font-semibold bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-xl shadow-lg hover:shadow-xl transition-all text-white"
                 >
                   {t('dashboard.requestModal.submit')}
                 </Button>
               </div>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* Review Details Modal */}

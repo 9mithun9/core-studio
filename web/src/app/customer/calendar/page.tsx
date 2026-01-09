@@ -235,13 +235,13 @@ export default function CustomerCalendar() {
         {initialLoading ? (
           <div className="flex items-center justify-center py-20">
             <div className="text-center">
-              <div className="inline-block w-12 h-12 border-4 border-purple-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+              <div className="inline-block w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4"></div>
               <p className="text-gray-600">Loading...</p>
             </div>
           </div>
         ) : packages.length === 0 ? (
           <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden max-w-2xl mx-auto">
-            <div className="relative bg-gradient-to-br from-purple-600 to-indigo-600 p-8">
+            <div className="relative bg-gradient-to-br from-orange-500 to-pink-500 p-8">
               <div className="absolute inset-0 opacity-10">
                 <div className="absolute top-0 right-0 w-40 h-40 bg-white rounded-full -mr-20 -mt-20"></div>
                 <div className="absolute bottom-0 left-0 w-32 h-32 bg-white rounded-full -ml-16 -mb-16"></div>
@@ -255,7 +255,7 @@ export default function CustomerCalendar() {
                 <h3 className="text-2xl font-bold text-white mb-2">
                   {t('calendar.noPackages.title')}
                 </h3>
-                <p className="text-purple-100">
+                <p className="text-orange-100">
                   {t('calendar.noPackages.message')}
                 </p>
               </div>
@@ -270,7 +270,7 @@ export default function CustomerCalendar() {
                     navigator.clipboard.writeText(t('calendar.noPackages.phone'));
                     toast.success('Phone number copied to clipboard!');
                   }}
-                  className="w-full flex items-center justify-center gap-2 text-purple-600 hover:text-purple-700 font-semibold transition-colors cursor-pointer"
+                  className="w-full flex items-center justify-center gap-2 text-orange-600 hover:text-orange-700 font-semibold transition-colors cursor-pointer"
                 >
                   <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -301,15 +301,15 @@ export default function CustomerCalendar() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Package Selection */}
               <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-5">
+                <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-5">
                   <h2 className="text-xl font-bold text-white mb-1">{t('calendar.selectPackage.title')}</h2>
-                  <p className="text-purple-100 text-sm">{t('calendar.selectPackage.description')}</p>
+                  <p className="text-orange-100 text-sm">{t('calendar.selectPackage.description')}</p>
                 </div>
                 <div className="p-6">
                   <select
                     value={selectedPackage}
                     onChange={(e) => setSelectedPackage(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-base"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-base"
                     required
                   >
                     {packages.map((pkg) => (
@@ -323,7 +323,7 @@ export default function CustomerCalendar() {
                     <div className="mt-6 p-5 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl space-y-4">
                       <div className="flex items-center justify-between">
                         <span className="font-semibold text-gray-700 text-sm">{t('calendar.selectPackage.packageType')}</span>
-                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold capitalize">
+                        <span className="px-3 py-1 bg-orange-100 text-orange-700 rounded-full text-xs font-semibold capitalize">
                           {selectedPackageData.type}
                         </span>
                       </div>
@@ -336,8 +336,8 @@ export default function CustomerCalendar() {
                           <div className="text-xs text-gray-500 mb-1">{t('calendar.selectPackage.upcoming')}</div>
                           <div className="text-xl font-bold text-blue-600">{selectedPackageData.upcomingCount ?? 0}</div>
                         </div>
-                        <div className="text-center p-3 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl shadow-md">
-                          <div className="text-xs text-purple-100 mb-1">{t('calendar.selectPackage.remaining')}</div>
+                        <div className="text-center p-3 bg-gradient-to-br from-orange-500 to-pink-500 rounded-xl shadow-md">
+                          <div className="text-xs text-orange-100 mb-1">{t('calendar.selectPackage.remaining')}</div>
                           <div className="text-xl font-bold text-white">{selectedPackageData.remainingUnbooked ?? selectedPackageData.availableForBooking ?? selectedPackageData.remainingSessions}</div>
                         </div>
                       </div>
@@ -356,9 +356,9 @@ export default function CustomerCalendar() {
 
               {/* Instructor Selection */}
               <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-5">
+                <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-5">
                   <h2 className="text-xl font-bold text-white mb-1">{t('calendar.selectInstructor.title')}</h2>
-                  <p className="text-purple-100 text-sm">{t('calendar.selectInstructor.description')}</p>
+                  <p className="text-orange-100 text-sm">{t('calendar.selectInstructor.description')}</p>
                 </div>
                 <div className="p-6">
                   <div className="space-y-3">
@@ -368,14 +368,14 @@ export default function CustomerCalendar() {
                         onClick={() => setSelectedTeacher(teacher._id)}
                         className={`p-4 border-2 rounded-2xl cursor-pointer transition-all ${
                           selectedTeacher === teacher._id
-                            ? 'border-purple-600 bg-gradient-to-br from-purple-50 to-indigo-50 shadow-md'
-                            : 'border-gray-200 hover:border-purple-300 hover:shadow-sm'
+                            ? 'border-orange-500 bg-gradient-to-br from-orange-50 to-pink-50 shadow-md'
+                            : 'border-gray-200 hover:border-orange-300 hover:shadow-sm'
                         }`}
                       >
                         <div className="flex items-center gap-3">
                           {selectedTeacher === teacher._id && (
                             <div className="flex-shrink-0">
-                              <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                              <svg className="w-5 h-5 text-orange-600" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                               </svg>
                             </div>
@@ -398,9 +398,9 @@ export default function CustomerCalendar() {
 
             {/* Date & Time Selection */}
             <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-6">
                 <h2 className="text-2xl font-bold text-white mb-1">{t('calendar.selectDateTime.title')}</h2>
-                <p className="text-purple-100 text-sm">{t('calendar.selectDateTime.description')}</p>
+                <p className="text-orange-100 text-sm">{t('calendar.selectDateTime.description')}</p>
               </div>
               <div className="p-8 space-y-6">
                 <div>
@@ -411,7 +411,7 @@ export default function CustomerCalendar() {
                       const [year, month, day] = e.target.value.split('-').map(Number);
                       setSelectedDate(new Date(year, month - 1, day));
                     }}
-                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all text-base"
+                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all text-base"
                     required
                   >
                     {availableDates.map((date) => (
@@ -441,7 +441,7 @@ export default function CustomerCalendar() {
                             isBlocked
                               ? 'border-red-300 bg-red-100 text-red-600 cursor-not-allowed'
                               : selectedTime === time
-                              ? 'border-purple-600 bg-gradient-to-br from-purple-600 to-indigo-600 text-white shadow-md'
+                              ? 'border-orange-500 bg-gradient-to-br from-orange-500 to-pink-500 text-white shadow-md'
                               : isPartial
                               ? 'border-yellow-300 bg-yellow-50 text-yellow-700 hover:border-yellow-400 hover:shadow-sm'
                               : 'border-green-300 bg-green-50 text-green-700 hover:border-green-400 hover:shadow-sm'
@@ -549,16 +549,16 @@ export default function CustomerCalendar() {
 
             {/* Notes */}
             <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-6">
                 <h2 className="text-2xl font-bold text-white mb-1">{t('calendar.notes.title')}</h2>
-                <p className="text-purple-100 text-sm">{t('calendar.notes.description')}</p>
+                <p className="text-orange-100 text-sm">{t('calendar.notes.description')}</p>
               </div>
               <div className="p-8">
                 <textarea
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   rows={4}
-                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all resize-none"
+                  className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all resize-none"
                   placeholder={t('calendar.notes.placeholder')}
                 />
               </div>
@@ -567,7 +567,7 @@ export default function CustomerCalendar() {
             {/* Submit */}
             <Button
               type="submit"
-              className="w-full py-6 text-lg font-bold bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+              className="w-full py-6 text-lg font-bold bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-2xl shadow-lg hover:shadow-xl transition-all"
               size="lg"
               disabled={loading}
             >

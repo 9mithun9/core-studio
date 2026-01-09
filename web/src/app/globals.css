@@ -140,4 +140,18 @@
   .animate-fall-4 {
     animation: fall-4 20s linear infinite;
   }
+
+  /* Shimmer animation for executive cards */
+  @keyframes shimmer {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-shimmer {
+    animation: shimmer 3s ease-in-out infinite;
+  }
 }

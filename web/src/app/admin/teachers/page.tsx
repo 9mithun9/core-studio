@@ -132,6 +132,23 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   return null;
 };
 
+// Custom Legend Component with Dot Design
+const CustomLegend = ({ payload }: any) => {
+  return (
+    <div className="flex flex-wrap items-center justify-center gap-4 mt-4">
+      {payload.map((entry: any, index: number) => (
+        <div key={index} className="flex items-center gap-2">
+          <div
+            className="w-3 h-3 rounded-full"
+            style={{ backgroundColor: entry.color }}
+          />
+          <span className="text-sm text-gray-700">{entry.value}</span>
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default function AdminTeachersPage() {
   const { t } = useTranslation('admin');
   const [teachers, setTeachers] = useState<TeacherWithDetails[]>([]);
@@ -432,7 +449,7 @@ export default function AdminTeachersPage() {
               <XAxis dataKey="monthYear" />
               <YAxis />
               <Tooltip content={<CustomTooltip />} />
-              <Legend />
+              <Legend content={<CustomLegend />} />
               {teacherNames.map((teacherName, index) => (
                 <Line
                   key={teacherName}

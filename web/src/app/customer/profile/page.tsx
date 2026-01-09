@@ -214,7 +214,7 @@ export default function CustomerProfilePage() {
     return (
       <div className="flex items-center justify-center py-20">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-purple-600 border-t-transparent mb-4"></div>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-orange-500 border-t-transparent mb-4"></div>
           <p className="text-lg text-gray-600">{t('profile.loading')}</p>
         </div>
       </div>
@@ -235,10 +235,10 @@ export default function CustomerProfilePage() {
     <div>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Profile Photo Section */}
-          <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-6 py-6">
+          <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-lg border border-white/30 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-6">
               <h2 className="text-2xl font-bold text-white mb-1">{t('profile.photo.title')}</h2>
-              <p className="text-purple-100 text-sm">{t('profile.photo.description')}</p>
+              <p className="text-orange-100 text-sm">{t('profile.photo.description')}</p>
             </div>
             <div className="p-8">
               <div className="flex flex-col items-center space-y-6">
@@ -247,9 +247,9 @@ export default function CustomerProfilePage() {
                     <img
                       src={previewUrl}
                       alt="Profile"
-                      className="w-48 h-48 rounded-full object-cover ring-4 ring-purple-100 shadow-xl"
+                      className="w-48 h-48 rounded-full object-cover ring-4 ring-orange-100 shadow-xl"
                     />
-                    <div className="absolute bottom-2 right-2 w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+                    <div className="absolute bottom-2 right-2 w-12 h-12 bg-gradient-to-br from-orange-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
                       <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -258,7 +258,7 @@ export default function CustomerProfilePage() {
                   </div>
                 ) : (
                   <div className="relative">
-                    <div className="w-48 h-48 rounded-full bg-gradient-to-br from-purple-400 to-indigo-600 flex items-center justify-center text-6xl font-bold text-white shadow-xl ring-4 ring-purple-100">
+                    <div className="w-48 h-48 rounded-full bg-gradient-to-br from-orange-400 to-pink-600 flex items-center justify-center text-6xl font-bold text-white shadow-xl ring-4 ring-orange-100">
                       {profile.userId.name.charAt(0).toUpperCase()}
                     </div>
                   </div>
@@ -284,11 +284,11 @@ export default function CustomerProfilePage() {
 
                   {selectedFile && (
                     <div className="space-y-3">
-                      <div className="p-3 bg-purple-50 rounded-xl border border-purple-200">
-                        <p className="text-xs text-purple-900 font-medium">
+                      <div className="p-3 bg-orange-50 rounded-xl border border-orange-200">
+                        <p className="text-xs text-orange-900 font-medium">
                           {selectedFile.name}
                         </p>
-                        <p className="text-xs text-purple-600 mt-1">
+                        <p className="text-xs text-orange-600 mt-1">
                           {(selectedFile.size / 1024).toFixed(2)} KB
                         </p>
                       </div>
@@ -296,7 +296,7 @@ export default function CustomerProfilePage() {
                         type="button"
                         onClick={handlePhotoUpload}
                         disabled={uploading}
-                        className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 rounded-xl py-3 shadow-md hover:shadow-lg transition-all"
+                        className="w-full bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 rounded-xl py-3 shadow-md hover:shadow-lg transition-all"
                       >
                         {uploading ? t('profile.photo.uploading') : t('profile.photo.uploadButton')}
                       </Button>
@@ -313,10 +313,10 @@ export default function CustomerProfilePage() {
 
           {/* Profile Information Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white rounded-3xl shadow-lg border border-gray-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 px-8 py-6">
+            <div className="bg-white/20 backdrop-blur-xl rounded-3xl shadow-lg border border-white/30 overflow-hidden">
+              <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-8 py-6">
                 <h2 className="text-2xl font-bold text-white mb-1">{t('profile.personalInfo')}</h2>
-                <p className="text-purple-100 text-sm">{t('profile.personalInfoDesc')}</p>
+                <p className="text-orange-100 text-sm">{t('profile.personalInfoDesc')}</p>
               </div>
               <div className="p-8">
                 <form onSubmit={handleSubmit} className="space-y-6">
@@ -352,7 +352,7 @@ export default function CustomerProfilePage() {
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                       placeholder={t('profile.fields.phonePlaceholder')}
                     />
                   </div>
@@ -365,7 +365,7 @@ export default function CustomerProfilePage() {
                         name="dateOfBirth"
                         value={formData.dateOfBirth}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                       />
                     </div>
 
@@ -375,7 +375,7 @@ export default function CustomerProfilePage() {
                         name="gender"
                         value={formData.gender}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                       >
                         <option value="">{t('profile.fields.genderSelect')}</option>
                         <option value="male">{t('profile.fields.genderMale')}</option>
@@ -391,7 +391,7 @@ export default function CustomerProfilePage() {
                       name="profession"
                       value={formData.profession}
                       onChange={handleChange}
-                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                      className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                     >
                       <option value="">{t('profile.fields.professionSelect')}</option>
                       <option value="student">{t('profile.fields.professionStudent')}</option>
@@ -412,7 +412,7 @@ export default function CustomerProfilePage() {
                         name="height"
                         value={formData.height}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                         placeholder={t('profile.fields.heightPlaceholder')}
                         min="0"
                         step="0.1"
@@ -426,7 +426,7 @@ export default function CustomerProfilePage() {
                         name="weight"
                         value={formData.weight}
                         onChange={handleChange}
-                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                         placeholder={t('profile.fields.weightPlaceholder')}
                         min="0"
                         step="0.1"
@@ -454,7 +454,7 @@ export default function CustomerProfilePage() {
                   {/* Emergency Contact */}
                   <div className="pt-6 border-t-2 border-gray-100">
                     <h3 className="font-bold mb-6 text-xl text-gray-900 flex items-center gap-2">
-                      <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                       </svg>
                       {t('profile.emergency.title')}
@@ -468,7 +468,7 @@ export default function CustomerProfilePage() {
                           name="emergencyContactName"
                           value={formData.emergencyContactName}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder={t('profile.emergency.namePlaceholder')}
                         />
                       </div>
@@ -480,7 +480,7 @@ export default function CustomerProfilePage() {
                           name="emergencyContactPhone"
                           value={formData.emergencyContactPhone}
                           onChange={handleChange}
-                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all"
+                          className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-orange-500 transition-all"
                           placeholder={t('profile.emergency.phonePlaceholder')}
                         />
                       </div>
@@ -491,7 +491,7 @@ export default function CustomerProfilePage() {
                     <Button
                       type="submit"
                       disabled={saving}
-                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 shadow-md hover:shadow-lg transition-all font-semibold"
+                      className="flex-1 py-3 rounded-xl bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600 shadow-md hover:shadow-lg transition-all font-semibold"
                     >
                       {saving ? t('profile.buttons.saving') : t('profile.buttons.save')}
                     </Button>

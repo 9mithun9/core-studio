@@ -53,7 +53,13 @@ export default function TeacherDashboard() {
   const [pendingRequests, setPendingRequests] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [sessionFilter, setSessionFilter] = useState<'today' | 'tomorrow' | 'date'>('today');
-  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [selectedDate, setSelectedDate] = useState<string>(() => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  });
   const [timeUntilNext, setTimeUntilNext] = useState<string>('');
   const [selectedStudent, setSelectedStudent] = useState<Booking | null>(null);
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
@@ -73,6 +79,7 @@ export default function TeacherDashboard() {
     thisWeek: 0,
     thisMonth: 0,
   });
+  const [timeRemaining, setTimeRemaining] = useState<{days: number; hours: number; minutes: number; seconds: number} | null>(null);
 
   const calculateAge = (dateOfBirth: string | undefined): number | null => {
     if (!dateOfBirth) return null;
@@ -144,34 +151,30 @@ export default function TeacherDashboard() {
     fetchDashboardData();
   }, []);
 
+  // Countdown timer for next session
   useEffect(() => {
-    if (!nextSession) return;
+    if (!nextSession?.startTime) return;
 
-    const updateCountdown = () => {
-      const now = new Date();
-      const sessionTime = new Date(nextSession.startTime);
-      const diff = sessionTime.getTime() - now.getTime();
+    const calculateTimeRemaining = () => {
+      const now = new Date().getTime();
+      const sessionTime = new Date(nextSession.startTime).getTime();
+      const difference = sessionTime - now;
 
-      if (diff <= 0) {
-        setTimeUntilNext(t('nextSession.started'));
+      if (difference <= 0) {
+        setTimeRemaining(null);
         return;
       }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-      if (days > 0) {
-        setTimeUntilNext(`${days}${t('time.days')} ${hours}${t('time.hours')} ${minutes}${t('time.minutes')}`);
-      } else if (hours > 0) {
-        setTimeUntilNext(`${hours}${t('time.hours')} ${minutes}${t('time.minutes')}`);
-      } else {
-        setTimeUntilNext(`${minutes} ${t('time.minutesFull')}`);
-      }
+      setTimeRemaining({ days, hours, minutes, seconds });
     };
 
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 60000); // Update every minute
+    calculateTimeRemaining();
+    const interval = setInterval(calculateTimeRemaining, 1000);
 
     return () => clearInterval(interval);
   }, [nextSession]);
@@ -198,11 +201,14 @@ export default function TeacherDashboard() {
         setNextSession(sorted[0]);
       }
 
-      // Fetch today's sessions
+      // Fetch today's sessions and sort by time (earliest first)
       const todayResponse: any = await apiClient.get('/teachers/sessions/today');
       console.log('Todays sessions:', todayResponse);
-      setTodaysSessions(todayResponse.sessions || []);
-      setAllTodaySessions(todayResponse.sessions || []);
+      const sortedSessions = (todayResponse.sessions || []).sort((a: Booking, b: Booking) =>
+        new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+      );
+      setTodaysSessions(sortedSessions);
+      setAllTodaySessions(sortedSessions);
 
       // Fetch ALL sessions and filter for pending on client side
       const allSessionsResponse: any = await apiClient.get('/teachers/sessions');
@@ -247,25 +253,42 @@ export default function TeacherDashboard() {
     }
   };
 
+  // Helper function to format date in local timezone
+  const formatLocalDate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleFilterChange = async (filter: 'today' | 'tomorrow' | 'date', date?: string) => {
     setSessionFilter(filter);
 
     if (filter === 'today') {
       const today = new Date();
-      setSelectedDate(today.toISOString().split('T')[0]);
+      const localDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+      setSelectedDate(formatLocalDate(today));
       setTodaysSessions(allTodaySessions);
     } else if (filter === 'tomorrow') {
       try {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        setSelectedDate(tomorrow.toISOString().split('T')[0]);
+        const today = new Date();
+        const tomorrow = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 1);
+        setSelectedDate(formatLocalDate(tomorrow));
+
+        // Create date range in local timezone
+        const startOfDay = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 0, 0, 0, 0);
+        const endOfDay = new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 23, 59, 59, 999);
+
         const response: any = await apiClient.get('/teachers/sessions', {
           params: {
-            from: new Date(tomorrow.setHours(0, 0, 0, 0)).toISOString(),
-            to: new Date(tomorrow.setHours(23, 59, 59, 999)).toISOString(),
+            from: startOfDay.toISOString(),
+            to: endOfDay.toISOString(),
           },
         });
-        setTodaysSessions(response.sessions || []);
+        const sortedSessions = (response.sessions || []).sort((a: Booking, b: Booking) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        );
+        setTodaysSessions(sortedSessions);
       } catch (error) {
         console.error('Failed to fetch tomorrow sessions:', error);
         toast.error(t('errors.loadSessions'));
@@ -273,14 +296,24 @@ export default function TeacherDashboard() {
     } else if (filter === 'date' && date) {
       setSelectedDate(date);
       try {
-        const selectedDay = new Date(date);
+        // Parse the date string correctly to avoid timezone issues
+        const [year, month, day] = date.split('-').map(Number);
+        const selectedDay = new Date(year, month - 1, day);
+
+        // Create date range in local timezone
+        const startOfDay = new Date(year, month - 1, day, 0, 0, 0, 0);
+        const endOfDay = new Date(year, month - 1, day, 23, 59, 59, 999);
+
         const response: any = await apiClient.get('/teachers/sessions', {
           params: {
-            from: new Date(selectedDay.setHours(0, 0, 0, 0)).toISOString(),
-            to: new Date(selectedDay.setHours(23, 59, 59, 999)).toISOString(),
+            from: startOfDay.toISOString(),
+            to: endOfDay.toISOString(),
           },
         });
-        setTodaysSessions(response.sessions || []);
+        const sortedSessions = (response.sessions || []).sort((a: Booking, b: Booking) =>
+          new Date(a.startTime).getTime() - new Date(b.startTime).getTime()
+        );
+        setTodaysSessions(sortedSessions);
       } catch (error) {
         console.error('Failed to fetch sessions for selected date:', error);
         toast.error(t('errors.loadSessions'));
@@ -365,92 +398,111 @@ export default function TeacherDashboard() {
 
   return (
     <div className="container mx-auto px-4 py-6 md:py-8">
-      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6 md:mb-8">{t('dashboard.title')}</h1>
+      {/* Stats Cards - Executive Style */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
+        {/* Total Completed */}
+        <div className="relative bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-indigo-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="relative z-10">
+            <p className="text-sm font-medium opacity-90 mb-3">{t('stats.totalCompleted')}</p>
+            <p className="text-3xl md:text-4xl font-bold">{stats.totalCompleted}</p>
+          </div>
+        </div>
 
-      {/* Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">{t('stats.totalCompleted')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.totalCompleted}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">{t('stats.thisWeek')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.thisWeek}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardTitle className="text-xs md:text-sm font-medium text-gray-600">{t('stats.thisMonth')}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl md:text-3xl font-bold text-gray-900">{stats.thisMonth}</div>
-          </CardContent>
-        </Card>
+        {/* This Month */}
+        <div className="relative bg-gradient-to-br from-purple-600 via-purple-700 to-pink-700 rounded-2xl p-6 md:p-8 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-purple-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-pink-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="relative z-10">
+            <p className="text-sm font-medium opacity-90 mb-3">{t('stats.thisMonth')}</p>
+            <p className="text-3xl md:text-4xl font-bold">{stats.thisMonth}</p>
+          </div>
+        </div>
+
+        {/* Next Session */}
+        <div className="relative bg-gradient-to-br from-teal-600 via-teal-700 to-cyan-700 rounded-2xl p-6 text-white overflow-hidden shadow-xl transform hover:scale-105 transition-all duration-300">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-teal-400 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute -bottom-10 -left-10 w-48 h-48 bg-cyan-400 rounded-full opacity-10 animate-pulse" style={{ animationDelay: '1s' }}></div>
+          <div className="relative z-10">
+            {/* Title and Badges Row */}
+            <div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+              <p className="text-sm font-medium opacity-90">{t('nextSession.title')}</p>
+              {nextSession && (
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold ${
+                    nextSession.status === 'confirmed'
+                      ? 'bg-green-400/30 text-green-100 border border-green-300/50'
+                      : 'bg-yellow-400/30 text-yellow-100 border border-yellow-300/50'
+                  }`}>
+                    {nextSession.status === 'confirmed' ? 'Confirmed' : 'Pending'}
+                  </span>
+                  {nextSession.packageId && (
+                    <>
+                      <span className="px-2 py-0.5 bg-white/20 rounded text-[9px] font-semibold border border-white/30">
+                        {nextSession.packageId.type === 'single' ? 'Single' :
+                         nextSession.packageId.type === 'duo' ? 'Duo' :
+                         nextSession.packageId.type === 'group' ? 'Group' : nextSession.packageId.type}
+                      </span>
+                      {nextSession.sessionNumber && nextSession.packageId.totalSessions && (
+                        <span className="px-2 py-0.5 bg-white/20 rounded text-[9px] font-semibold border border-white/30">
+                          {nextSession.sessionNumber}/{nextSession.packageId.totalSessions}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {nextSession ? (
+              <div className="flex flex-col md:flex-row gap-3 md:gap-4 md:items-start">
+                {/* Session Details */}
+                <div className="flex-1 space-y-1">
+                  <p className="text-2xl md:text-3xl font-bold leading-tight">{formatStudioTime(nextSession.startTime, 'h:mm a')}</p>
+                  <p className="text-xs opacity-90">{formatStudioTime(nextSession.startTime, 'EEE, MMM d')} • {nextSession.customerId.userId.name}</p>
+                </div>
+
+                {/* Countdown Timer */}
+                {timeRemaining && (
+                  <div className="flex gap-2 justify-center md:justify-end items-center">
+                    <div className="flex flex-col items-center">
+                      <div className="text-2xl md:text-3xl font-bold leading-tight">{timeRemaining.days}</div>
+                      <div className="text-[10px] text-white/80 uppercase leading-tight">Days</div>
+                    </div>
+                    <div className="text-2xl md:text-3xl font-bold opacity-50 leading-tight">:</div>
+                    <div className="flex flex-col items-center">
+                      <div className="text-2xl md:text-3xl font-bold leading-tight">{String(timeRemaining.hours).padStart(2, '0')}</div>
+                      <div className="text-[10px] text-white/80 uppercase leading-tight">Hours</div>
+                    </div>
+                    <div className="text-2xl md:text-3xl font-bold opacity-50 leading-tight">:</div>
+                    <div className="flex flex-col items-center">
+                      <div className="text-2xl md:text-3xl font-bold leading-tight">{String(timeRemaining.minutes).padStart(2, '0')}</div>
+                      <div className="text-[10px] text-white/80 uppercase leading-tight">Mins</div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <p className="text-lg font-semibold">{t('nextSession.noUpcoming')}</p>
+            )}
+          </div>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-        {/* LEFT COLUMN */}
+        {/* LEFT COLUMN - Pending Requests */}
         <div className="lg:col-span-1 space-y-4 md:space-y-6">
-          {/* Next Session */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base md:text-lg">{t('nextSession.title')}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {nextSession ? (
-                <div>
-                  <div className="text-lg md:text-2xl font-bold text-primary-600 mb-1">
-                    {formatStudioTime(nextSession.startTime, 'EEEE, MMM d')}
-                  </div>
-                  <div className="text-base md:text-xl font-semibold mb-2">
-                    {formatStudioTime(nextSession.startTime, 'h:mm a')} {t('nextSession.with')} {nextSession.customerId.userId.name}
-                  </div>
-
-                  {timeUntilNext && (
-                    <div className="mt-3 p-2 md:p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                      <div className="text-xs md:text-sm text-blue-600 font-medium">{t('nextSession.startsIn')}</div>
-                      <div className="text-lg md:text-2xl font-bold text-blue-700">{timeUntilNext}</div>
-                    </div>
-                  )}
-
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <span className={`inline-block px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium ${getStatusColor(nextSession.status)}`}>
-                      {nextSession.status}
-                    </span>
-                    <span className="inline-block px-2 md:px-3 py-1 rounded-full text-xs md:text-sm font-medium bg-purple-100 text-purple-700 capitalize">
-                      {nextSession.type}
-                    </span>
-                  </div>
-
-                  {nextSession.packageId && (
-                    <div className="mt-3 text-xs md:text-sm text-gray-600">
-                      {nextSession.packageId.name} - {nextSession.packageId.type}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <p className="text-sm md:text-base text-gray-500">{t('nextSession.noUpcoming')}</p>
-              )}
-            </CardContent>
-          </Card>
-
           {/* Pending Booking Requests */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-base md:text-lg">{t('requests.title')} ({pendingRequests.length})</CardTitle>
-            </CardHeader>
-            <CardContent>
+          <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
+              <h3 className="text-xl font-bold text-white">{t('requests.title')} ({pendingRequests.length})</h3>
+            </div>
+            <div className="p-6">
               <div className="mb-3">
                 <button
                   onClick={() => router.push('/teacher/session-requests')}
-                  className="text-primary-600 hover:text-primary-700 text-xs md:text-sm font-medium hover:underline cursor-pointer"
+                  className="text-orange-600 hover:text-orange-700 text-xs md:text-sm font-medium hover:underline cursor-pointer"
                 >
                   {t('requests.viewAll')} →
                 </button>
@@ -460,16 +512,15 @@ export default function TeacherDashboard() {
               ) : (
                 <div className="space-y-3">
                   {pendingRequests.slice(0, 3).map((request) => (
-                    <div key={request._id} className="border border-orange-200 bg-orange-50 rounded-lg p-2 md:p-3">
+                    <div key={request._id} className="bg-white/40 backdrop-blur-sm rounded-2xl p-3 md:p-4 border border-white/50 hover:border-orange-300 hover:shadow-lg transition-all">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                         <div className="flex-1">
                           <p className="text-sm md:text-base font-semibold text-gray-900">{request.customerId.userId.name}</p>
                           <p className="text-xs md:text-sm text-gray-600 break-all">{request.customerId.userId.email}</p>
                         </div>
-                      </div>
-                      <div className="text-xs md:text-sm text-gray-700 mb-2 md:mb-3">
-                        <div className="font-medium text-orange-600">
-                          {formatStudioTime(request.startTime, 'EEE, MMM d')} at {formatStudioTime(request.startTime, 'h:mm a')}
+                        <div className="text-right">
+                          <p className="text-xs md:text-sm font-medium text-orange-600">{formatStudioTime(request.startTime, 'h:mm a')}</p>
+                          <p className="text-xs text-gray-600">{formatStudioTime(request.startTime, 'EEE, MMM d')}</p>
                         </div>
                       </div>
                       {request.notes && (
@@ -481,7 +532,7 @@ export default function TeacherDashboard() {
                         <Button
                           size="sm"
                           onClick={() => handleApproveRequest(request._id)}
-                          className="flex-1 text-xs py-1 h-8"
+                          className="flex-1 text-xs py-1 h-8 bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
                         >
                           {t('requests.approve')}
                         </Button>
@@ -489,7 +540,7 @@ export default function TeacherDashboard() {
                           size="sm"
                           variant="outline"
                           onClick={() => handleRejectRequest(request._id)}
-                          className="flex-1 text-xs py-1 h-8"
+                          className="flex-1 text-xs py-1 h-8 border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
                         >
                           {t('requests.reject')}
                         </Button>
@@ -498,23 +549,25 @@ export default function TeacherDashboard() {
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* RIGHT COLUMN - Today's Sessions */}
         <div className="lg:col-span-2">
-          <Card>
-            <CardHeader>
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-3">
-                <CardTitle className="text-lg md:text-xl">{t('sessions.title')}</CardTitle>
+          <div className="bg-white/30 backdrop-blur-md rounded-3xl shadow-2xl border border-white/40 overflow-hidden">
+            <div className="bg-gradient-to-r from-orange-500 to-pink-500 px-6 py-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <h3 className="text-xl md:text-2xl font-bold text-white">
+                  {todaysSessions.length} {t('sessions.title')}
+                </h3>
                 <div className="flex flex-wrap gap-2 items-center">
                   <button
                     onClick={() => handleFilterChange('today')}
                     className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm font-medium transition-colors ${
                       sessionFilter === 'today'
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-white text-orange-600'
+                        : 'bg-white/20 text-white hover:bg-white/30'
                     }`}
                   >
                     {t('sessions.today')}
@@ -523,8 +576,8 @@ export default function TeacherDashboard() {
                     onClick={() => handleFilterChange('tomorrow')}
                     className={`px-2 md:px-3 py-1 rounded-md text-xs md:text-sm font-medium transition-colors ${
                       sessionFilter === 'tomorrow'
-                        ? 'bg-primary-600 text-white'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                        ? 'bg-white text-orange-600'
+                        : 'bg-white/20 text-white hover:bg-white/30'
                     }`}
                   >
                     {t('sessions.tomorrow')}
@@ -533,15 +586,12 @@ export default function TeacherDashboard() {
                     type="date"
                     value={selectedDate}
                     onChange={(e) => handleFilterChange('date', e.target.value)}
-                    className="px-2 md:px-3 py-1 border border-gray-300 rounded-md text-xs md:text-sm w-full sm:w-auto"
+                    className="px-2 md:px-3 py-1 border border-white/30 bg-white/20 text-white placeholder-white/70 rounded-md text-xs md:text-sm w-full sm:w-auto"
                   />
                 </div>
               </div>
-              <div className="text-2xl md:text-3xl font-bold text-primary-600">
-                {todaysSessions.length} {todaysSessions.length === 1 ? t('sessions.session') : t('sessions.sessions')}
-              </div>
-            </CardHeader>
-            <CardContent>
+            </div>
+            <div className="p-6">
               {todaysSessions.length === 0 ? (
                 <div className="text-center py-8 md:py-12">
                   <p className="text-gray-500 text-base md:text-lg">{t('sessions.noScheduled')}</p>
@@ -550,12 +600,12 @@ export default function TeacherDashboard() {
               ) : (
                 <div className="space-y-3 md:space-y-4">
                   {todaysSessions.map((session) => (
-                    <div key={session._id} className="border-2 border-gray-200 rounded-xl p-3 md:p-5 hover:shadow-lg transition-all hover:border-primary-300 bg-white/80 backdrop-blur-md">
+                    <div key={session._id} className="bg-white/40 backdrop-blur-sm rounded-2xl p-3 md:p-4 hover:shadow-lg transition-all border border-white/50 hover:border-orange-300">
                       {/* Header Section */}
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 mb-3 md:mb-4 pb-3 md:pb-4 border-b border-gray-100">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-3 pb-3 border-b border-white/40">
                         <div className="flex-1">
                           <h4
-                            className="text-lg md:text-xl font-bold text-primary-600 mb-1 cursor-pointer hover:text-primary-700 hover:underline"
+                            className="text-lg md:text-xl font-bold text-orange-600 mb-1 cursor-pointer hover:text-orange-700 hover:underline"
                             onClick={() => handleStudentClick(session)}
                           >
                             {session.customerId.userId.name}
@@ -582,8 +632,8 @@ export default function TeacherDashboard() {
                             )}
                           </div>
                         </div>
-                        <div className="text-right sm:text-right">
-                          <div className="text-xl md:text-2xl font-bold text-primary-600">
+                        <div className="text-right">
+                          <div className="text-xl md:text-2xl font-bold text-orange-600">
                             {formatStudioTime(session.startTime, 'h:mm a')}
                           </div>
                           <div className="text-xs md:text-sm text-gray-500">
@@ -593,7 +643,7 @@ export default function TeacherDashboard() {
                       </div>
 
                       {/* Session Info */}
-                      <div className="flex flex-wrap gap-2 mb-3 md:mb-4">
+                      <div className="flex flex-wrap gap-2 mb-3">
                         <span className={`inline-block px-2 md:px-3 py-1 md:py-1.5 rounded-full text-xs font-semibold ${getStatusColor(session.status)}`}>
                           {session.status}
                         </span>
@@ -616,39 +666,27 @@ export default function TeacherDashboard() {
 
                       {/* Notes Section */}
                       {session.notes && (
-                        <div className="mb-3 p-2 md:p-3 bg-blue-50 border-l-4 border-blue-400 rounded-r text-xs md:text-sm">
-                          <div className="flex items-start gap-2">
-                            <svg className="w-3 h-3 md:w-4 md:h-4 mt-0.5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                            </svg>
-                            <div className="flex-1">
-                              <span className="font-semibold text-blue-800">{t('sessions.bookingNotes')}:</span>
-                              <p className="text-blue-700 mt-1">{session.notes}</p>
-                            </div>
-                          </div>
+                        <div className="mb-3 p-2 md:p-3 border-l-4 border-blue-400 rounded-r text-xs md:text-sm">
+                          <span className="font-semibold text-blue-800">{t('sessions.bookingNotes')}:</span>
+                          <span className="text-blue-700 ml-1">{session.notes}</span>
                         </div>
                       )}
 
                       {/* Health Notes */}
                       {session.customerId.healthNotes && (
-                        <div className="mb-3 p-2 md:p-3 bg-orange-50 border-l-4 border-orange-400 rounded-r text-xs md:text-sm">
-                          <div className="flex items-start gap-2">
-                            <span className="text-base md:text-lg">⚠️</span>
-                            <div className="flex-1">
-                              <span className="font-semibold text-orange-800">{t('sessions.healthNotes')}:</span>
-                              <p className="text-orange-700 mt-1">{session.customerId.healthNotes}</p>
-                            </div>
-                          </div>
+                        <div className="mb-3 p-2 md:p-3 border-l-4 border-orange-400 rounded-r text-xs md:text-sm">
+                          <span className="font-semibold text-orange-800">⚠️ {t('sessions.healthNotes')}:</span>
+                          <span className="text-orange-700 ml-1">{session.customerId.healthNotes}</span>
                         </div>
                       )}
 
                       {/* Action Buttons */}
-                      <div className="pt-3 md:pt-4 border-t border-gray-100 flex flex-col sm:flex-row justify-end gap-2 md:gap-3">
+                      <div className="pt-3 border-t border-white/40 flex flex-col sm:flex-row justify-end gap-2 md:gap-3">
                         {/* Review Button for Completed Sessions */}
                         {session.status === 'completed' && !session.hasReview && (
                           <button
                             onClick={() => handleOpenReviewModal(session)}
-                            className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-primary-600 hover:text-primary-700 border-2 border-primary-300 hover:border-primary-400 rounded-lg hover:bg-primary-50 transition-all"
+                            className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-orange-600 hover:text-orange-700 border-2 border-orange-300 hover:border-orange-400 rounded-lg hover:bg-orange-50 transition-all"
                           >
                             {t('sessions.writeReview')}
                           </button>
@@ -663,7 +701,7 @@ export default function TeacherDashboard() {
                         {session.status !== 'cancelled' && canCancelSession(session.startTime) && (
                           <button
                             onClick={() => handleCancelSession(session._id, session.startTime)}
-                            className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-red-600 hover:text-red-700 border-2 border-red-300 hover:border-red-400 rounded-lg hover:bg-red-50 transition-all"
+                            className="px-4 md:px-6 py-2 text-xs md:text-sm font-medium text-orange-600 hover:text-orange-700 border-2 border-orange-300 hover:border-orange-400 rounded-lg hover:bg-orange-50 transition-all"
                           >
                             {t('sessions.cancelSession')}
                           </button>
@@ -673,39 +711,42 @@ export default function TeacherDashboard() {
                   ))}
                 </div>
               )}
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
       </div>
 
       {/* Student Info Modal */}
       <Dialog open={isStudentModalOpen} onOpenChange={setIsStudentModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 !bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl">
           {selectedStudent && (
             <>
-              <DialogHeader>
-                <DialogTitle className="text-xl md:text-2xl">{t('studentInfo.title')}</DialogTitle>
-              </DialogHeader>
+              {/* Glassmorphism Header */}
+              <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm p-4 md:p-6 rounded-t-lg border-b border-white/20">
+                <DialogHeader>
+                  <DialogTitle className="text-xl md:text-2xl text-white font-bold">{t('studentInfo.title')}</DialogTitle>
+                </DialogHeader>
+              </div>
 
-              <div className="space-y-4 md:space-y-6">
+              <div className="p-4 md:p-6 space-y-4 md:space-y-6">
                 {/* Profile Section */}
-                <div className="flex items-center gap-3 md:gap-4 pb-3 md:pb-4 border-b">
+                <div className="flex items-center gap-3 md:gap-4 pb-3 md:pb-4 border-b border-orange-200/40">
                   {selectedStudent.customerId.profilePhoto ? (
                     selectedStudent.customerId.profilePhoto.startsWith('http') ? (
                       <img
                         src={selectedStudent.customerId.profilePhoto}
                         alt={selectedStudent.customerId.userId.name}
-                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-primary-200"
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-4 ring-orange-300/50"
                       />
                     ) : (
                       <img
                         src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:5000'}${selectedStudent.customerId.profilePhoto}`}
                         alt={selectedStudent.customerId.userId.name}
-                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover border-2 border-primary-200"
+                        className="w-16 h-16 md:w-20 md:h-20 rounded-full object-cover ring-4 ring-orange-300/50"
                       />
                     )
                   ) : (
-                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white text-2xl md:text-3xl font-bold">
+                    <div className="w-16 h-16 md:w-20 md:h-20 rounded-full bg-gradient-to-br from-orange-400 to-pink-500 flex items-center justify-center text-white text-2xl md:text-3xl font-bold ring-4 ring-orange-300/50">
                       {selectedStudent.customerId.userId.name.charAt(0).toUpperCase()}
                     </div>
                   )}
@@ -718,33 +759,33 @@ export default function TeacherDashboard() {
                 {/* Basic Info Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
                   {calculateAge(selectedStudent.customerId.dateOfBirth) !== null && (
-                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.age')}</div>
-                      <div className="text-base md:text-lg font-semibold text-gray-900">
+                    <div className="bg-gradient-to-br from-orange-50 to-pink-50 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-orange-200/50 hover:border-orange-300 transition-all">
+                      <div className="text-xs md:text-sm text-orange-600 font-medium mb-1">{t('studentInfo.age')}</div>
+                      <div className="text-base md:text-lg font-bold text-gray-900">
                         {calculateAge(selectedStudent.customerId.dateOfBirth)} {t('studentInfo.years')}
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.gender && (
-                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.gender')}</div>
-                      <div className="text-base md:text-lg font-semibold text-gray-900 capitalize">
+                    <div className="bg-gradient-to-br from-orange-50 to-pink-50 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-orange-200/50 hover:border-orange-300 transition-all">
+                      <div className="text-xs md:text-sm text-orange-600 font-medium mb-1">{t('studentInfo.gender')}</div>
+                      <div className="text-base md:text-lg font-bold text-gray-900 capitalize">
                         {selectedStudent.customerId.gender}
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.height && (
-                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.height')}</div>
-                      <div className="text-base md:text-lg font-semibold text-gray-900">
+                    <div className="bg-gradient-to-br from-orange-50 to-pink-50 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-orange-200/50 hover:border-orange-300 transition-all">
+                      <div className="text-xs md:text-sm text-orange-600 font-medium mb-1">{t('studentInfo.height')}</div>
+                      <div className="text-base md:text-lg font-bold text-gray-900">
                         {selectedStudent.customerId.height} {t('studentInfo.cm')}
                       </div>
                     </div>
                   )}
                   {selectedStudent.customerId.weight && (
-                    <div className="bg-gray-50 rounded-lg p-3 md:p-4">
-                      <div className="text-xs md:text-sm text-gray-500 mb-1">{t('studentInfo.weight')}</div>
-                      <div className="text-base md:text-lg font-semibold text-gray-900">
+                    <div className="bg-gradient-to-br from-orange-50 to-pink-50 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-orange-200/50 hover:border-orange-300 transition-all">
+                      <div className="text-xs md:text-sm text-orange-600 font-medium mb-1">{t('studentInfo.weight')}</div>
+                      <div className="text-base md:text-lg font-bold text-gray-900">
                         {selectedStudent.customerId.weight} {t('studentInfo.kg')}
                       </div>
                     </div>
@@ -754,25 +795,25 @@ export default function TeacherDashboard() {
                 {/* Package Info */}
                 {studentPackages.length > 0 && (
                   <div className="space-y-3">
-                    <div className="text-xs md:text-sm font-medium text-gray-700">{t('studentInfo.activePackages')}</div>
+                    <div className="text-xs md:text-sm font-bold text-gray-900">{t('studentInfo.activePackages')}</div>
                     {studentPackages.map((pkg: any) => (
-                      <div key={pkg._id} className="bg-blue-50 rounded-lg p-3 md:p-4 border border-blue-200">
+                      <div key={pkg._id} className="bg-white/60 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-orange-200/50 hover:border-orange-300 hover:shadow-lg transition-all">
                         <div className="space-y-2">
                           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
-                            <span className="text-sm md:text-base text-gray-700 font-medium">{pkg.name}</span>
-                            <span className="px-2 md:px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs md:text-sm font-semibold capitalize self-start">
+                            <span className="text-sm md:text-base text-gray-900 font-semibold">{pkg.name}</span>
+                            <span className="px-2 md:px-3 py-1 bg-gradient-to-r from-orange-500 to-pink-500 text-white rounded-full text-xs md:text-sm font-semibold capitalize self-start shadow-md">
                               {pkg.type}
                             </span>
                           </div>
                           <div className="flex justify-between items-center text-xs md:text-sm">
-                            <span className="text-gray-600">{t('studentInfo.sessionsRemaining')}</span>
-                            <span className="font-semibold text-gray-900">
+                            <span className="text-gray-600 font-medium">{t('studentInfo.sessionsRemaining')}</span>
+                            <span className="font-bold text-orange-600">
                               {pkg.remainingSessions} / {pkg.totalSessions}
                             </span>
                           </div>
                           <div className="flex justify-between items-center text-xs text-gray-500">
-                            <span>{t('studentInfo.validUntil')}</span>
-                            <span>{new Date(pkg.validTo).toLocaleDateString()}</span>
+                            <span className="font-medium">{t('studentInfo.validUntil')}</span>
+                            <span className="font-semibold">{new Date(pkg.validTo).toLocaleDateString()}</span>
                           </div>
                         </div>
                       </div>
@@ -782,16 +823,16 @@ export default function TeacherDashboard() {
 
                 {/* Medical Conditions */}
                 {(selectedStudent.customerId.healthNotes || selectedStudent.customerId.medicalNotes) && (
-                  <div className="bg-orange-50 rounded-lg p-3 md:p-4 border border-orange-200">
+                  <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 md:p-4 border-2 border-orange-300/60 shadow-lg">
                     <div className="flex items-start gap-2">
                       <span className="text-xl md:text-2xl">⚠️</span>
                       <div className="flex-1">
-                        <div className="text-xs md:text-sm font-medium text-orange-600 mb-2">{t('studentInfo.medicalConditions')}</div>
+                        <div className="text-xs md:text-sm font-bold text-orange-700 mb-2">{t('studentInfo.medicalConditions')}</div>
                         {selectedStudent.customerId.healthNotes && (
-                          <p className="text-xs md:text-sm text-gray-700 mb-2">{selectedStudent.customerId.healthNotes}</p>
+                          <p className="text-xs md:text-sm text-gray-800 mb-2 font-medium">{selectedStudent.customerId.healthNotes}</p>
                         )}
                         {selectedStudent.customerId.medicalNotes && (
-                          <p className="text-xs md:text-sm text-gray-700">{selectedStudent.customerId.medicalNotes}</p>
+                          <p className="text-xs md:text-sm text-gray-800 font-medium">{selectedStudent.customerId.medicalNotes}</p>
                         )}
                       </div>
                     </div>
@@ -805,16 +846,19 @@ export default function TeacherDashboard() {
 
       {/* Review Modal */}
       <Dialog open={isReviewModalOpen} onOpenChange={setIsReviewModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto p-0 !bg-white/30 backdrop-blur-xl border-2 border-white/40 shadow-2xl">
           {selectedSessionForReview && (
             <>
-              <DialogHeader>
-                <DialogTitle className="text-xl md:text-2xl">{t('review.title')}</DialogTitle>
-              </DialogHeader>
+              {/* Glassmorphism Header */}
+              <div className="bg-gradient-to-r from-orange-500/90 to-pink-500/90 backdrop-blur-sm p-4 md:p-6 rounded-t-lg border-b border-white/20">
+                <DialogHeader>
+                  <DialogTitle className="text-xl md:text-2xl text-white font-bold">{t('review.title')}</DialogTitle>
+                </DialogHeader>
+              </div>
 
-              <div className="space-y-4 md:space-y-6">
+              <div className="p-4 md:p-6 space-y-4 md:space-y-6">
                 {/* Session Info */}
-                <div className="bg-gray-50 rounded-lg p-3 md:p-4">
+                <div className="bg-white/40 backdrop-blur-sm rounded-xl p-3 md:p-4 border border-orange-200/50">
                   <div className="text-sm md:text-base font-semibold text-gray-900 mb-1">
                     {selectedSessionForReview.customerId.userId.name}
                   </div>
@@ -973,14 +1017,14 @@ export default function TeacherDashboard() {
                     variant="outline"
                     onClick={() => setIsReviewModalOpen(false)}
                     size="sm"
-                    className="text-xs md:text-sm"
+                    className="text-xs md:text-sm border-orange-300 text-orange-600 hover:bg-orange-50 hover:border-orange-400"
                   >
                     {t('review.cancel')}
                   </Button>
                   <Button
                     onClick={handleSubmitReview}
                     size="sm"
-                    className="text-xs md:text-sm"
+                    className="text-xs md:text-sm bg-gradient-to-r from-orange-500 to-pink-500 hover:from-orange-600 hover:to-pink-600"
                   >
                     {t('review.submit')}
                   </Button>
