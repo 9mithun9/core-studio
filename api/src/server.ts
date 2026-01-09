@@ -16,6 +16,7 @@ const app: Application = express();
 // Middleware
 const allowedOrigins = [
   config.webUrl,
+  'https://core-studio-web.vercel.app',
   'https://core-studio-web-mog7.vercel.app',
   'http://localhost:3000'
 ];
