@@ -407,29 +407,57 @@ export default function AdminDashboard() {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={revenueOps.revenueByType}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="type" />
-                    <YAxis />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="type" stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
                     <Tooltip
-                      formatter={(value, name, props) => {
-                        if (name === 'Revenue (฿)') {
-                          return [
-                            `฿${Number(value).toLocaleString()}`,
-                            `Revenue (฿)`
-                          ];
-                        }
-                        return value;
-                      }}
-                      labelFormatter={(label, payload) => {
-                        if (payload && payload[0]) {
+                      cursor={false}
+                      content={({ active, payload, label }: any) => {
+                        if (active && payload && payload.length) {
                           const data = payload[0].payload;
-                          return `${label} - ${data.count} packages`;
+                          return (
+                            <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                              <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                              <div className="space-y-1.5">
+                                {payload.map((entry: any, index: number) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                    <span className="text-sm text-gray-700">
+                                      Revenue: <span className="font-semibold text-gray-900">฿{Number(entry.value).toLocaleString()}</span>
+                                    </span>
+                                  </div>
+                                ))}
+                                <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-600">
+                                  {data.count} packages
+                                </div>
+                              </div>
+                            </div>
+                          );
                         }
-                        return label;
+                        return null;
                       }}
                     />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#10b981" name="Revenue (฿)" />
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{ paddingTop: '20px' }}
+                    />
+                    <Bar
+                      dataKey="revenue"
+                      fill="#f59e0b"
+                      name="Revenue (฿)"
+                      radius={[6, 6, 0, 0]}
+                      shape={(props: any) => (
+                        <rect
+                          x={props.x}
+                          y={props.y}
+                          width={props.width}
+                          height={props.height}
+                          fill="#f59e0b"
+                          rx={6}
+                          ry={6}
+                        />
+                      )}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -444,29 +472,57 @@ export default function AdminDashboard() {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={revenueOps.revenueBySessionCount}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="sessionCount" label={{ value: 'Sessions', position: 'insideBottom', offset: -5 }} />
-                    <YAxis />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="sessionCount" label={{ value: 'Sessions', position: 'insideBottom', offset: -5 }} stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
                     <Tooltip
-                      formatter={(value, name, props) => {
-                        if (name === 'Revenue (฿)') {
-                          return [
-                            `฿${Number(value).toLocaleString()}`,
-                            `Revenue (฿)`
-                          ];
-                        }
-                        return value;
-                      }}
-                      labelFormatter={(label, payload) => {
-                        if (payload && payload[0]) {
+                      cursor={false}
+                      content={({ active, payload, label }: any) => {
+                        if (active && payload && payload.length) {
                           const data = payload[0].payload;
-                          return `${label} sessions - ${data.count} packages`;
+                          return (
+                            <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                              <p className="font-semibold text-gray-900 mb-2 text-sm">{label} sessions</p>
+                              <div className="space-y-1.5">
+                                {payload.map((entry: any, index: number) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                    <span className="text-sm text-gray-700">
+                                      Revenue: <span className="font-semibold text-gray-900">฿{Number(entry.value).toLocaleString()}</span>
+                                    </span>
+                                  </div>
+                                ))}
+                                <div className="mt-2 pt-2 border-t border-gray-200 text-xs text-gray-600">
+                                  {data.count} packages
+                                </div>
+                              </div>
+                            </div>
+                          );
                         }
-                        return label;
+                        return null;
                       }}
                     />
-                    <Legend />
-                    <Bar dataKey="revenue" fill="#3b82f6" name="Revenue (฿)" />
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{ paddingTop: '20px' }}
+                    />
+                    <Bar
+                      dataKey="revenue"
+                      fill="#8b5cf6"
+                      name="Revenue (฿)"
+                      radius={[6, 6, 0, 0]}
+                      shape={(props: any) => (
+                        <rect
+                          x={props.x}
+                          y={props.y}
+                          width={props.width}
+                          height={props.height}
+                          fill="#8b5cf6"
+                          rx={6}
+                          ry={6}
+                        />
+                      )}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -508,13 +564,72 @@ export default function AdminDashboard() {
             <CardContent>
               <ResponsiveContainer width="100%" height={350}>
                 <BarChart data={customerIntel.newVsReturning}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="month" />
-                  <YAxis />
-                  <Tooltip />
-                  <Legend />
-                  <Bar dataKey="new" fill="#3b82f6" name={t('dashboard.newCustomers')} stackId="a" />
-                  <Bar dataKey="returning" fill="#10b981" name={t('dashboard.renewals')} stackId="a" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                  <XAxis dataKey="month" stroke="#6b7280" />
+                  <YAxis stroke="#6b7280" />
+                  <Tooltip
+                    cursor={false}
+                    content={({ active, payload, label }: any) => {
+                      if (active && payload && payload.length) {
+                        return (
+                          <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                            <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                            <div className="space-y-1.5">
+                              {payload.map((entry: any, index: number) => (
+                                <div key={index} className="flex items-center gap-2">
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                  <span className="text-sm text-gray-700">
+                                    {entry.name}: <span className="font-semibold text-gray-900">{Number(entry.value).toLocaleString()}</span>
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        );
+                      }
+                      return null;
+                    }}
+                  />
+                  <Legend
+                    iconType="circle"
+                    wrapperStyle={{ paddingTop: '20px' }}
+                  />
+                  <Bar
+                    dataKey="new"
+                    fill="#f59e0b"
+                    name={t('dashboard.newCustomers')}
+                    stackId="a"
+                    radius={[0, 0, 0, 0]}
+                    shape={(props: any) => (
+                      <rect
+                        x={props.x}
+                        y={props.y}
+                        width={props.width}
+                        height={props.height}
+                        fill="#f59e0b"
+                        rx={6}
+                        ry={6}
+                      />
+                    )}
+                  />
+                  <Bar
+                    dataKey="returning"
+                    fill="#8b5cf6"
+                    name={t('dashboard.renewals')}
+                    stackId="a"
+                    radius={[6, 6, 0, 0]}
+                    shape={(props: any) => (
+                      <rect
+                        x={props.x}
+                        y={props.y}
+                        width={props.width}
+                        height={props.height}
+                        fill="#8b5cf6"
+                        rx={6}
+                        ry={6}
+                      />
+                    )}
+                  />
                 </BarChart>
               </ResponsiveContainer>
             </CardContent>
@@ -619,11 +734,33 @@ export default function AdminDashboard() {
               <CardContent>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={ageDemographic || customerIntel.ageDistribution}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="ageRange" tick={{ fontSize: 10 }} />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="count" fill="#8b5cf6">
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="ageRange" tick={{ fontSize: 10 }} stroke="#6b7280" />
+                    <YAxis stroke="#6b7280" />
+                    <Tooltip
+                      cursor={false}
+                      content={({ active, payload, label }: any) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                              <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                              <div className="space-y-1.5">
+                                {payload.map((entry: any, index: number) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                    <span className="text-sm text-gray-700">
+                                      Count: <span className="font-semibold text-gray-900">{Number(entry.value).toLocaleString()}</span>
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Bar dataKey="count" fill="#8b5cf6" radius={[6, 6, 0, 0]}>
                       {(ageDemographic || customerIntel.ageDistribution).map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={AGE_COLORS[index % AGE_COLORS.length]} />
                       ))}
@@ -809,12 +946,53 @@ export default function AdminDashboard() {
               <CardContent>
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={retentionInsights.purchaseTimeDistribution}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="range" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} />
-                    <Tooltip />
-                    <Legend wrapperStyle={{ fontSize: '12px' }} />
-                    <Bar dataKey="count" fill="#f59e0b" name={t('dashboard.renewedPackages')} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                    <XAxis dataKey="range" tick={{ fontSize: 11 }} stroke="#6b7280" />
+                    <YAxis tick={{ fontSize: 11 }} stroke="#6b7280" />
+                    <Tooltip
+                      cursor={false}
+                      content={({ active, payload, label }: any) => {
+                        if (active && payload && payload.length) {
+                          return (
+                            <div className="bg-white/80 backdrop-blur-md border-2 border-white/60 rounded-xl shadow-2xl p-4">
+                              <p className="font-semibold text-gray-900 mb-2 text-sm">{label}</p>
+                              <div className="space-y-1.5">
+                                {payload.map((entry: any, index: number) => (
+                                  <div key={index} className="flex items-center gap-2">
+                                    <div className="w-3 h-3 rounded-full" style={{ backgroundColor: entry.fill }} />
+                                    <span className="text-sm text-gray-700">
+                                      {entry.name}: <span className="font-semibold text-gray-900">{Number(entry.value).toLocaleString()}</span>
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      }}
+                    />
+                    <Legend
+                      iconType="circle"
+                      wrapperStyle={{ paddingTop: '20px', fontSize: '12px' }}
+                    />
+                    <Bar
+                      dataKey="count"
+                      fill="#f59e0b"
+                      name={t('dashboard.renewedPackages')}
+                      radius={[6, 6, 0, 0]}
+                      shape={(props: any) => (
+                        <rect
+                          x={props.x}
+                          y={props.y}
+                          width={props.width}
+                          height={props.height}
+                          fill="#f59e0b"
+                          rx={6}
+                          ry={6}
+                        />
+                      )}
+                    />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>
